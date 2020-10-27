@@ -44,7 +44,7 @@ une combinaison de touches dans la partie **Options/Commandes** du jeu pour que 
 Si ce fichier n’est pas présent alors *RaoulFumier* ne sera pas en mesure d’exécuter les commandes élaborées vocalement.
 
 Lors de la première installation, il faut impérativement qu’**Elite Dangerous** soit arrêté. Lancez l’installation et 
-vérifier qu’aucun message d’erreur ne soit affiché. Si tout se déroule sans problème alors relancez Elite Dangerous, 
+vérifiez qu’aucun message d’erreur ne soit affiché. Si tout se déroule sans problème alors relancez Elite Dangerous, 
 puis allez dans la partie **Options/Commandes**. Vous constaterez que des commandes ont alors été ajoutées. 
 Elles permettent au logiciel vocal de garantir ainsi l’utilisation complète du jeu.
 
