@@ -13,7 +13,7 @@ running processes and access to the *Windows* taskbar.
 This software is strongly recommended in addition to the **EDTaupeEye** software (https://github.com/MaxiDonkey/EDTaupeEye) 
 to fully benefit from the commands of Elite Dangerous and thus allow people with disabilities to continue 
 the great adventure offered by *Frontier* through from *Elite Dangerous*.
-
+s
 **RaoulFumier** also allows text entry into the game through the use of the *NATO* alphabet thus allowing 
 the entry of messages to other commanders in the communication panel or the entry of the names of 
 the systems in the card of the galaxy.
@@ -39,4 +39,15 @@ la saisie des noms des systèmes dans la carte de la galaxie.
 
 ## Installation
 
+Prérequis : Le logiciel a besoin qu’**Elite Dangerous** soit installé et opérationnel. Il faut également que vous ayez modifié 
+une combinaison de touches dans la partie **Options/Commandes** du jeu pour que le fichier *Custom.3.0.binds* soit créé. 
+Si ce fichier n’est pas présent alors *RaoulFumier* ne sera pas en mesure d’exécuter les commandes élaborées vocalement.
+
+Lors de la première installation, il faut impérativement qu’**Elite Dangerous** soit arrêté. Lancez l’installation et 
+vérifier qu’aucun message d’erreur ne soit affiché. Si tout se déroule sans problème alors relancez Elite Dangerous, 
+puis allez dans la partie **Options/Commandes**. Vous constaterez que des commandes ont alors été ajoutées. 
+Elles permettent au logiciel vocal de garantir ainsi l’utilisation complète du jeu.
+
+Si vous apportez des modifications à certaines commandes, et que *RaoulFumier* est en cours de fonctionnement alors pensez à
+le relancer en prononçant **«Hey fumier il faut redémarrer »**.
 
