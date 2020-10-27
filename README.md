@@ -23,18 +23,20 @@ Since this first version of the software is only available for the French langua
 
 ## Résumé
 
-Points forts : Possibilité d'exécuter plusieurs  commandes simultanément permettant une meilleur immertion en jeu.
+Points forts : Possibilité d'exécuter plusieurs  commandes simultanément permettant une meilleure immersion en jeu.
 Aucun paramétrage n'est requis pour bénéficier de toutes les commandes permises avec *Elite Dangerous* et plus...
-Possibilité également de naviguer sous Windows et dans de nombreux logiciels avec notamment l'accès à la liste des 
+Possibilité également de naviguer sous *Windows* et dans de nombreux logiciels avec notamment l'accès à la liste des 
 processus en cours de fonctionnement et l'accès à la barre des tâches de *Windows*.
 
 Ce logiciel est fortement recommandé en complément du logiciel **EDTaupeEye** (https://github.com/MaxiDonkey/EDTaupeEye) 
-pour bénéficier pleinement des commandes d'*Elite Dangerous* et ainsi permettre au personnes souffrant de handicap 
+pour bénéficier pleinement des commandes d'*Elite Dangerous* et ainsi permettre aux personnes souffrant de handicap 
 de poursuivre la formidable aventure offerte par *Frontier* au travers d'*Elite Dangerous*. 
 
 **RaoulFumier** permet également la saisie de textes en jeu par le biais de l'utilisation de l'alphabet *NATO* permettant 
 ainsi la saisie de messages à destination des autres commanders dans le panneau de communication ou encore 
-la saisie des nom des systèmes dans la carte de la galaxie.
+la saisie des noms des systèmes dans la carte de la galaxie.
 
+
+## Installation
 
 
