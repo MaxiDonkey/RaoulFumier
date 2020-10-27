@@ -39,7 +39,7 @@ la saisie des noms des systèmes dans la carte de la galaxie.
 
 ## Installation
 
-Prérequis : Le logiciel a besoin qu’**Elite Dangerous** soit installé et opérationnel. Il faut également que vous ayez modifié 
+**Prérequis** : Le logiciel a besoin qu’**Elite Dangerous** soit installé et opérationnel. Il faut également que vous ayez modifié 
 une combinaison de touches dans la partie **Options/Commandes** du jeu pour que le fichier *Custom.3.0.binds* soit créé. 
 Si ce fichier n’est pas présent alors *RaoulFumier* ne sera pas en mesure d’exécuter les commandes élaborées vocalement.
 
