@@ -163,7 +163,7 @@
 			<VersionInfoKeys Name="CompanyName">MaxiDonkey</VersionInfoKeys>
 			<VersionInfoKeys Name="FileDescription">Assistance vocale</VersionInfoKeys>
 			<VersionInfoKeys Name="InternalName">Voice project</VersionInfoKeys>
-			<VersionInfoKeys Name="LegalCopyright">2016-2020</VersionInfoKeys>
+			<VersionInfoKeys Name="LegalCopyright"></VersionInfoKeys>
 			<VersionInfoKeys Name="LegalTrademarks">MaxiDonkey</VersionInfoKeys>
 			<VersionInfoKeys Name="OriginalFilename">Persephone</VersionInfoKeys>
 			<VersionInfoKeys Name="ProductName">Raoul Fumieer</VersionInfoKeys>
