@@ -1,0 +1,1798 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Root PresetName="Custom" MajorVersion="3" MinorVersion="0">
+	<KeyboardLayout>fr-FR</KeyboardLayout>
+	<MouseXMode Value="" />
+	<MouseXDecay Value="0" />
+	<MouseYMode Value="" />
+	<MouseYDecay Value="0" />
+	<MouseReset>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</MouseReset>
+	<MouseSensitivity Value="1.00000000" />
+	<MouseDecayRate Value="4.00000000" />
+	<MouseDeadzone Value="0.05000000" />
+	<MouseLinearity Value="1.00000000" />
+	<MouseGUI Value="1" />
+	<YawAxisRaw>
+		<Binding Device="SaitekX56Joystick" Key="Joy_RZAxis" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.03000000" />
+	</YawAxisRaw>
+	<YawLeftButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_Home" />
+	</YawLeftButton>
+	<YawRightButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_End" />
+	</YawRightButton>
+	<YawToRollMode Value="Bindings_YawIntoRollNone" />
+	<YawToRollSensitivity Value="0.40000001" />
+	<YawToRollMode_FAOff Value="" />
+	<YawToRollButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+		<ToggleOn Value="0" />
+	</YawToRollButton>
+	<RollAxisRaw>
+		<Binding Device="SaitekX56Joystick" Key="Joy_XAxis" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.04312500" />
+	</RollAxisRaw>
+	<RollLeftButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_ScrollLock" />
+	</RollLeftButton>
+	<RollRightButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_Numpad_Multiply" />
+	</RollRightButton>
+	<PitchAxisRaw>
+		<Binding Device="SaitekX56Joystick" Key="Joy_YAxis" />
+		<Inverted Value="1" />
+		<Deadzone Value="0.02000000" />
+	</PitchAxisRaw>
+	<PitchUpButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_PageUp" />
+	</PitchUpButton>
+	<PitchDownButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_PageDown" />
+	</PitchDownButton>
+	<LateralThrustRaw>
+		<Binding Device="SaitekX56Throttle" Key="Joy_RXAxis" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</LateralThrustRaw>
+	<LeftThrustButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_P">
+			<Modifier Device="Keyboard" Key="Key_LeftControl" />
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</LeftThrustButton>
+	<RightThrustButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_Q">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+	</RightThrustButton>
+	<VerticalThrustRaw>
+		<Binding Device="SaitekX56Throttle" Key="Joy_RYAxis" />
+		<Inverted Value="1" />
+		<Deadzone Value="0.02000000" />
+	</VerticalThrustRaw>
+	<UpThrustButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_R">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+	</UpThrustButton>
+	<DownThrustButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_S">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+	</DownThrustButton>
+	<AheadThrust>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</AheadThrust>
+	<ForwardThrustButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_T">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+	</ForwardThrustButton>
+	<BackwardThrustButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_U">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+	</BackwardThrustButton>
+	<UseAlternateFlightValuesToggle>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+		<ToggleOn Value="1" />
+	</UseAlternateFlightValuesToggle>
+	<YawAxisAlternate>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</YawAxisAlternate>
+	<RollAxisAlternate>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</RollAxisAlternate>
+	<PitchAxisAlternate>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</PitchAxisAlternate>
+	<LateralThrustAlternate>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</LateralThrustAlternate>
+	<VerticalThrustAlternate>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</VerticalThrustAlternate>
+	<ThrottleAxis>
+		<Binding Device="SaitekX56Throttle" Key="Joy_XAxis" />
+		<Inverted Value="1" />
+		<Deadzone Value="0.00000000" />
+	</ThrottleAxis>
+	<ThrottleRange Value="Bindings_ThrottleForewardOnly" />
+	<ToggleReverseThrottleInput>
+		<Primary Device="SaitekX56Throttle" Key="Joy_2" />
+		<Secondary Device="Keyboard" Key="Key_D">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+		<ToggleOn Value="1" />
+	</ToggleReverseThrottleInput>
+	<ForwardKey>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_N">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+	</ForwardKey>
+	<BackwardKey>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_O">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+	</BackwardKey>
+	<ThrottleIncrement Value="0.10000000" />
+	<SetSpeedMinus100>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_E">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+	</SetSpeedMinus100>
+	<SetSpeedMinus75>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_F">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+	</SetSpeedMinus75>
+	<SetSpeedMinus50>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_G">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+	</SetSpeedMinus50>
+	<SetSpeedMinus25>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_H">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+	</SetSpeedMinus25>
+	<SetSpeedZero>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_I">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+	</SetSpeedZero>
+	<SetSpeed25>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_J">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+	</SetSpeed25>
+	<SetSpeed50>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_K">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+	</SetSpeed50>
+	<SetSpeed75>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_L">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+	</SetSpeed75>
+	<SetSpeed100>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_M">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+	</SetSpeed100>
+	<YawAxis_Landing>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</YawAxis_Landing>
+	<YawLeftButton_Landing>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_Home">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</YawLeftButton_Landing>
+	<YawRightButton_Landing>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_Delete">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</YawRightButton_Landing>
+	<YawToRollMode_Landing Value="" />
+	<PitchAxis_Landing>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</PitchAxis_Landing>
+	<PitchUpButton_Landing>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_Insert">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</PitchUpButton_Landing>
+	<PitchDownButton_Landing>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_UpArrow">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</PitchDownButton_Landing>
+	<RollAxis_Landing>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</RollAxis_Landing>
+	<RollLeftButton_Landing>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_LeftArrow">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</RollLeftButton_Landing>
+	<RollRightButton_Landing>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_DownArrow">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</RollRightButton_Landing>
+	<LateralThrust_Landing>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</LateralThrust_Landing>
+	<LeftThrustButton_Landing>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_Home" />
+	</LeftThrustButton_Landing>
+	<RightThrustButton_Landing>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_End" />
+	</RightThrustButton_Landing>
+	<VerticalThrust_Landing>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</VerticalThrust_Landing>
+	<UpThrustButton_Landing>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_PageUp" />
+	</UpThrustButton_Landing>
+	<DownThrustButton_Landing>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_PageDown" />
+	</DownThrustButton_Landing>
+	<AheadThrust_Landing>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</AheadThrust_Landing>
+	<ForwardThrustButton_Landing>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_ScrollLock" />
+	</ForwardThrustButton_Landing>
+	<BackwardThrustButton_Landing>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_Numpad_Multiply" />
+	</BackwardThrustButton_Landing>
+	<ToggleFlightAssist>
+		<Primary Device="SaitekX56Throttle" Key="Joy_24" />
+		<Secondary Device="Keyboard" Key="Key_X">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+		<ToggleOn Value="1" />
+	</ToggleFlightAssist>
+	<UseBoostJuice>
+		<Primary Device="SaitekX56Joystick" Key="Joy_6" />
+		<Secondary Device="Keyboard" Key="Key_F">
+			<Modifier Device="Keyboard" Key="Key_RightShift" />
+		</Secondary>
+	</UseBoostJuice>
+	<HyperSuperCombination>
+		<Primary Device="SaitekX56Throttle" Key="Joy_29" />
+		<Secondary Device="Keyboard" Key="Key_Y">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</HyperSuperCombination>
+	<Supercruise>
+		<Primary Device="SaitekX56Throttle" Key="Joy_16" />
+		<Secondary Device="Keyboard" Key="Key_Z">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</Supercruise>
+	<Hyperspace>
+		<Primary Device="SaitekX56Throttle" Key="Joy_18" />
+		<Secondary Device="Keyboard" Key="Key_A">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+	</Hyperspace>
+	<DisableRotationCorrectToggle>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_B">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+		<ToggleOn Value="1" />
+	</DisableRotationCorrectToggle>
+	<OrbitLinesToggle>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_C">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+	</OrbitLinesToggle>
+	<SelectTarget>
+		<Primary Device="SaitekX56Joystick" Key="Joy_3" />
+		<Secondary Device="Keyboard" Key="Key_J">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</SelectTarget>
+	<CycleNextTarget>
+		<Primary Device="SaitekX56Throttle" Key="Joy_21" />
+		<Secondary Device="Keyboard" Key="Key_K">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</CycleNextTarget>
+	<CyclePreviousTarget>
+		<Primary Device="SaitekX56Throttle" Key="Joy_23" />
+		<Secondary Device="Keyboard" Key="Key_L">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</CyclePreviousTarget>
+	<SelectHighestThreat>
+		<Primary Device="SaitekX56Throttle" Key="Joy_12" />
+		<Secondary Device="Keyboard" Key="Key_M">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</SelectHighestThreat>
+	<CycleNextHostileTarget>
+		<Primary Device="SaitekX56Throttle" Key="Joy_14" />
+		<Secondary Device="Keyboard" Key="Key_N">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</CycleNextHostileTarget>
+	<CyclePreviousHostileTarget>
+		<Primary Device="SaitekX56Throttle" Key="Joy_15" />
+		<Secondary Device="Keyboard" Key="Key_O">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</CyclePreviousHostileTarget>
+	<TargetWingman0>
+		<Primary Device="SaitekX56Joystick" Key="Joy_9" />
+		<Secondary Device="Keyboard" Key="Key_P">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</TargetWingman0>
+	<TargetWingman1>
+		<Primary Device="SaitekX56Joystick" Key="Joy_10" />
+		<Secondary Device="Keyboard" Key="Key_Q">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</TargetWingman1>
+	<TargetWingman2>
+		<Primary Device="SaitekX56Joystick" Key="Joy_8" />
+		<Secondary Device="Keyboard" Key="Key_R">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</TargetWingman2>
+	<SelectTargetsTarget>
+		<Primary Device="SaitekX56Joystick" Key="Joy_7" />
+		<Secondary Device="Keyboard" Key="Key_S">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</SelectTargetsTarget>
+	<WingNavLock>
+		<Primary Device="SaitekX56Throttle" Key="Joy_13" />
+		<Secondary Device="Keyboard" Key="Key_T">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</WingNavLock>
+	<CycleNextSubsystem>
+		<Primary Device="SaitekX56Throttle" Key="Joy_30" />
+		<Secondary Device="Keyboard" Key="Key_U">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</CycleNextSubsystem>
+	<CyclePreviousSubsystem>
+		<Primary Device="SaitekX56Throttle" Key="Joy_31" />
+		<Secondary Device="Keyboard" Key="Key_V">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</CyclePreviousSubsystem>
+	<TargetNextRouteSystem>
+		<Primary Device="SaitekX56Joystick" Key="Joy_POV1Right" />
+		<Secondary Device="Keyboard" Key="Key_W">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</TargetNextRouteSystem>
+	<PrimaryFire>
+		<Primary Device="SaitekX56Joystick" Key="Joy_1" />
+		<Secondary Device="Keyboard" Key="Key_C">
+			<Modifier Device="Keyboard" Key="Key_RightShift" />
+		</Secondary>
+	</PrimaryFire>
+	<SecondaryFire>
+		<Primary Device="SaitekX56Joystick" Key="Neg_Joy_RXAxis" />
+		<Secondary Device="Keyboard" Key="Key_T">
+			<Modifier Device="Keyboard" Key="Key_RightShift" />
+		</Secondary>
+	</SecondaryFire>
+	<CycleFireGroupNext>
+		<Primary Device="SaitekX56Throttle" Key="Joy_5" />
+		<Secondary Device="Keyboard" Key="Key_V">
+			<Modifier Device="Keyboard" Key="Key_RightShift" />
+		</Secondary>
+	</CycleFireGroupNext>
+	<CycleFireGroupPrevious>
+		<Primary Device="SaitekX56Throttle" Key="Joy_4" />
+		<Secondary Device="Keyboard" Key="Key_H">
+			<Modifier Device="Keyboard" Key="Key_RightShift" />
+		</Secondary>
+	</CycleFireGroupPrevious>
+	<DeployHardpointToggle>
+		<Primary Device="SaitekX56Joystick" Key="Joy_2" />
+		<Secondary Device="Keyboard" Key="Key_R">
+			<Modifier Device="Keyboard" Key="Key_RightShift" />
+		</Secondary>
+	</DeployHardpointToggle>
+	<DeployHardpointsOnFire Value="0" />
+	<ToggleButtonUpInput>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_V">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+		<ToggleOn Value="1" />
+	</ToggleButtonUpInput>
+	<DeployHeatSink>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_W">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+	</DeployHeatSink>
+	<ShipSpotLightToggle>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_H">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</ShipSpotLightToggle>
+	<RadarRangeAxis>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</RadarRangeAxis>
+	<RadarIncreaseRange>
+		<Primary Device="SaitekX56Joystick" Key="Joy_POV1Up" />
+		<Secondary Device="Keyboard" Key="Key_E">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</RadarIncreaseRange>
+	<RadarDecreaseRange>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_G">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</RadarDecreaseRange>
+	<IncreaseEnginesPower>
+		<Primary Device="SaitekX56Joystick" Key="Joy_11" />
+		<Secondary Device="Keyboard" Key="Key_M">
+			<Modifier Device="Keyboard" Key="Key_RightShift" />
+		</Secondary>
+	</IncreaseEnginesPower>
+	<IncreaseWeaponsPower>
+		<Primary Device="SaitekX56Joystick" Key="Joy_12" />
+		<Secondary Device="Keyboard" Key="Key_A">
+			<Modifier Device="Keyboard" Key="Key_RightShift" />
+		</Secondary>
+	</IncreaseWeaponsPower>
+	<IncreaseSystemsPower>
+		<Primary Device="SaitekX56Joystick" Key="Joy_14" />
+		<Secondary Device="Keyboard" Key="Key_S">
+			<Modifier Device="Keyboard" Key="Key_RightShift" />
+		</Secondary>
+	</IncreaseSystemsPower>
+	<ResetPowerDistribution>
+		<Primary Device="SaitekX56Joystick" Key="Joy_13" />
+		<Secondary Device="Keyboard" Key="Key_D">
+			<Modifier Device="Keyboard" Key="Key_RightShift" />
+		</Secondary>
+	</ResetPowerDistribution>
+	<HMDReset>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</HMDReset>
+	<ToggleCargoScoop>
+		<Primary Device="SaitekX56Throttle" Key="Joy_1">
+			<Modifier Device="SaitekX56Joystick" Key="Joy_5" />
+		</Primary>
+		<Secondary Device="Keyboard" Key="Key_A">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+		<ToggleOn Value="1" />
+	</ToggleCargoScoop>
+	<EjectAllCargo>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_I">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</EjectAllCargo>
+	<LandingGearToggle>
+		<Primary Device="SaitekX56Throttle" Key="Joy_3" />
+		<Secondary Device="Keyboard" Key="Key_T">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</LandingGearToggle>
+	<MicrophoneMute>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+		<ToggleOn Value="1" />
+	</MicrophoneMute>
+	<MuteButtonMode Value="mute_toggle" />
+	<CqcMuteButtonMode Value="mute_pushToTalk" />
+	<UseShieldCell>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_B">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</UseShieldCell>
+	<FireChaffLauncher>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_C">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</FireChaffLauncher>
+	<ChargeECM>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_B">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</ChargeECM>
+	<EnableRumbleTrigger Value="1" />
+	<EnableMenuGroups Value="0" />
+	<MouseGUI Value="1" />
+	<WeaponColourToggle>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_RightArrow">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</WeaponColourToggle>
+	<EngineColourToggle>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_F12">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</EngineColourToggle>
+	<NightVisionToggle>
+		<Primary Device="SaitekX56Throttle" Key="Joy_18">
+			<Modifier Device="SaitekX56Joystick" Key="Joy_5" />
+		</Primary>
+		<Secondary Device="Keyboard" Key="Key_A">
+			<Modifier Device="Keyboard" Key="Key_LeftControl" />
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</NightVisionToggle>
+	<UIFocus>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</UIFocus>
+	<UIFocusMode Value="Bindings_FocusModeHold" />
+	<FocusLeftPanel>
+		<Primary Device="SaitekX56Throttle" Key="Joy_6" />
+		<Secondary Device="Keyboard" Key="Key_X">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+	</FocusLeftPanel>
+	<FocusCommsPanel>
+		<Primary Device="SaitekX56Throttle" Key="Joy_7" />
+		<Secondary Device="Keyboard" Key="Key_Y">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+	</FocusCommsPanel>
+	<FocusOnTextEntryField Value="0" />
+	<QuickCommsPanel>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_F11">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</QuickCommsPanel>
+	<FocusRadarPanel>
+		<Primary Device="SaitekX56Throttle" Key="Joy_11" />
+		<Secondary Device="Keyboard" Key="Key_Z">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+	</FocusRadarPanel>
+	<FocusRightPanel>
+		<Primary Device="SaitekX56Throttle" Key="Joy_10" />
+		<Secondary Device="Keyboard" Key="Key_A">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</FocusRightPanel>
+	<LeftPanelFocusOptions Value="FocusOption_Nothing" />
+	<CommsPanelFocusOptions Value="FocusOption_Nothing" />
+	<RolePanelFocusOptions Value="" />
+	<RightPanelFocusOptions Value="FocusOption_Nothing" />
+	<EnableCameraLockOn Value="1" />
+	<GalaxyMapOpen>
+		<Primary Device="SaitekX56Throttle" Key="Joy_8" />
+		<Secondary Device="Keyboard" Key="Key_B">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</GalaxyMapOpen>
+	<SystemMapOpen>
+		<Primary Device="SaitekX56Throttle" Key="Joy_9" />
+		<Secondary Device="Keyboard" Key="Key_C">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</SystemMapOpen>
+	<ShowPGScoreSummaryInput>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+		<ToggleOn Value="0" />
+	</ShowPGScoreSummaryInput>
+	<HeadLookToggle>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+		<ToggleOn Value="1" />
+	</HeadLookToggle>
+	<Pause>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_D">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</Pause>
+	<FriendsMenu>
+		<Primary Device="Keyboard" Key="Key_V" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</FriendsMenu>
+	<OpenCodexGoToDiscovery>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_E">
+			<Modifier Device="Keyboard" Key="Key_LeftShift" />
+			<Modifier Device="Keyboard" Key="Key_RightShift" />
+		</Secondary>
+	</OpenCodexGoToDiscovery>
+	<PlayerHUDModeToggle>
+		<Primary Device="SaitekX56Throttle" Key="Joy_27" />
+		<Secondary Device="Keyboard" Key="Key_R">
+			<Modifier Device="Keyboard" Key="Key_LeftShift" />
+			<Modifier Device="Keyboard" Key="Key_RightShift" />
+		</Secondary>
+	</PlayerHUDModeToggle>
+	<ExplorationFSSEnter>
+		<Primary Device="SaitekX56Throttle" Key="Joy_6">
+			<Modifier Device="SaitekX56Joystick" Key="Joy_5" />
+		</Primary>
+		<Secondary Device="Keyboard" Key="Key_T">
+			<Modifier Device="Keyboard" Key="Key_LeftShift" />
+			<Modifier Device="Keyboard" Key="Key_RightShift" />
+		</Secondary>
+	</ExplorationFSSEnter>
+	<UI_Up>
+		<Primary Device="SaitekX56Joystick" Key="Pos_Joy_RXAxis" />
+		<Secondary Device="Keyboard" Key="Key_Numpad_8" />
+	</UI_Up>
+	<UI_Down>
+		<Primary Device="SaitekX56Joystick" Key="Neg_Joy_RXAxis" />
+		<Secondary Device="Keyboard" Key="Key_Numpad_2" />
+	</UI_Down>
+	<UI_Left>
+		<Primary Device="SaitekX56Joystick" Key="Neg_Joy_RYAxis" />
+		<Secondary Device="Keyboard" Key="Key_Numpad_4" />
+	</UI_Left>
+	<UI_Right>
+		<Primary Device="SaitekX56Joystick" Key="Pos_Joy_RYAxis" />
+		<Secondary Device="Keyboard" Key="Key_Numpad_6" />
+	</UI_Right>
+	<UI_Select>
+		<Primary Device="SaitekX56Joystick" Key="Joy_1" />
+		<Secondary Device="Keyboard" Key="Key_Enter" />
+	</UI_Select>
+	<UI_Back>
+		<Primary Device="SaitekX56Joystick" Key="Joy_5" />
+		<Secondary Device="Keyboard" Key="Key_Numpad_Decimal" />
+	</UI_Back>
+	<UI_Toggle>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</UI_Toggle>
+	<CycleNextPanel>
+		<Primary Device="SaitekX56Throttle" Key="Pos_Joy_RXAxis" />
+		<Secondary Device="Keyboard" Key="Key_F10">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</CycleNextPanel>
+	<CyclePreviousPanel>
+		<Primary Device="SaitekX56Throttle" Key="Neg_Joy_RXAxis" />
+		<Secondary Device="Keyboard" Key="Key_F9">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</CyclePreviousPanel>
+	<CycleNextPage>
+		<Primary Device="SaitekX56Throttle" Key="Joy_21" />
+		<Secondary Device="Keyboard" Key="Key_F8">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</CycleNextPage>
+	<CyclePreviousPage>
+		<Primary Device="SaitekX56Throttle" Key="Joy_23" />
+		<Secondary Device="Keyboard" Key="Key_F7">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</CyclePreviousPage>
+	<MouseHeadlook Value="1" />
+	<MouseHeadlookInvert Value="0" />
+	<MouseHeadlookSensitivity Value="0.50000000" />
+	<HeadlookDefault Value="0" />
+	<HeadlookIncrement Value="0.00000000" />
+	<HeadlookMode Value="Bindings_HeadlookModeAccumulate" />
+	<HeadlookResetOnToggle Value="1" />
+	<HeadlookSensitivity Value="1.00000000" />
+	<HeadlookSmoothing Value="1" />
+	<HeadLookReset>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</HeadLookReset>
+	<HeadLookPitchUp>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</HeadLookPitchUp>
+	<HeadLookPitchDown>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</HeadLookPitchDown>
+	<HeadLookPitchAxisRaw>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</HeadLookPitchAxisRaw>
+	<HeadLookYawLeft>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</HeadLookYawLeft>
+	<HeadLookYawRight>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</HeadLookYawRight>
+	<HeadLookYawAxis>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</HeadLookYawAxis>
+	<MotionHeadlook Value="0" />
+	<HeadlookMotionSensitivity Value="1.00000000" />
+	<yawRotateHeadlook Value="0" />
+	<CamPitchAxis>
+		<Binding Device="SaitekX56Joystick" Key="Joy_YAxis" />
+		<Inverted Value="1" />
+		<Deadzone Value="0.00000000" />
+	</CamPitchAxis>
+	<CamPitchUp>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_F6">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</CamPitchUp>
+	<CamPitchDown>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_F5">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</CamPitchDown>
+	<CamYawAxis>
+		<Binding Device="SaitekX56Joystick" Key="Joy_XAxis" />
+		<Inverted Value="1" />
+		<Deadzone Value="0.00000000" />
+	</CamYawAxis>
+	<CamYawLeft>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_F4">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</CamYawLeft>
+	<CamYawRight>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_F3">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</CamYawRight>
+	<CamTranslateYAxis>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</CamTranslateYAxis>
+	<CamTranslateForward>
+		<Primary Device="SaitekX56Joystick" Key="Joy_11" />
+		<Secondary Device="Keyboard" Key="Key_ScrollLock" />
+	</CamTranslateForward>
+	<CamTranslateBackward>
+		<Primary Device="SaitekX56Joystick" Key="Joy_13" />
+		<Secondary Device="Keyboard" Key="Key_Numpad_Multiply" />
+	</CamTranslateBackward>
+	<CamTranslateXAxis>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</CamTranslateXAxis>
+	<CamTranslateLeft>
+		<Primary Device="SaitekX56Joystick" Key="Joy_14" />
+		<Secondary Device="Keyboard" Key="Key_Home" />
+	</CamTranslateLeft>
+	<CamTranslateRight>
+		<Primary Device="SaitekX56Joystick" Key="Joy_12" />
+		<Secondary Device="Keyboard" Key="Key_End" />
+	</CamTranslateRight>
+	<CamTranslateZAxis>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</CamTranslateZAxis>
+	<CamTranslateUp>
+		<Primary Device="SaitekX56Joystick" Key="Joy_POV1Up" />
+		<Secondary Device="Keyboard" Key="Key_PageUp" />
+	</CamTranslateUp>
+	<CamTranslateDown>
+		<Primary Device="SaitekX56Joystick" Key="Joy_POV1Down" />
+		<Secondary Device="Keyboard" Key="Key_PageDown" />
+	</CamTranslateDown>
+	<CamZoomAxis>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</CamZoomAxis>
+	<CamZoomIn>
+		<Primary Device="SaitekX56Joystick" Key="Joy_POV1Right" />
+		<Secondary Device="Keyboard" Key="Key_PageDown">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</CamZoomIn>
+	<CamZoomOut>
+		<Primary Device="SaitekX56Joystick" Key="Joy_POV1Left" />
+		<Secondary Device="Keyboard" Key="Key_PageUp">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</CamZoomOut>
+	<CamTranslateZHold>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="SaitekX56Throttle" Key="Joy_32" />
+		<ToggleOn Value="1" />
+	</CamTranslateZHold>
+	<GalaxyMapHome>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_End">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</GalaxyMapHome>
+	<ToggleDriveAssist>
+		<Primary Device="SaitekX56Joystick" Key="Joy_6" />
+		<Secondary Device="Keyboard" Key="Key_A">
+			<Modifier Device="Keyboard" Key="Key_LeftControl" />
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+		<ToggleOn Value="1" />
+	</ToggleDriveAssist>
+	<DriveAssistDefault Value="1" />
+	<MouseBuggySteeringXMode Value="" />
+	<MouseBuggySteeringXDecay Value="0" />
+	<MouseBuggyRollingXMode Value="" />
+	<MouseBuggyRollingXDecay Value="0" />
+	<MouseBuggyYMode Value="" />
+	<MouseBuggyYDecay Value="0" />
+	<SteeringAxis>
+		<Binding Device="SaitekX56Joystick" Key="Joy_XAxis" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</SteeringAxis>
+	<SteerLeftButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_Home" />
+	</SteerLeftButton>
+	<SteerRightButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_End" />
+	</SteerRightButton>
+	<BuggyRollAxisRaw>
+		<Binding Device="SaitekX56Joystick" Key="Joy_XAxis" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</BuggyRollAxisRaw>
+	<BuggyRollLeftButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_F2">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</BuggyRollLeftButton>
+	<BuggyRollRightButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_F1">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</BuggyRollRightButton>
+	<BuggyPitchAxis>
+		<Binding Device="SaitekX56Joystick" Key="Joy_YAxis" />
+		<Inverted Value="1" />
+		<Deadzone Value="0.00000000" />
+	</BuggyPitchAxis>
+	<BuggyPitchUpButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_Z">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</BuggyPitchUpButton>
+	<BuggyPitchDownButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_Y">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</BuggyPitchDownButton>
+	<VerticalThrustersButton>
+		<Primary Device="SaitekX56Throttle" Key="Joy_24" />
+		<Secondary Device="Keyboard" Key="Key_B">
+			<Modifier Device="Keyboard" Key="Key_LeftControl" />
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+		<ToggleOn Value="0" />
+	</VerticalThrustersButton>
+	<BuggyPrimaryFireButton>
+		<Primary Device="SaitekX56Joystick" Key="Joy_1" />
+		<Secondary Device="Keyboard" Key="Key_C">
+			<Modifier Device="Keyboard" Key="Key_RightShift" />
+		</Secondary>
+	</BuggyPrimaryFireButton>
+	<BuggySecondaryFireButton>
+		<Primary Device="SaitekX56Joystick" Key="Joy_2" />
+		<Secondary Device="Keyboard" Key="Key_T">
+			<Modifier Device="Keyboard" Key="Key_RightShift" />
+		</Secondary>
+	</BuggySecondaryFireButton>
+	<AutoBreakBuggyButton>
+		<Primary Device="SaitekX56Throttle" Key="Joy_4" />
+		<Secondary Device="Keyboard" Key="Key_ScrollLock" />
+		<ToggleOn Value="1" />
+	</AutoBreakBuggyButton>
+	<HeadlightsBuggyButton>
+		<Primary Device="SaitekX56Throttle" Key="Joy_28" />
+		<Secondary Device="Keyboard" Key="Key_H">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</HeadlightsBuggyButton>
+	<ToggleBuggyTurretButton>
+		<Primary Device="SaitekX56Throttle" Key="Joy_3" />
+		<Secondary Device="Keyboard" Key="Key_Numpad_Multiply" />
+	</ToggleBuggyTurretButton>
+	<BuggyCycleFireGroupNext>
+		<Primary Device="SaitekX56Throttle" Key="Joy_5" />
+		<Secondary Device="Keyboard" Key="Key_V">
+			<Modifier Device="Keyboard" Key="Key_RightShift" />
+		</Secondary>
+	</BuggyCycleFireGroupNext>
+	<BuggyCycleFireGroupPrevious>
+		<Primary Device="SaitekX56Throttle" Key="Joy_4" />
+		<Secondary Device="Keyboard" Key="Key_H">
+			<Modifier Device="Keyboard" Key="Key_RightShift" />
+		</Secondary>
+	</BuggyCycleFireGroupPrevious>
+	<SelectTarget_Buggy>
+		<Primary Device="SaitekX56Joystick" Key="Joy_3" />
+		<Secondary Device="Keyboard" Key="Key_J">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</SelectTarget_Buggy>
+	<MouseTurretXMode Value="" />
+	<MouseTurretXDecay Value="1" />
+	<MouseTurretYMode Value="" />
+	<MouseTurretYDecay Value="1" />
+	<BuggyTurretYawAxisRaw>
+		<Binding Device="SaitekX56Throttle" Key="Joy_RXAxis" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</BuggyTurretYawAxisRaw>
+	<BuggyTurretYawLeftButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_Home" />
+	</BuggyTurretYawLeftButton>
+	<BuggyTurretYawRightButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_End" />
+	</BuggyTurretYawRightButton>
+	<BuggyTurretPitchAxisRaw>
+		<Binding Device="SaitekX56Throttle" Key="Joy_RYAxis" />
+		<Inverted Value="1" />
+		<Deadzone Value="0.00000000" />
+	</BuggyTurretPitchAxisRaw>
+	<BuggyTurretPitchUpButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_PageUp" />
+	</BuggyTurretPitchUpButton>
+	<BuggyTurretPitchDownButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_PageDown" />
+	</BuggyTurretPitchDownButton>
+	<BuggyTurretMouseSensitivity Value="1.00000000" />
+	<BuggyTurretMouseDeadzone Value="0.05000000" />
+	<BuggyTurretMouseLinearity Value="1.00000000" />
+	<DriveSpeedAxis>
+		<Binding Device="SaitekX56Throttle" Key="Joy_XAxis" />
+		<Inverted Value="1" />
+		<Deadzone Value="0.00000000" />
+	</DriveSpeedAxis>
+	<BuggyThrottleRange Value="Bindings_BuggyThrottleForewardOnly" />
+	<BuggyToggleReverseThrottleInput>
+		<Primary Device="SaitekX56Throttle" Key="Joy_5" />
+		<Secondary Device="Keyboard" Key="Key_D">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+		<ToggleOn Value="1" />
+	</BuggyToggleReverseThrottleInput>
+	<BuggyThrottleIncrement Value="0.00000000" />
+	<IncreaseSpeedButtonMax>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_PageUp" />
+	</IncreaseSpeedButtonMax>
+	<DecreaseSpeedButtonMax>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_PageDown" />
+	</DecreaseSpeedButtonMax>
+	<IncreaseSpeedButtonPartial>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</IncreaseSpeedButtonPartial>
+	<DecreaseSpeedButtonPartial>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</DecreaseSpeedButtonPartial>
+	<IncreaseEnginesPower_Buggy>
+		<Primary Device="SaitekX56Joystick" Key="Joy_11" />
+		<Secondary Device="Keyboard" Key="Key_M">
+			<Modifier Device="Keyboard" Key="Key_RightShift" />
+		</Secondary>
+	</IncreaseEnginesPower_Buggy>
+	<IncreaseWeaponsPower_Buggy>
+		<Primary Device="SaitekX56Joystick" Key="Joy_12" />
+		<Secondary Device="Keyboard" Key="Key_A">
+			<Modifier Device="Keyboard" Key="Key_RightShift" />
+		</Secondary>
+	</IncreaseWeaponsPower_Buggy>
+	<IncreaseSystemsPower_Buggy>
+		<Primary Device="SaitekX56Joystick" Key="Joy_14" />
+		<Secondary Device="Keyboard" Key="Key_S">
+			<Modifier Device="Keyboard" Key="Key_RightShift" />
+		</Secondary>
+	</IncreaseSystemsPower_Buggy>
+	<ResetPowerDistribution_Buggy>
+		<Primary Device="SaitekX56Joystick" Key="Joy_13" />
+		<Secondary Device="Keyboard" Key="Key_D">
+			<Modifier Device="Keyboard" Key="Key_RightShift" />
+		</Secondary>
+	</ResetPowerDistribution_Buggy>
+	<ToggleCargoScoop_Buggy>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_A">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+		<ToggleOn Value="1" />
+	</ToggleCargoScoop_Buggy>
+	<EjectAllCargo_Buggy>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_I">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+		</Secondary>
+	</EjectAllCargo_Buggy>
+	<RecallDismissShip>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_J">
+			<Modifier Device="Keyboard" Key="Key_LeftControl" />
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</RecallDismissShip>
+	<UIFocus_Buggy>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</UIFocus_Buggy>
+	<FocusLeftPanel_Buggy>
+		<Primary Device="SaitekX56Throttle" Key="Joy_6" />
+		<Secondary Device="Keyboard" Key="Key_X">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+	</FocusLeftPanel_Buggy>
+	<FocusCommsPanel_Buggy>
+		<Primary Device="SaitekX56Throttle" Key="Joy_7" />
+		<Secondary Device="Keyboard" Key="Key_Y">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+	</FocusCommsPanel_Buggy>
+	<QuickCommsPanel_Buggy>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_X">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</QuickCommsPanel_Buggy>
+	<FocusRadarPanel_Buggy>
+		<Primary Device="SaitekX56Throttle" Key="Joy_11" />
+		<Secondary Device="Keyboard" Key="Key_Z">
+			<Modifier Device="Keyboard" Key="Key_RightAlt" />
+		</Secondary>
+	</FocusRadarPanel_Buggy>
+	<FocusRightPanel_Buggy>
+		<Primary Device="SaitekX56Throttle" Key="Joy_10" />
+		<Secondary Device="Keyboard" Key="Key_A">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</FocusRightPanel_Buggy>
+	<GalaxyMapOpen_Buggy>
+		<Primary Device="SaitekX56Throttle" Key="Joy_8" />
+		<Secondary Device="Keyboard" Key="Key_B">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</GalaxyMapOpen_Buggy>
+	<SystemMapOpen_Buggy>
+		<Primary Device="SaitekX56Throttle" Key="Joy_9" />
+		<Secondary Device="Keyboard" Key="Key_C">
+			<Modifier Device="Keyboard" Key="Key_RightControl" />
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</SystemMapOpen_Buggy>
+	<OpenCodexGoToDiscovery_Buggy>
+		<Primary Device="SaitekX56Throttle" Key="Joy_24" />
+		<Secondary Device="Keyboard" Key="Key_E">
+			<Modifier Device="Keyboard" Key="Key_LeftShift" />
+			<Modifier Device="Keyboard" Key="Key_RightShift" />
+		</Secondary>
+	</OpenCodexGoToDiscovery_Buggy>
+	<PlayerHUDModeToggle_Buggy>
+		<Primary Device="SaitekX56Throttle" Key="Joy_26" />
+		<Secondary Device="Keyboard" Key="Key_R">
+			<Modifier Device="Keyboard" Key="Key_LeftShift" />
+			<Modifier Device="Keyboard" Key="Key_RightShift" />
+		</Secondary>
+	</PlayerHUDModeToggle_Buggy>
+	<HeadLookToggle_Buggy>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+		<ToggleOn Value="1" />
+	</HeadLookToggle_Buggy>
+	<MultiCrewToggleMode>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_W">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</MultiCrewToggleMode>
+	<MultiCrewPrimaryFire>
+		<Primary Device="Keyboard" Key="Key_C">
+			<Modifier Device="Keyboard" Key="Key_RightShift" />
+		</Primary>
+		<Secondary Device="{NoDevice}" Key="" />
+	</MultiCrewPrimaryFire>
+	<MultiCrewSecondaryFire>
+		<Primary Device="Keyboard" Key="Key_T">
+			<Modifier Device="Keyboard" Key="Key_RightShift" />
+		</Primary>
+		<Secondary Device="{NoDevice}" Key="" />
+	</MultiCrewSecondaryFire>
+	<MultiCrewPrimaryUtilityFire>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_V">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</MultiCrewPrimaryUtilityFire>
+	<MultiCrewSecondaryUtilityFire>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_U">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</MultiCrewSecondaryUtilityFire>
+	<MultiCrewThirdPersonMouseXMode Value="" />
+	<MultiCrewThirdPersonMouseXDecay Value="0" />
+	<MultiCrewThirdPersonMouseYMode Value="" />
+	<MultiCrewThirdPersonMouseYDecay Value="0" />
+	<MultiCrewThirdPersonYawAxisRaw>
+		<Binding Device="SaitekX56Joystick" Key="Joy_XAxis" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</MultiCrewThirdPersonYawAxisRaw>
+	<MultiCrewThirdPersonYawLeftButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_Home" />
+	</MultiCrewThirdPersonYawLeftButton>
+	<MultiCrewThirdPersonYawRightButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_End" />
+	</MultiCrewThirdPersonYawRightButton>
+	<MultiCrewThirdPersonPitchAxisRaw>
+		<Binding Device="SaitekX56Joystick" Key="Joy_YAxis" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</MultiCrewThirdPersonPitchAxisRaw>
+	<MultiCrewThirdPersonPitchUpButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_PageUp" />
+	</MultiCrewThirdPersonPitchUpButton>
+	<MultiCrewThirdPersonPitchDownButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_PageDown" />
+	</MultiCrewThirdPersonPitchDownButton>
+	<MultiCrewThirdPersonMouseSensitivity Value="30.00000000" />
+	<MultiCrewThirdPersonFovAxisRaw>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</MultiCrewThirdPersonFovAxisRaw>
+	<MultiCrewThirdPersonFovOutButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_T">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</MultiCrewThirdPersonFovOutButton>
+	<MultiCrewThirdPersonFovInButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_S">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</MultiCrewThirdPersonFovInButton>
+	<MultiCrewCockpitUICycleForward>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_R">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</MultiCrewCockpitUICycleForward>
+	<MultiCrewCockpitUICycleBackward>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_Q">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</MultiCrewCockpitUICycleBackward>
+	<OrderRequestDock>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_K">
+			<Modifier Device="Keyboard" Key="Key_LeftControl" />
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</OrderRequestDock>
+	<OrderDefensiveBehaviour>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_L">
+			<Modifier Device="Keyboard" Key="Key_LeftControl" />
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</OrderDefensiveBehaviour>
+	<OrderAggressiveBehaviour>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_M">
+			<Modifier Device="Keyboard" Key="Key_LeftControl" />
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</OrderAggressiveBehaviour>
+	<OrderFocusTarget>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_Numpad_6">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt"/>
+		</Secondary>
+	</OrderFocusTarget>
+	<OrderHoldFire>
+		<Primary Device="Mouse" Key="Mouse_1" />
+		<Secondary Device="Keyboard" Key="Key_O">
+			<Modifier Device="Keyboard" Key="Key_LeftControl" />
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</OrderHoldFire>
+	<OrderHoldPosition>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_P">
+			<Modifier Device="Keyboard" Key="Key_LeftControl" />
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</OrderHoldPosition>
+	<OrderFollow>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_Q">
+			<Modifier Device="Keyboard" Key="Key_LeftControl" />
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</OrderFollow>
+	<OpenOrders>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_R">
+			<Modifier Device="Keyboard" Key="Key_LeftControl" />
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</OpenOrders>
+	<PhotoCameraToggle>
+		<Primary Device="SaitekX56Throttle" Key="Joy_2">
+			<Modifier Device="SaitekX56Joystick" Key="Joy_5" />
+		</Primary>
+		<Secondary Device="Keyboard" Key="Key_Numpad_4">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</PhotoCameraToggle>
+	<PhotoCameraToggle_Buggy>
+		<Primary Device="SaitekX56Throttle" Key="Joy_2">
+			<Modifier Device="SaitekX56Joystick" Key="Joy_5" />
+		</Primary>
+		<Secondary Device="Keyboard" Key="Key_Numpad_3">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</PhotoCameraToggle_Buggy>
+	<VanityCameraScrollLeft>
+		<Primary Device="SaitekX56Joystick" Key="Pos_Joy_RXAxis" />
+		<Secondary Device="Keyboard" Key="Key_Numpad_2">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</VanityCameraScrollLeft>
+	<VanityCameraScrollRight>
+		<Primary Device="SaitekX56Joystick" Key="Neg_Joy_RXAxis" />
+		<Secondary Device="Keyboard" Key="Key_Numpad_1">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</VanityCameraScrollRight>
+	<ToggleFreeCam>
+		<Primary Device="SaitekX56Joystick" Key="Neg_Joy_RYAxis" />
+		<Secondary Device="Keyboard" Key="Key_Numpad_0">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</ToggleFreeCam>
+	<VanityCameraOne>
+		<Primary Device="SaitekX56Joystick" Key="Joy_11" />
+		<Secondary Device="Keyboard" Key="Key_Pause">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</VanityCameraOne>
+	<VanityCameraTwo>
+		<Primary Device="SaitekX56Joystick" Key="Joy_13" />
+		<Secondary Device="Keyboard" Key="Key_ScrollLock">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</VanityCameraTwo>
+	<VanityCameraThree>
+		<Primary Device="SaitekX56Joystick" Key="Joy_12" />
+		<Secondary Device="Keyboard" Key="Key_P">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</VanityCameraThree>
+	<VanityCameraFour>
+		<Primary Device="SaitekX56Joystick" Key="Joy_14" />
+		<Secondary Device="Keyboard" Key="Key_O">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</VanityCameraFour>
+	<VanityCameraFive>
+		<Primary Device="SaitekX56Joystick" Key="Joy_POV1Right" />
+		<Secondary Device="Keyboard" Key="Key_N">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</VanityCameraFive>
+	<VanityCameraSix>
+		<Primary Device="SaitekX56Joystick" Key="Joy_POV1Left" />
+		<Secondary Device="Keyboard" Key="Key_M">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</VanityCameraSix>
+	<VanityCameraSeven>
+		<Primary Device="SaitekX56Joystick" Key="Joy_POV1Up" />
+		<Secondary Device="Keyboard" Key="Key_L">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</VanityCameraSeven>
+	<VanityCameraEight>
+		<Primary Device="SaitekX56Joystick" Key="Joy_POV1Down" />
+		<Secondary Device="Keyboard" Key="Key_K">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</VanityCameraEight>
+	<VanityCameraNine>
+		<Primary Device="SaitekX56Joystick" Key="Joy_3" />
+		<Secondary Device="Keyboard" Key="Key_J">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</VanityCameraNine>
+	<FreeCamToggleHUD>
+		<Primary Device="SaitekX56Joystick" Key="Joy_POV1Up" />
+		<Secondary Device="Keyboard" Key="Key_Numpad_5">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</FreeCamToggleHUD>
+	<FreeCamSpeedInc>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</FreeCamSpeedInc>
+	<FreeCamSpeedDec>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</FreeCamSpeedDec>
+	<MoveFreeCamY>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</MoveFreeCamY>
+	<ThrottleRangeFreeCam Value="" />
+	<ToggleReverseThrottleInputFreeCam>
+		<Primary Device="SaitekX56Throttle" Key="Joy_1" />
+		<Secondary Device="{NoDevice}" Key="" />
+		<ToggleOn Value="1" />
+	</ToggleReverseThrottleInputFreeCam>
+	<MoveFreeCamForward>
+		<Primary Device="SaitekX56Throttle" Key="Pos_Joy_RXAxis" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</MoveFreeCamForward>
+	<MoveFreeCamBackwards>
+		<Primary Device="SaitekX56Throttle" Key="Neg_Joy_RXAxis" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</MoveFreeCamBackwards>
+	<MoveFreeCamX>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</MoveFreeCamX>
+	<MoveFreeCamRight>
+		<Primary Device="SaitekX56Joystick" Key="Pos_Joy_RXAxis" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</MoveFreeCamRight>
+	<MoveFreeCamLeft>
+		<Primary Device="SaitekX56Joystick" Key="Neg_Joy_RXAxis" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</MoveFreeCamLeft>
+	<MoveFreeCamZ>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</MoveFreeCamZ>
+	<MoveFreeCamUpAxis>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</MoveFreeCamUpAxis>
+	<MoveFreeCamDownAxis>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</MoveFreeCamDownAxis>
+	<MoveFreeCamUp>
+		<Primary Device="SaitekX56Throttle" Key="Neg_Joy_RYAxis" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</MoveFreeCamUp>
+	<MoveFreeCamDown>
+		<Primary Device="SaitekX56Throttle" Key="Pos_Joy_RYAxis" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</MoveFreeCamDown>
+	<PitchCameraMouse Value="" />
+	<YawCameraMouse Value="" />
+	<PitchCamera>
+		<Binding Device="SaitekX56Joystick" Key="Joy_YAxis" />
+		<Inverted Value="1" />
+		<Deadzone Value="0.00000000" />
+	</PitchCamera>
+	<FreeCamMouseSensitivity Value="5.00000000" />
+	<FreeCamMouseYDecay Value="1" />
+	<PitchCameraUp>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</PitchCameraUp>
+	<PitchCameraDown>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</PitchCameraDown>
+	<YawCamera>
+		<Binding Device="SaitekX56Joystick" Key="Joy_RZAxis" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</YawCamera>
+	<FreeCamMouseXDecay Value="1" />
+	<YawCameraLeft>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</YawCameraLeft>
+	<YawCameraRight>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</YawCameraRight>
+	<RollCamera>
+		<Binding Device="SaitekX56Joystick" Key="Joy_XAxis" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</RollCamera>
+	<RollCameraLeft>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</RollCameraLeft>
+	<RollCameraRight>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</RollCameraRight>
+	<ToggleRotationLock>
+		<Primary Device="SaitekX56Throttle" Key="Joy_25" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</ToggleRotationLock>
+	<FixCameraRelativeToggle>
+		<Primary Device="SaitekX56Throttle" Key="Joy_2" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</FixCameraRelativeToggle>
+	<FixCameraWorldToggle>
+		<Primary Device="SaitekX56Throttle" Key="Joy_21" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</FixCameraWorldToggle>
+	<QuitCamera>
+		<Primary Device="SaitekX56Throttle" Key="Joy_18">
+			<Modifier Device="SaitekX56Joystick" Key="Joy_5" />
+		</Primary>
+		<Secondary Device="{NoDevice}" Key="" />
+	</QuitCamera>
+	<ToggleAdvanceMode>
+		<Primary Device="SaitekX56Joystick" Key="Joy_11" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</ToggleAdvanceMode>
+	<FreeCamZoomIn>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</FreeCamZoomIn>
+	<FreeCamZoomOut>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</FreeCamZoomOut>
+	<FStopDec>
+		<Primary Device="SaitekX56Joystick" Key="Joy_12" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</FStopDec>
+	<FStopInc>
+		<Primary Device="SaitekX56Joystick" Key="Joy_14" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</FStopInc>
+	<StoreEnableRotation>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</StoreEnableRotation>
+	<StorePitchCamera>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</StorePitchCamera>
+	<StoreYawCamera>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</StoreYawCamera>
+	<StoreCamZoomIn>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</StoreCamZoomIn>
+	<StoreCamZoomOut>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</StoreCamZoomOut>
+	<StoreToggle>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</StoreToggle>
+	<CommanderCreator_Undo>
+		<Primary Device="Keyboard" Key="Key_W" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</CommanderCreator_Undo>
+	<CommanderCreator_Redo>
+		<Primary Device="Keyboard" Key="Key_X" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</CommanderCreator_Redo>
+	<CommanderCreator_Rotation_MouseToggle>
+		<Primary Device="Mouse" Key="Mouse_2" />
+		<Secondary Device="{NoDevice}" Key="" />
+	</CommanderCreator_Rotation_MouseToggle>
+	<CommanderCreator_Rotation>
+		<Binding Device="SaitekX56Joystick" Key="Joy_RZAxis" />
+		<Inverted Value="1" />
+		<Deadzone Value="0.00000000" />
+	</CommanderCreator_Rotation>
+	<GalnetAudio_Play_Pause>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_I">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</GalnetAudio_Play_Pause>
+	<GalnetAudio_SkipForward>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_H">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</GalnetAudio_SkipForward>
+	<GalnetAudio_SkipBackward>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_G">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</GalnetAudio_SkipBackward>
+	<GalnetAudio_ClearQueue>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_F">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</GalnetAudio_ClearQueue>
+	<ExplorationFSSCameraPitch>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</ExplorationFSSCameraPitch>
+	<ExplorationFSSCameraPitchIncreaseButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_PageDown" />
+	</ExplorationFSSCameraPitchIncreaseButton>
+	<ExplorationFSSCameraPitchDecreaseButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_PageUp" />
+	</ExplorationFSSCameraPitchDecreaseButton>
+	<ExplorationFSSCameraYaw>
+		<Binding Device="{NoDevice}" Key="" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</ExplorationFSSCameraYaw>
+	<ExplorationFSSCameraYawIncreaseButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_End" />
+	</ExplorationFSSCameraYawIncreaseButton>
+	<ExplorationFSSCameraYawDecreaseButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_Home" />
+	</ExplorationFSSCameraYawDecreaseButton>
+	<ExplorationFSSZoomIn>
+		<Primary Device="SaitekX56Throttle" Key="Pos_Joy_RXAxis" />
+		<Secondary Device="Keyboard" Key="Key_Numpad_8" />
+	</ExplorationFSSZoomIn>
+	<ExplorationFSSZoomOut>
+		<Primary Device="SaitekX56Throttle" Key="Neg_Joy_RXAxis" />
+		<Secondary Device="Keyboard" Key="Key_Numpad_6" />
+	</ExplorationFSSZoomOut>
+	<ExplorationFSSMiniZoomIn>
+		<Primary Device="SaitekX56Throttle" Key="Neg_Joy_RYAxis" />
+		<Secondary Device="Keyboard" Key="Key_Numpad_2" />
+	</ExplorationFSSMiniZoomIn>
+	<ExplorationFSSMiniZoomOut>
+		<Primary Device="SaitekX56Throttle" Key="Pos_Joy_RYAxis" />
+		<Secondary Device="Keyboard" Key="Key_E">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</ExplorationFSSMiniZoomOut>
+	<ExplorationFSSRadioTuningX_Raw>
+		<Binding Device="SaitekX56Joystick" Key="Joy_YAxis" />
+		<Inverted Value="1" />
+		<Deadzone Value="0.00000000" />
+	</ExplorationFSSRadioTuningX_Raw>
+	<ExplorationFSSRadioTuningX_Increase>
+		<Primary Device="SaitekX56Joystick" Key="Pos_Joy_RXAxis" />
+		<Secondary Device="Keyboard" Key="Key_Numpad_Multiply" />
+	</ExplorationFSSRadioTuningX_Increase>
+	<ExplorationFSSRadioTuningX_Decrease>
+		<Primary Device="SaitekX56Joystick" Key="Neg_Joy_RXAxis" />
+		<Secondary Device="Keyboard" Key="Key_ScrollLock" />
+	</ExplorationFSSRadioTuningX_Decrease>
+	<ExplorationFSSRadioTuningAbsoluteX>
+		<Binding Device="SaitekX56Joystick" Key="Joy_XAxis" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</ExplorationFSSRadioTuningAbsoluteX>
+	<FSSTuningSensitivity Value="1.00000000" />
+	<ExplorationFSSDiscoveryScan>
+		<Primary Device="SaitekX56Throttle" Key="Joy_8" />
+		<Secondary Device="Keyboard" Key="Key_C">
+			<Modifier Device="Keyboard" Key="Key_RightShift" />
+		</Secondary>
+	</ExplorationFSSDiscoveryScan>
+	<ExplorationFSSQuit>
+		<Primary Device="SaitekX56Throttle" Key="Joy_6" />
+		<Secondary Device="Keyboard" Key="Key_Numpad_Decimal" />
+	</ExplorationFSSQuit>
+	<FSSMouseXMode Value="" />
+	<FSSMouseXDecay Value="1" />
+	<FSSMouseYMode Value="" />
+	<FSSMouseYDecay Value="1" />
+	<FSSMouseSensitivity Value="5.00000000" />
+	<FSSMouseDeadzone Value="0.00000000" />
+	<FSSMouseLinearity Value="1.00000000" />
+	<ExplorationFSSTarget>
+		<Primary Device="SaitekX56Throttle" Key="Joy_10" />
+		<Secondary Device="Keyboard" Key="Key_Enter" />
+	</ExplorationFSSTarget>
+	<ExplorationFSSShowHelp>
+		<Primary Device="SaitekX56Throttle" Key="Joy_11" />
+		<Secondary Device="Keyboard" Key="Key_D">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</ExplorationFSSShowHelp>
+	<ExplorationSAAChangeScannedAreaViewToggle>
+		<Primary Device="SaitekX56Throttle" Key="Joy_7">
+			<Modifier Device="SaitekX56Joystick" Key="Joy_5" />
+		</Primary>
+		<Secondary Device="Keyboard" Key="Key_C">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+		<ToggleOn Value="1" />
+	</ExplorationSAAChangeScannedAreaViewToggle>
+	<ExplorationSAAExitThirdPerson>
+		<Primary Device="SaitekX56Joystick" Key="Joy_5" />
+		<Secondary Device="Keyboard" Key="Key_B">
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
+		</Secondary>
+	</ExplorationSAAExitThirdPerson>
+	<SAAThirdPersonMouseXMode Value="" />
+	<SAAThirdPersonMouseXDecay Value="0" />
+	<SAAThirdPersonMouseYMode Value="" />
+	<SAAThirdPersonMouseYDecay Value="0" />
+	<SAAThirdPersonMouseSensitivity Value="30.00000000" />
+	<SAAThirdPersonYawAxisRaw>
+		<Binding Device="SaitekX56Joystick" Key="Joy_XAxis" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</SAAThirdPersonYawAxisRaw>
+	<SAAThirdPersonYawLeftButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_Home" />
+	</SAAThirdPersonYawLeftButton>
+	<SAAThirdPersonYawRightButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_End" />
+	</SAAThirdPersonYawRightButton>
+	<SAAThirdPersonPitchAxisRaw>
+		<Binding Device="SaitekX56Joystick" Key="Joy_YAxis" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</SAAThirdPersonPitchAxisRaw>
+	<SAAThirdPersonPitchUpButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_PageUp" />
+	</SAAThirdPersonPitchUpButton>
+	<SAAThirdPersonPitchDownButton>
+		<Primary Device="{NoDevice}" Key="" />
+		<Secondary Device="Keyboard" Key="Key_PageDown" />
+	</SAAThirdPersonPitchDownButton>
+	<SAAThirdPersonFovAxisRaw>
+		<Binding Device="SaitekX56Throttle" Key="Joy_ZAxis" />
+		<Inverted Value="0" />
+		<Deadzone Value="0.00000000" />
+	</SAAThirdPersonFovAxisRaw>
+	<SAAThirdPersonFovOutButton>
+		<Primary Device="SaitekX56Throttle" Key="Joy_21" />
+		<Secondary Device="Keyboard" Key="Key_ScrollLock" />
+	</SAAThirdPersonFovOutButton>
+	<SAAThirdPersonFovInButton>
+		<Primary Device="SaitekX56Throttle" Key="Joy_23" />
+		<Secondary Device="Keyboard" Key="Key_Numpad_Multiply" />
+	</SAAThirdPersonFovInButton>
+</Root>

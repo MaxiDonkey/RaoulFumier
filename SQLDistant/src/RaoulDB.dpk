@@ -1,0 +1,46 @@
+package RaoulDB;
+
+{$R *.res}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$IMPLICITBUILD OFF}
+
+requires
+  rtl,
+  vcl,
+  dbrtl,
+  adortl,
+  cxExtEditorsD9,
+  cxDataD9,
+  dxCoreD9,
+  cxEditorsD9,
+  cxLibraryD9,
+  dxThemeD9,
+  dxGDIPlusD9,
+  vclx,
+  vcljpg,
+  vcldb;
+
+contains
+  uSQLTransaction in '..\..\Persephone\Share\uSQLTransaction.pas';
+
+end.

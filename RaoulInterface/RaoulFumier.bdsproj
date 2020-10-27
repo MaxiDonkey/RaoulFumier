@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<PersonalityInfo>
+		<Option>
+			<Option Name="Personality">Delphi.Personality</Option>
+			<Option Name="ProjectType"></Option>
+			<Option Name="Version">1.0</Option>
+			<Option Name="GUID">{430FD659-2943-456F-8B46-92464F6BBE7B}</Option>
+		</Option>
+	</PersonalityInfo>
+	<Delphi.Personality>
+		<Source>
+			<Source Name="MainSource">RaoulFumier.dpr</Source>
+		</Source>
+		<FileVersion>
+			<FileVersion Name="Version">7.0</FileVersion>
+		</FileVersion>
+		<Compiler>
+			<Compiler Name="A">8</Compiler>
+			<Compiler Name="B">0</Compiler>
+			<Compiler Name="C">1</Compiler>
+			<Compiler Name="D">1</Compiler>
+			<Compiler Name="E">0</Compiler>
+			<Compiler Name="F">0</Compiler>
+			<Compiler Name="G">1</Compiler>
+			<Compiler Name="H">1</Compiler>
+			<Compiler Name="I">1</Compiler>
+			<Compiler Name="J">0</Compiler>
+			<Compiler Name="K">0</Compiler>
+			<Compiler Name="L">1</Compiler>
+			<Compiler Name="M">0</Compiler>
+			<Compiler Name="N">1</Compiler>
+			<Compiler Name="O">1</Compiler>
+			<Compiler Name="P">1</Compiler>
+			<Compiler Name="Q">0</Compiler>
+			<Compiler Name="R">0</Compiler>
+			<Compiler Name="S">0</Compiler>
+			<Compiler Name="T">0</Compiler>
+			<Compiler Name="U">0</Compiler>
+			<Compiler Name="V">1</Compiler>
+			<Compiler Name="W">0</Compiler>
+			<Compiler Name="X">1</Compiler>
+			<Compiler Name="Y">1</Compiler>
+			<Compiler Name="Z">1</Compiler>
+			<Compiler Name="ShowHints">True</Compiler>
+			<Compiler Name="ShowWarnings">True</Compiler>
+			<Compiler Name="UnitAliases">WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;</Compiler>
+			<Compiler Name="NamespacePrefix"></Compiler>
+			<Compiler Name="GenerateDocumentation">False</Compiler>
+			<Compiler Name="DefaultNamespace"></Compiler>
+			<Compiler Name="SymbolDeprecated">True</Compiler>
+			<Compiler Name="SymbolLibrary">True</Compiler>
+			<Compiler Name="SymbolPlatform">True</Compiler>
+			<Compiler Name="SymbolExperimental">True</Compiler>
+			<Compiler Name="UnitLibrary">True</Compiler>
+			<Compiler Name="UnitPlatform">True</Compiler>
+			<Compiler Name="UnitDeprecated">True</Compiler>
+			<Compiler Name="UnitExperimental">True</Compiler>
+			<Compiler Name="HResultCompat">True</Compiler>
+			<Compiler Name="HidingMember">True</Compiler>
+			<Compiler Name="HiddenVirtual">True</Compiler>
+			<Compiler Name="Garbage">True</Compiler>
+			<Compiler Name="BoundsError">True</Compiler>
+			<Compiler Name="ZeroNilCompat">True</Compiler>
+			<Compiler Name="StringConstTruncated">True</Compiler>
+			<Compiler Name="ForLoopVarVarPar">True</Compiler>
+			<Compiler Name="TypedConstVarPar">True</Compiler>
+			<Compiler Name="AsgToTypedConst">True</Compiler>
+			<Compiler Name="CaseLabelRange">True</Compiler>
+			<Compiler Name="ForVariable">True</Compiler>
+			<Compiler Name="ConstructingAbstract">True</Compiler>
+			<Compiler Name="ComparisonFalse">True</Compiler>
+			<Compiler Name="ComparisonTrue">True</Compiler>
+			<Compiler Name="ComparingSignedUnsigned">True</Compiler>
+			<Compiler Name="CombiningSignedUnsigned">True</Compiler>
+			<Compiler Name="UnsupportedConstruct">True</Compiler>
+			<Compiler Name="FileOpen">True</Compiler>
+			<Compiler Name="FileOpenUnitSrc">True</Compiler>
+			<Compiler Name="BadGlobalSymbol">True</Compiler>
+			<Compiler Name="DuplicateConstructorDestructor">True</Compiler>
+			<Compiler Name="InvalidDirective">True</Compiler>
+			<Compiler Name="PackageNoLink">True</Compiler>
+			<Compiler Name="PackageThreadVar">True</Compiler>
+			<Compiler Name="ImplicitImport">True</Compiler>
+			<Compiler Name="HPPEMITIgnored">True</Compiler>
+			<Compiler Name="NoRetVal">True</Compiler>
+			<Compiler Name="UseBeforeDef">True</Compiler>
+			<Compiler Name="ForLoopVarUndef">True</Compiler>
+			<Compiler Name="UnitNameMismatch">True</Compiler>
+			<Compiler Name="NoCFGFileFound">True</Compiler>
+			<Compiler Name="MessageDirective">True</Compiler>
+			<Compiler Name="ImplicitVariants">True</Compiler>
+			<Compiler Name="UnicodeToLocale">True</Compiler>
+			<Compiler Name="LocaleToUnicode">True</Compiler>
+			<Compiler Name="ImagebaseMultiple">True</Compiler>
+			<Compiler Name="SuspiciousTypecast">True</Compiler>
+			<Compiler Name="PrivatePropAccessor">True</Compiler>
+			<Compiler Name="UnsafeType">False</Compiler>
+			<Compiler Name="UnsafeCode">False</Compiler>
+			<Compiler Name="UnsafeCast">False</Compiler>
+			<Compiler Name="OptionTruncated">True</Compiler>
+			<Compiler Name="WideCharReduced">True</Compiler>
+			<Compiler Name="DuplicatesIgnored">True</Compiler>
+		</Compiler>
+		<Linker>
+			<Linker Name="MapFile">0</Linker>
+			<Linker Name="OutputObjs">0</Linker>
+			<Linker Name="ConsoleApp">1</Linker>
+			<Linker Name="DebugInfo">False</Linker>
+			<Linker Name="RemoteSymbols">False</Linker>
+			<Linker Name="GenerateDRC">False</Linker>
+			<Linker Name="MinStackSize">16384</Linker>
+			<Linker Name="MaxStackSize">1048576</Linker>
+			<Linker Name="ImageBase">4194304</Linker>
+			<Linker Name="ExeDescription"></Linker>
+		</Linker>
+		<Directories>
+			<Directories Name="OutputDir">H:\2020 Developpement\RaoulFumier\bin</Directories>
+			<Directories Name="UnitOutputDir">H:\2020 Developpement\RaoulFumier\RaoulInterface\dcu</Directories>
+			<Directories Name="PackageDLLOutputDir"></Directories>
+			<Directories Name="PackageDCPOutputDir"></Directories>
+			<Directories Name="SearchPath">H:\2020 Developpement\RaoulFumier\Persephone\Share</Directories>
+			<Directories Name="Packages">rtl;vcl;vcldb;dbrtl;vclx;adortl;dbxcds;dbexpress;vclib;ibxpress;IntrawebDB_72_90;Intraweb_72_90;xmlrtl;vclie;inet;inetdbbde;inetdbxpress;IndySystem;IndyCore;dclOfficeXP;VclSmp;soaprtl;dsnap;IndyProtocols;inetdb;bdertl;vcldbx;vclactnband;vclshlctrls;teeui;teedb;tee;dxCoreD9;dxGDIPlusD9;cxLibraryD9;dxDockingD9;dxBarD9;dxBarDBNavD9;dxBarExtDBItemsD9;dxBarExtItemsD9;dxRibbonD9;cxPageControlD9;cxEditorsD9;dxThemeD9;cxDataD9;cxExtEditorsD9;cxGridD9;cxSchedulerD9;dxLayoutControlD9;cxVerticalGridD9;dxmdsD9;dxComnD9;dxsbD9;dxNavBarD9;dcldxSkinsCoreD9;dxSkinsCoreD9;dxSkinBlackD9;dxSkinBlueD9;dxSkinCaramelD9;dxSkinCoffeeD9;dxSkinDarkRoomD9;dxSkinDarkSideD9;dxSkinFoggyD9;dxSkinGlassOceansD9;dxSkiniMaginaryD9;dxSkinLilianD9;dxSkinLiquidSkyD9;dxSkinLondonLiquidSkyD9;dxSkinMcSkinD9;dxSkinMoneyTwinsD9;dxSkinOffice2007BlackD9;dxSkinOffice2007BlueD9;dxSkinOffice2007GreenD9;dxSkinOffice2007PinkD9;dxSkinOffice2007SilverD9;dxSkinOffice2010BlackD9;dxSkinOffice2010BlueD9;dxSkinOffice2010SilverD9;dxSkinPumpkinD9;dxSkinSevenD9;dxSkinSharpD9;dxSkinSilverD9;dxSkinSpringTimeD9;dxSkinStardustD9;dxSkinSummer2008D9;dxSkinValentineD9;dxSkinXmas2008BlueD9;dxPSCoreD9;dxPSTeeChartD9;dxPSLnksD9;dxPSDBTeeChartD9;dxPScxPCProdD9;cxPivotGridD9;cxPivotGridOLAPD9;cxBarEditItemD9;cxSchedulerGridD9;dxLayoutControlcxEditAdaptersD9;dxSkinscxPCPainterD9;dxSkinscxScheduler3PainterD9;dxSkinsdxBarPainterD9;dxSkinsdxLCPainterD9;dxSkinsdxNavBar2PainterD9;dxSkinsdxRibbonPainterD9;dxSkinsdxDLPainterD9;dxPScxCommonD9;dxPScxExtCommonD9;dxPScxGrid6LnkD9;dxPScxPivotGrid2LnkD9;dxPScxScheduler3LnkD9;dxPScxVGridLnkD9;dxPSdxLCLnkD9;dxPsPrVwAdvD9;dxPSPrVwRibbonD9;cxPivotGridChartD9</Directories>
+			<Directories Name="Conditionals"></Directories>
+			<Directories Name="DebugSourceDirs"></Directories>
+			<Directories Name="UsePackages">False</Directories>
+		</Directories>
+		<Parameters>
+			<Parameters Name="RunParams"></Parameters>
+			<Parameters Name="HostApplication"></Parameters>
+			<Parameters Name="Launcher"></Parameters>
+			<Parameters Name="UseLauncher">False</Parameters>
+			<Parameters Name="DebugCWD"></Parameters>
+			<Parameters Name="RemoteHost"></Parameters>
+			<Parameters Name="RemotePath"></Parameters>
+			<Parameters Name="RemoteLauncher"></Parameters>
+			<Parameters Name="RemoteCWD"></Parameters>
+			<Parameters Name="RemoteDebug">False</Parameters>
+		</Parameters>
+		<Language>
+			<Language Name="ActiveLang"></Language>
+			<Language Name="ProjectLang">$00000000</Language>
+			<Language Name="RootDir"></Language>
+		</Language>
+		<VersionInfo>
+			<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
+			<VersionInfo Name="AutoIncBuild">True</VersionInfo>
+			<VersionInfo Name="MajorVer">0</VersionInfo>
+			<VersionInfo Name="MinorVer">9</VersionInfo>
+			<VersionInfo Name="Release">1</VersionInfo>
+			<VersionInfo Name="Build">94</VersionInfo>
+			<VersionInfo Name="Debug">False</VersionInfo>
+			<VersionInfo Name="PreRelease">False</VersionInfo>
+			<VersionInfo Name="Special">False</VersionInfo>
+			<VersionInfo Name="Private">False</VersionInfo>
+			<VersionInfo Name="DLL">False</VersionInfo>
+			<VersionInfo Name="Locale">1036</VersionInfo>
+			<VersionInfo Name="CodePage">1252</VersionInfo>
+		</VersionInfo>
+		<VersionInfoKeys>
+			<VersionInfoKeys Name="FileVersion">0.9.1.94</VersionInfoKeys>
+			<VersionInfoKeys Name="ProductVersion">0.8.0.23</VersionInfoKeys>
+			<VersionInfoKeys Name="CompanyName">MaxiDonkey</VersionInfoKeys>
+			<VersionInfoKeys Name="FileDescription">Assistance vocale</VersionInfoKeys>
+			<VersionInfoKeys Name="InternalName">Voice project</VersionInfoKeys>
+			<VersionInfoKeys Name="LegalCopyright">2016-2020</VersionInfoKeys>
+			<VersionInfoKeys Name="LegalTrademarks">MaxiDonkey</VersionInfoKeys>
+			<VersionInfoKeys Name="OriginalFilename">Persephone</VersionInfoKeys>
+			<VersionInfoKeys Name="ProductName">Raoul Fumieer</VersionInfoKeys>
+		</VersionInfoKeys>  <Excluded_Packages>
+      <Excluded_Packages Name="C:\Users\JANKOWSKI\Documents\Projets Borland Studio\Bpl\SynEdit_D2005.bpl">SynEdit component suite</Excluded_Packages>
+    </Excluded_Packages>
+  </Delphi.Personality>
+</BorlandProject>

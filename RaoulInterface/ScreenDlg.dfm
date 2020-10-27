@@ -1,0 +1,23 @@
+object ScreenDialog: TScreenDialog
+  Left = 0
+  Top = 0
+  BorderStyle = bsNone
+  Caption = 'ScreenDialog'
+  ClientHeight = 710
+  ClientWidth = 1011
+  Color = clBlack
+  TransparentColor = True
+  Ctl3D = False
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clGray
+  Font.Height = -15
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  FormStyle = fsStayOnTop
+  OldCreateOrder = False
+  OnClick = FormClick
+  OnCreate = FormCreate
+  OnShow = FormShow
+  PixelsPerInch = 96
+  TextHeight = 18
+end

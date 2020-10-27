@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<grammar mode="voice"
+         root="gr_custom"
+         version="1.0" xml:lang="fr-FR"
+         xmlns="http://www.w3.org/2001/06/grammar"
+         tag-format="semantics/1.0"
+         sapi:alphabet="x-microsoft-ups"
+         xmlns:sapi="http://schemas.microsoft.com/Speech/2002/06/SRGSExtensions">
+
+  <rule id="gr_custom" scope="public">
+    <tag> out.Sender = "gr_custom"; </tag>
+    <one-of>
+      <item weight="231840"> <token sapi:pron="A L T AX M A ZH AX Z E RH O"> num_shift_alt_0 </token> </item>
+      <item weight="231840"> <token sapi:pron="A L T AX M A ZH AX OEN"> num_shift_alt_1 </token> </item>
+      <item weight="231840"> <token sapi:pron="A L T AX M A ZH AX D EU"> num_shift_alt_2 </token> </item>
+      <item weight="231840"> <token sapi:pron="A L T AX M A ZH AX D OE"> num_shift_alt_2 </token> </item>
+      <item weight="231840"> <token sapi:pron="A L T AX M A ZH AX D AX"> num_shift_alt_2 </token> </item>
+      <item weight="231840"> <token sapi:pron="A L T AX M A ZH AX T RH W A"> num_shift_alt_3 </token> </item>
+      <item weight="231840"> <token sapi:pron="A L T AX M A ZH AX K A T RH"> num_shift_alt_4 </token> </item>
+      <item weight="231840"> <token sapi:pron="A L T AX M A ZH AX S OEN K"> num_shift_alt_5 </token> </item>
+      <item weight="231840"> <token sapi:pron="A L T AX M A ZH AX S I S"> num_shift_alt_6 </token> </item>
+      <item weight="231840"> <token sapi:pron="A L T AX M A ZH AX S EH T"> num_shift_alt_7 </token> </item>
+      <item weight="231840"> <token sapi:pron="A L T AX M A ZH AX Y I T"> num_shift_alt_8 </token> </item>
+      <item weight="231840"> <token sapi:pron="A L T AX M A ZH AX N OE F"> num_shift_alt_9 </token> </item>
+      <item weight="231840"> <token sapi:pron="M A ZH K ON T RH AO L AX Z E RH O"> num_shift_ctrl_0 </token> </item>
+      <item weight="231840"> <token sapi:pron="M A ZH K ON T RH AO L AX OEN"> num_shift_ctrl_1 </token> </item>
+      <item weight="231840"> <token sapi:pron="M A ZH K ON T RH AO L AX D EU"> num_shift_ctrl_2 </token> </item>
+      <item weight="231840"> <token sapi:pron="M A ZH K ON T RH AO L AX D OE"> num_shift_ctrl_2 </token> </item>
+      <item weight="231840"> <token sapi:pron="M A ZH K ON T RH AO L AX T RH W A"> num_shift_ctrl_3 </token> </item>
+      <item weight="231840"> <token sapi:pron="K ON T RH AO L M A ZH AX T RH W A"> num_shift_ctrl_3 </token> </item>
+      <item weight="231840"> <token sapi:pron="M A ZH K ON T RH AO L AX K A T RH"> num_shift_ctrl_4 </token> </item>
+      <item weight="231840"> <token sapi:pron="K ON T RH AO L M A ZH AX K A T RH"> num_shift_ctrl_4 </token> </item>
+      <item weight="231840"> <token sapi:pron="K ON T RH AO L M A ZH AX S OEN K"> num_shift_ctrl_5 </token> </item>
+      <item weight="231840"> <token sapi:pron="M A ZH K ON T RH AO L AX S OEN K"> num_shift_ctrl_5 </token> </item>
+      <item weight="231840"> <token sapi:pron="M A ZH K ON T RH AO L AX S I S"> num_shift_ctrl_6 </token> </item>
+      <item weight="231840"> <token sapi:pron="K ON T RH AO L M A ZH AX S EH T"> num_shift_ctrl_7 </token> </item>
+      <item weight="231840"> <token sapi:pron="M A ZH K ON T RH AO L AX S EH T"> num_shift_ctrl_7 </token> </item>
+      <item weight="231840"> <token sapi:pron="M A ZH K ON T RH AO L AX Y I T"> num_shift_ctrl_8 </token> </item>
+      <item weight="231840"> <token sapi:pron="M A ZH K ON T RH AO L AX N OE F"> num_shift_ctrl_9 </token> </item>
+    </one-of>
+  </rule>
+
+</grammar>

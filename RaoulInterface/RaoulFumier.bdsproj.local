@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2020/07/24 02:18:26.943.pas,C:\Users\JANKOWSKI\Documents\Projets Borland Studio\Unit1.pas=H:\2020 Developpement\RaoulInterface\main.pas</Transaction>
+    <Transaction>2020/07/24 02:18:26.943.dfm,C:\Users\JANKOWSKI\Documents\Projets Borland Studio\Unit1.dfm=H:\2020 Developpement\RaoulInterface\main.dfm</Transaction>
+    <Transaction>2020/07/24 02:23:36.323.pas,H:\2020 Developpement\RaoulInterface\Unit1.pas=H:\2020 Developpement\RaoulInterface\uRaoulDisplay.pas</Transaction>
+    <Transaction>2020/07/24 02:41:32.331.pas,H:\2020 Developpement\RaoulInterface\Unit2.pas=H:\2020 Developpement\RaoulInterface\DisplayTextForm.pas</Transaction>
+    <Transaction>2020/07/24 02:41:32.331.dfm,H:\2020 Developpement\RaoulInterface\Unit2.dfm=H:\2020 Developpement\RaoulInterface\DisplayTextForm.dfm</Transaction>
+    <Transaction>2020/07/24 18:03:51.631.pas,H:\2020 Developpement\RaoulInterface\Unit1.pas=H:\2020 Developpement\RaoulInterface\ScreenDlg.pas</Transaction>
+    <Transaction>2020/07/24 18:03:51.631.dfm,H:\2020 Developpement\RaoulInterface\Unit1.dfm=H:\2020 Developpement\RaoulInterface\ScreenDlg.dfm</Transaction>
+    <Transaction>2020/07/25 01:34:27.411.pas,H:\2020 Developpement\RaoulInterface\Unit1.pas=H:\2020 Developpement\RaoulInterface\uTestDLG.pas</Transaction>
+    <Transaction>2020/07/25 01:34:27.411.dfm,H:\2020 Developpement\RaoulInterface\Unit1.dfm=H:\2020 Developpement\RaoulInterface\uTestDLG.dfm</Transaction>
+    <Transaction>2020/07/25 14:32:05.919.pas,H:\2020 Developpement\RaoulInterface\Unit1.pas=H:\2020 Developpement\RaoulInterface\uEmbendedAncestor.pas</Transaction>
+    <Transaction>2020/07/25 14:32:05.919.dfm,H:\2020 Developpement\RaoulInterface\Unit1.dfm=H:\2020 Developpement\RaoulInterface\uEmbendedAncestor.dfm</Transaction>
+    <Transaction>2020/07/25 14:38:46.741.pas,H:\2020 Developpement\RaoulInterface\uTestDLG.pas=</Transaction>
+    <Transaction>2020/07/25 14:38:46.741.dfm,H:\2020 Developpement\RaoulInterface\uTestDLG.dfm=</Transaction>
+    <Transaction>2020/07/25 14:42:32.218.pas,H:\2020 Developpement\RaoulInterface\Unit1.pas=H:\2020 Developpement\RaoulInterface\uEmbendedDlg.pas</Transaction>
+    <Transaction>2020/07/25 14:42:32.218.dfm,H:\2020 Developpement\RaoulInterface\Unit1.dfm=H:\2020 Developpement\RaoulInterface\uEmbendedDlg.dfm</Transaction>
+    <Transaction>2020/07/25 18:16:05.365.pas,H:\2020 Developpement\RaoulInterface\Unit1.pas=H:\2020 Developpement\RaoulInterface\uRaoulRecorder.pas</Transaction>
+    <Transaction>2020/07/26 04:18:53.549.pas,H:\2020 Developpement\RaoulInterface\Unit1.pas=H:\2020 Developpement\RaoulInterface\uEmbendedSensibility.pas</Transaction>
+    <Transaction>2020/07/26 04:18:53.549.dfm,H:\2020 Developpement\RaoulInterface\Unit1.dfm=H:\2020 Developpement\RaoulInterface\uEmbendedSensibility.dfm</Transaction>
+    <Transaction>2020/07/26 04:20:48.505.pas,H:\2020 Developpement\RaoulInterface\uEmbendedSensibility.pas=</Transaction>
+    <Transaction>2020/07/26 04:20:48.505.dfm,H:\2020 Developpement\RaoulInterface\uEmbendedSensibility.dfm=</Transaction>
+    <Transaction>2020/07/26 04:23:35.422.pas,H:\2020 Developpement\RaoulInterface\Unit1.pas=H:\2020 Developpement\RaoulInterface\uEmbendedSensibility.pas</Transaction>
+    <Transaction>2020/07/26 04:23:35.422.dfm,H:\2020 Developpement\RaoulInterface\Unit1.dfm=H:\2020 Developpement\RaoulInterface\uEmbendedSensibility.dfm</Transaction>
+    <Transaction>2020/07/26 04:33:43.636.pas,H:\2020 Developpement\RaoulInterface\uEmbendedSensibility.pas=</Transaction>
+    <Transaction>2020/07/26 04:33:43.636.dfm,H:\2020 Developpement\RaoulInterface\uEmbendedSensibility.dfm=</Transaction>
+    <Transaction>2020/07/26 04:50:58.721.pas,H:\2020 Developpement\RaoulInterface\uEmbendedDlg.pas=</Transaction>
+    <Transaction>2020/07/26 04:50:58.721.dfm,H:\2020 Developpement\RaoulInterface\uEmbendedDlg.dfm=</Transaction>
+    <Transaction>2020/07/26 04:57:17.100.pas,H:\2020 Developpement\RaoulInterface\Unit1.pas=H:\2020 Developpement\RaoulInterface\uEmbendedDlg.pas</Transaction>
+    <Transaction>2020/07/26 04:57:17.100.dfm,H:\2020 Developpement\RaoulInterface\Unit1.dfm=H:\2020 Developpement\RaoulInterface\uEmbendedDlg.dfm</Transaction>
+    <Transaction>2020/07/26 05:16:39.888.pas,H:\2020 Developpement\RaoulInterface\Unit1.pas=H:\2020 Developpement\RaoulInterface\uEmbendedSensibility.pas</Transaction>
+    <Transaction>2020/07/26 05:16:39.888.dfm,H:\2020 Developpement\RaoulInterface\Unit1.dfm=H:\2020 Developpement\RaoulInterface\uEmbendedSensibility.dfm</Transaction>
+    <Transaction>2020/07/27 11:00:53.556.pas,H:\2020 Developpement\RaoulInterface\Unit1.pas=H:\2020 Developpement\RaoulInterface\uPickerForm.pas</Transaction>
+    <Transaction>2020/07/27 11:00:53.556.dfm,H:\2020 Developpement\RaoulInterface\Unit1.dfm=H:\2020 Developpement\RaoulInterface\uPickerForm.dfm</Transaction>
+    <Transaction>2020/07/29 13:12:02.260.pas,H:\2020 Developpement\RaoulInterface\Unit1.pas=H:\2020 Developpement\Persephone\Share\uVeersion.pas</Transaction>
+    <Transaction>2020/07/29 13:12:27.044.pas,H:\2020 Developpement\Persephone\Share\uVeersion.pas=</Transaction>
+    <Transaction>2020/08/01 12:28:12.063.pas,H:\2020 Developpement\RaoulInterface\Unit1.pas=H:\2020 Developpement\RaoulInterface\uRaoulDB.pas</Transaction>
+    <Transaction>2020/08/03 12:33:23.532.pas,H:\2020 Developpement\RaoulInterface\Unit1.pas=H:\2020 Developpement\RaoulInterface\uRaoulUpdater.pas</Transaction>
+    <Transaction>2020/08/03 14:57:56.800.pas,H:\2020 Developpement\RaoulInterface\uNewRecorder.pas=</Transaction>
+    <Transaction>2020/08/26 10:41:33.545.pas,H:\2020 Developpement\RaoulInterface\Unit1.pas=H:\2020 Developpement\RaoulInterface\uEliteManager.pas</Transaction>
+    <Transaction>2020/09/03 15:50:54.223.pas,H:\2020 Developpement\RaoulInterface\Unit1.pas=H:\2020 Developpement\RaoulInterface\uRaoulParameters.pas</Transaction>
+  </Transactions>
+</BorlandProject>
