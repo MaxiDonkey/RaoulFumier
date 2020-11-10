@@ -3,12 +3,13 @@ unit SendKey32;
 interface
 
 uses
-  SysUtils, classes, Windows, Messages, Dialogs, Forms, KeysDef, uRegistry,
-  StrUtils;
+  SysUtils, classes, Windows, Messages, Dialogs, Forms, uRegistry,
+  StrUtils, KeysDef;
 
 type
   {For KeyBoardState}
-  TByteSet = Set of byte;
+  TByteSet   = Set of byte;
+  KeyWinType = (kw_shift, kw_control, kw_alt, kw_altgr);
 
 {...............................................................................
 
@@ -33,10 +34,14 @@ function SendKeys(SendKeysString : PChar; Wait : Boolean) : Boolean; overload;
 procedure SendKey(iKey: Smallint; Tms: Cardinal; Specials: TSpecials = []); overload;
 
 { --- Combinaison Win+Alpha --- }
-procedure SendKeyWin(iKey: Smallint; Tms: Cardinal);
+procedure SendKeyWin(iKey: Smallint; Tms: Cardinal = 30); overload;
+procedure SendKeyWin(iKey: Smallint; Special: KeyWinType); overload;
+procedure SendKeyWin; overload;
 
 { --- Alt + xxxx ex : ³ âr alt+0179 --- }
 procedure SendKey(sCode: string); overload;
+procedure AltTab;
+procedure AltRelease;
 
 { --- Mouse --- }
 function  GetMousePosition: TPoint;
@@ -132,6 +137,23 @@ type
   THKeys = array[0..pred(MaxLongInt)] of byte;
 var
   AllocationSize : integer;
+
+procedure AltTab;
+begin
+  keybd_event(VK_LMENU, MapVirtualKey(VK_LMENU, 0), 0, 0);
+  keybd_event(VK_TAB,   MapVirtualKey(VK_TAB,   0), 0, 0);
+
+  keybd_event(VK_TAB,   MapVirtualKey(VK_TAB,   0), KEYEVENTF_KEYUP, 0);
+  KeyWrite(ParamKey, 'Alt_Tab', True);
+end;
+
+
+procedure AltRelease;
+begin
+  keybd_event(VK_LMENU, MapVirtualKey(VK_LMENU, 0), KEYEVENTF_KEYUP, 0);
+  KeyWrite(ParamKey, 'Alt_Tab', False)
+end;
+
 
 (*
 Envoi une chaîne de caractères à un composant windows disposant du focus
@@ -315,6 +337,56 @@ begin
   if BitSet(Hi(MKey), VKKEYSCANALTON)   then SendKeyUp(VK_MENU)
 end;
 
+procedure AltPlusKey(const Number: string);
+var
+  i    : Integer;
+  iKey : Integer;
+begin
+  SendKeyDown(VK_MENU, 1, False);
+  try
+    SendKeyDown(VK_NUMPAD0, 1, False);
+    SendKeyUp(VK_NUMPAD0);
+    for I := 1 to Length(Number) do begin
+      iKey := VkKeyScan(Number[i]);
+      case IndexStr(Number[i], ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']) of
+        0 : iKey := VK_NUMPAD0;
+        1 : iKey := VK_NUMPAD1;
+        2 : iKey := VK_NUMPAD2;
+        3 : iKey := VK_NUMPAD3;
+        4 : iKey := VK_NUMPAD4;
+        5 : iKey := VK_NUMPAD5;
+        6 : iKey := VK_NUMPAD6;
+        7 : iKey := VK_NUMPAD7;
+        8 : iKey := VK_NUMPAD8;
+        9 : iKey := VK_NUMPAD9;
+      end;
+      SendKeyDown(iKey, 1, False);
+      SendKeyUp(iKey)
+    end
+  finally
+    SendKeyUp(VK_MENU)
+  end;
+end;
+
+procedure SendKeyCirconflex(const car: Char);
+begin
+  SendKeyDown(VkKeyScan('^'), 1, False);
+  SendKeyUp(VkKeyScan('^'));
+  SendKeyDown(VkKeyScan(car), 1, False);
+  SendKeyUp(VkKeyScan(car));
+end;
+
+procedure SendKeyTrema(const car: Char);
+begin
+  SendKeyDown(VK_SHIFT, 1, False);
+  SendKeyDown(VkKeyScan('^'), 1, False);
+  SendKeyUp(VkKeyScan('^'));
+  SendKeyUp(VK_SHIFT);
+  SendKeyDown(VkKeyScan(car), 1, False);
+  SendKeyUp(VkKeyScan(car));
+end;
+
+
 {Implements a simple binary search to locate special key name strings}
 
 function StringToVKey(KeyString : ShortString) : Word;
@@ -415,27 +487,27 @@ begin
 
   while I < L do begin
     case SendKeysString[I] of
-    '%' : begin //ALT
+    '©' : begin //ALT
              AltDown := True;
              SendKeyDown(VK_MENU, 1, False);
              Inc(I);
           end;
-    '+' : begin //SHIFT
+    '®' : begin //SHIFT
              ShiftDown := True;
              SendKeyDown(VK_SHIFT, 1, False);
              Inc(I);
           end;
-    '^' : begin //CTRL
+    'ª' : begin //CTRL
              ControlDown := True;
              SendKeyDown(VK_CONTROL, 1, False);
              Inc(I);
           end;
-    '~' : begin //RETURN
+    '¹' : begin //RETURN
             SendKeyDown(VK_RETURN, 1, True);
             PopUpShiftKeys;
             Inc(I);
           end;
-    '"' : begin
+    'º' : begin
             Inc(I);
             if (I < L) and (SendKeysString[I] in ['a'..'l','%','+','^','~','"'])
               then I := FunctionKey(I);
@@ -462,7 +534,31 @@ begin
             SendKey(MKey, 1, True);
             PopUpShiftKeys;
           end else
-            MessageBox(0, 'Invalid key name!', 'SendKeys Routine', MB_ICONWARNING or MB_OK);
+            case IndexStr(SendKeysString[I], ['ô','î', 'â', 'ï',
+                  'Â', 'À', 'É', 'È', 'Ê', 'ë', 'Ë', 'ê', 'Ô', 'Ï', 'Î', 'Ç', 'ç',
+                  'ø', 'Ø']) of
+              0  : SendKeyCirconflex('o');
+              1  : SendKeyCirconflex('i');
+              2  : SendKeyCirconflex('a');
+              3  : SendKeyTrema('i');
+              4  : SendKeyCirconflex('A');
+              5  : AltPlusKey('192');
+              6  : AltPlusKey('201');
+              7  : AltPlusKey('200');
+              8  : AltPlusKey('202');
+              9  : AltPlusKey('235');
+              10 : AltPlusKey('203');
+              11 : AltPlusKey('234');
+              12 : AltPlusKey('212');
+              13 : AltPlusKey('207');
+              14 : AltPlusKey('206');
+              15 : AltPlusKey('199');
+              16 : AltPlusKey('231');
+              17 : AltPlusKey('248');
+              18 : AltPlusKey('216');
+
+              -1 : MessageBox(0, 'Invalid key name!', 'SendKeys Routine', MB_ICONWARNING or MB_OK);
+            end;
         end;
         Inc(I);
       end;
@@ -476,12 +572,73 @@ end;
   SIMULATION DE L'APPUI DE TOUCHES WINDOWS + CHAR AVEC TEMPS DATTENTE
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++}
 
+procedure SendKeyWinShift(iKey: Smallint; Tms: Cardinal = 100);
+begin
+  keybd_event(VK_LWIN,   MapVirtualKey(VK_LWIN, 0),    KEYEVENTF_EXTENDEDKEY, 0);
+  keybd_event(VK_RSHIFT, MapVirtualKey(VK_RSHIFT, 0),  KEYEVENTF_EXTENDEDKEY, 0);
+  keybd_event(iKey,      MapVirtualKey(iKey, 0), 0, 0);
+  WaitForKey( Tms );
+  keybd_event(iKey,      MapVirtualKey(iKey, 0),       KEYEVENTF_KEYUP, 0);
+  keybd_event(VK_RSHIFT, MapVirtualKey(VK_RSHIFT, 0),  KEYEVENTF_EXTENDEDKEY or KEYEVENTF_KEYUP, 0);
+  keybd_event(VK_LWIN,   MapVirtualKey(VK_LWIN, 0),    KEYEVENTF_EXTENDEDKEY or KEYEVENTF_KEYUP, 0)
+end;
+                                                     
+procedure SendKeyWinCrtl(iKey: Smallint; Tms: Cardinal = 10);
+begin
+  keybd_event(VK_LWIN,     MapVirtualKey(VK_LWIN, 0),     KEYEVENTF_EXTENDEDKEY, 0);
+  keybd_event(VK_LCONTROL, MapVirtualKey(VK_LCONTROL, 0), KEYEVENTF_EXTENDEDKEY, 0);
+  keybd_event(iKey, MapVirtualKey(iKey, 0), 0, 0);
+  WaitForKey( Tms );
+  keybd_event(iKey, MapVirtualKey(iKey, 0), KEYEVENTF_KEYUP, 0);
+  keybd_event(VK_LCONTROL, MapVirtualKey(VK_LCONTROL, 0), KEYEVENTF_EXTENDEDKEY or KEYEVENTF_KEYUP, 0);
+  keybd_event(VK_LWIN,     MapVirtualKey(VK_LWIN, 0),     KEYEVENTF_EXTENDEDKEY or KEYEVENTF_KEYUP, 0)
+end;
+
+procedure SendKeyWinAlt(iKey: Smallint; Tms: Cardinal = 10);
+begin
+  keybd_event(VK_LWIN,  MapVirtualKey(VK_LWIN, 0),  KEYEVENTF_EXTENDEDKEY, 0);
+  keybd_event(VK_LMENU, MapVirtualKey(VK_LMENU, 0), KEYEVENTF_EXTENDEDKEY, 0);
+  keybd_event(iKey, MapVirtualKey(iKey, 0), 0, 0);
+  WaitForKey( Tms );
+  keybd_event(iKey, MapVirtualKey(iKey, 0), KEYEVENTF_KEYUP, 0);
+  keybd_event(VK_LMENU, MapVirtualKey(VK_LMENU, 0), KEYEVENTF_EXTENDEDKEY or KEYEVENTF_KEYUP, 0);
+  keybd_event(VK_LWIN,  MapVirtualKey(VK_LWIN, 0),  KEYEVENTF_EXTENDEDKEY or KEYEVENTF_KEYUP, 0)
+end;
+
+procedure SendKeyWinAltGr(iKey: Smallint; Tms: Cardinal = 10);
+begin
+  keybd_event(VK_RWIN,  MapVirtualKey(VK_RWIN, 0),  KEYEVENTF_EXTENDEDKEY, 0);
+//  keybd_event(VK_RMENU, MapVirtualKey(VK_RMENU, 0), KEYEVENTF_EXTENDEDKEY, 0);
+  keybd_event(iKey, MapVirtualKey(iKey, 0), 0, 0);
+  WaitForKey( Tms );
+  keybd_event(iKey, MapVirtualKey(iKey, 0), KEYEVENTF_KEYUP, 0);
+//  keybd_event(VK_RMENU, MapVirtualKey(VK_RMENU, 0), KEYEVENTF_EXTENDEDKEY or KEYEVENTF_KEYUP, 0);
+  keybd_event(VK_RWIN,  MapVirtualKey(VK_RWIN, 0),  KEYEVENTF_EXTENDEDKEY or KEYEVENTF_KEYUP, 0)
+end;
+
+procedure SendKeyWin(iKey: Smallint; Special: KeyWinType);
+begin
+  case Special of
+    kw_shift   : SendKeyWinShift ( ikey );
+    kw_control : SendKeyWinCrtl  ( ikey );
+    kw_alt     : SendKeyWinAlt   ( ikey );
+    kw_altgr   : SendKeyWinAltGr ( ikey );
+  end
+end;
+
 procedure SendKeyWin(iKey: Smallint; Tms: Cardinal);
 begin
   keybd_event(VK_LWIN, MapVirtualKey(VK_LWIN, 0), KEYEVENTF_EXTENDEDKEY, 0);
   keybd_event(iKey, MapVirtualKey(iKey, 0), 0, 0);
   WaitForKey( Tms );
   keybd_event(iKey, MapVirtualKey(iKey, 0), KEYEVENTF_KEYUP, 0);
+  keybd_event(VK_LWIN, MapVirtualKey(VK_LWIN, 0), KEYEVENTF_EXTENDEDKEY or KEYEVENTF_KEYUP, 0)
+end;
+
+procedure SendKeyWin;
+begin
+  keybd_event(VK_LWIN, MapVirtualKey(VK_LWIN, 0), KEYEVENTF_EXTENDEDKEY, 0);
+  WaitForKey( 30 );
   keybd_event(VK_LWIN, MapVirtualKey(VK_LWIN, 0), KEYEVENTF_EXTENDEDKEY or KEYEVENTF_KEYUP, 0)
 end;
 
@@ -987,8 +1144,6 @@ type
 
 
 function ShiftStateToKind(const Shift: TShiftState):TShiftKind;
-var
-  Sf: TShiftState;
 begin
   Result := sk_none;
   if ssShift in Shift then begin
@@ -1308,5 +1463,5 @@ begin
 end;
 
 initialization
-  AllShortCut := Shortcuts;
+//  AllShortCut := Shortcuts;
 end.

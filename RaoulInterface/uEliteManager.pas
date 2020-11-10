@@ -1,10 +1,16 @@
+{*******************************************************}
+{                                                       }
+{             08/2020  MaxiDonkey  Library              }
+{                                                       }
+{*******************************************************}
+
 unit uEliteManager;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StrCopyUtils, uRegistry, StrUtils,
+  Dialogs, StrCopyUtils, uRegistry, StrUtils, 
 
   KeysDef,
   {Elite bindings}
@@ -308,6 +314,7 @@ type
 var
   EliteManager         : TEliteManager = nil;
   EliteRunningObserver : TEliteRunningObserver;
+  ProcExitElite        : TNotifyEvent = nil;
 
 implementation
 
@@ -320,7 +327,7 @@ uses
 
 procedure TCustomEliteManager.AssignTagsToStack;
 begin
-  ProtectedCode( DoWithTag );
+  ProtectedCode( DoWithTag )
 end;
 
 procedure TCustomEliteManager.CallCommande(const Ast: string; Again: Boolean);
@@ -753,8 +760,9 @@ begin
     30041 : Coller;
     30042 : AlphaKeyBoard(VK_ADD);
     30043 : AlphaKeyBoard(VK_SUBTRACT);
+    31000 : if Assigned(ProcExitElite) then ProcExitElite(nil);
   end;
-  if not Again and not IsAgainCommand(indexCmd) then LastCmd := indexCmd;
+  if not Again and not IsAgainCommand(indexCmd) then LastCmd := indexCmd
 end; {CallCommande}
 
 function TCustomEliteManager.CanLongRepeat: Boolean;
@@ -770,7 +778,7 @@ begin
     2  : FKeyInventory.KeyTrigger_( 'TargetWingman1' , WITH_KEYUP);
     else FKeyInventory.KeyTrigger_( 'TargetWingman2' , WITH_KEYUP);
   end;
-  FKeyInventory.KeyTrigger_( 'SelectTargetsTarget' ,   WITH_KEYUP);
+  FKeyInventory.KeyTrigger_( 'SelectTargetsTarget' ,   WITH_KEYUP)
 end;
 
 constructor TCustomEliteManager.Create;
@@ -805,16 +813,21 @@ procedure TCustomEliteManager.DoWithTag(Sender: TObject);
 var
   Buffer : string;
   ASt    : string;
+
+  procedure Stack(const Value: string); begin
+    if Pos('undefined', Value) = 0 then FTagStack.Insert(0, Value )
+  end;
+
 begin
   FTagStack.Clear;
   ASt := FTags;
   while Pos('.', ASt) > 0 do begin
     Buffer := GetBeforStr(ASt, '.');
     ASt    := GetAfterStr(ASt, '.');
-    if Buffer <> 'undefined' then FTagStack.Insert(0, Buffer )
+    Stack( Buffer )
   end;
-  if (Ast <> EmptyStr) and (Ast <> 'undefined') then FTagStack.Insert(0, Ast )
-end;
+  if Ast <> EmptyStr then Stack( Ast );
+end; {DoWithTag}
 
 procedure TCustomEliteManager.FinalizeMutex;
 begin
@@ -823,35 +836,35 @@ end;
 
 procedure TCustomEliteManager.FSD;
 begin
-  FKeyInventory.KeyTrigger_( 'SetSpeed100', WITH_KEYUP);
-  FKeyInventory.KeyTrigger_( 'HyperSuperCombination', WITH_KEYUP);
+  if not EliteStatus.SuperCruise then FKeyInventory.KeyTrigger_( 'SetSpeed100', WITH_KEYUP);
+  FKeyInventory.KeyTrigger_( 'HyperSuperCombination', WITH_KEYUP)
 end;
 
 procedure TCustomEliteManager.FullSystem;
 begin
   PipeReset;
   PipeSystem;
-  PipeSystem;
+  PipeSystem
 end;
 
 procedure TCustomEliteManager.FullArme;
 begin
   PipeReset;
   PipeArmes;
-  PipeArmes;
+  PipeArmes
 end;
 
 procedure TCustomEliteManager.FullMoteur;
 begin
   PipeReset;
   PipeMoteur;
-  PipeMoteur;
+  PipeMoteur
 end;
 
 procedure TCustomEliteManager.InitializeMutex;
 begin
   EliteMutex := CreateMutex(nil, False, 'StackElite');
-  if EliteMutex = 0 then RaiseLastOSError;
+  if EliteMutex = 0 then RaiseLastOSError
 end;
 
 function TCustomEliteManager.IsAgainCommand(const Cmd: Integer): Boolean;
@@ -882,18 +895,18 @@ begin
     2  : FKeyInventory.KeyTrigger_( 'TargetWingman1' , WITH_KEYUP);
     else FKeyInventory.KeyTrigger_( 'TargetWingman2' , WITH_KEYUP);
   end;
-  FKeyInventory.KeyTrigger_( 'WingNavLock',           WITH_KEYUP);
+  FKeyInventory.KeyTrigger_( 'WingNavLock',           WITH_KEYUP)
 end;
 
 procedure TCustomEliteManager.PRL;
 begin
-  FKeyInventory.KeyTrigger_( 'SetSpeed100', WITH_KEYUP);
+  if not EliteStatus.SuperCruise then FKeyInventory.KeyTrigger_( 'SetSpeed100', WITH_KEYUP);
   FKeyInventory.KeyTrigger_( 'Hyperspace',  WITH_KEYUP)
 end;
 
 procedure TCustomEliteManager.ProcessOnStack;
 begin
-  ProtectedCode( DoOnStack );
+  ProtectedCode( DoOnStack )
 end;
 
 procedure TCustomEliteManager.ProtectedCode(Method: TNotifyEvent);
@@ -919,12 +932,13 @@ begin
     FTags := Value;
     AssignTagsToStack;
     ProcessOnStack
-  end
+  end else
+  if (Pos('31000', Value) > 0) and Assigned(ProcExitElite) then ProcExitElite(nil)
 end;
 
 procedure TCustomEliteManager.SuperNavigation;
 begin
-  FKeyInventory.KeyTrigger_( 'SetSpeed100', WITH_KEYUP);
+  if not EliteStatus.SuperCruise then FKeyInventory.KeyTrigger_( 'SetSpeed100', WITH_KEYUP);
   FKeyInventory.KeyTrigger_( 'Supercruise', WITH_KEYUP)
 end;
 
@@ -941,13 +955,13 @@ end;
 procedure TCustomEliteManager.Camera_ShipShow;
 begin
   FKeyInventory.KeyTrigger_( 'PhotoCameraToggle', WITH_KEYUP);
-  FKeyInventory.KeyTrigger_( 'FreeCamToggleHUD',  WITH_KEYUP);
+  FKeyInventory.KeyTrigger_( 'FreeCamToggleHUD',  WITH_KEYUP)
 end;
 
 procedure TCustomEliteManager.Camera_VRSShow;
 begin
   FKeyInventory.KeyTrigger_( 'PhotoCameraToggle_Buggy', WITH_KEYUP);
-  FKeyInventory.KeyTrigger_( 'FreeCamToggleHUD',        WITH_KEYUP);
+  FKeyInventory.KeyTrigger_( 'FreeCamToggleHUD',        WITH_KEYUP)
 end;
 
 procedure TCustomEliteManager.Up(index: Byte; tms: Integer);
@@ -996,7 +1010,7 @@ begin
     gt_systemmap : ASt := 'RollLeftButton'; { --> Père value }
     else
       if EliteStatus.LandinGearDown then ASt := 'PitchUpButton_Landing'
-        else ASt := 'PitchUpButton';
+        else ASt := 'PitchUpButton'
   end;
   for i := 1 to index do
     if tms < 1 then FKeyInventory.KeyTrigger_(ASt , WITH_KEYUP)
@@ -1013,7 +1027,7 @@ begin
     gt_systemmap : ASt := 'RollRightButton'; { --> Fils value }
     else
       if EliteStatus.LandinGearDown then ASt := 'PitchDownButton_Landing'
-        else ASt := 'PitchDownButton';
+        else ASt := 'PitchDownButton'
   end;
   for i := 1 to index do
     if tms < 1 then FKeyInventory.KeyTrigger_(ASt , WITH_KEYUP)
@@ -1030,7 +1044,7 @@ begin
     gt_systemmap : ASt := 'YawRightButton';
     else
       if EliteStatus.LandinGearDown then ASt := 'YawRightButton_Landing'
-        else ASt := 'YawRightButton';
+        else ASt := 'YawRightButton'
   end;
   for i := 1 to index do
     if tms < 1 then FKeyInventory.KeyTrigger_(ASt, WITH_KEYUP)
@@ -1047,7 +1061,7 @@ begin
     gt_systemmap : ASt := 'YawLeftButton';
     else
       if EliteStatus.LandinGearDown then ASt := 'YawLeftButton_Landing'
-        else ASt := 'YawLeftButton';
+        else ASt := 'YawLeftButton'
   end;
   for i := 1 to index do
     if tms < 1 then FKeyInventory.KeyTrigger_(ASt, WITH_KEYUP)
@@ -1064,7 +1078,7 @@ begin
     gt_systemmap : ASt := 'RollLeftButton';
     else
       if EliteStatus.LandinGearDown then ASt := 'RollLeftButton_Landing'
-        else ASt := 'RollLeftButton';
+        else ASt := 'RollLeftButton'
   end;
   for i := 1 to index do
     if tms < 1 then FKeyInventory.KeyTrigger_(ASt, WITH_KEYUP)
@@ -1081,7 +1095,7 @@ begin
     gt_systemmap : ASt := 'RollRightButton';
     else
       if EliteStatus.LandinGearDown then ASt := 'RollRightButton_Landing'
-        else ASt := 'RollRightButton';
+        else ASt := 'RollRightButton'
   end;
   for i := 1 to index do
     if tms < 1 then FKeyInventory.KeyTrigger_(ASt , WITH_KEYUP)
@@ -1193,7 +1207,7 @@ procedure TCustomEliteManager.CombatDefensif;
 begin
   PipeReset;
   PipeSystem;
-  PipeArmes;
+  PipeArmes
 end;
 
 procedure TCustomEliteManager.ModeFuite;
@@ -1202,7 +1216,7 @@ begin
   PipeSystem;
   PipeMoteur;
   PipeSystem;
-  PipeMoteur;
+  PipeMoteur
 end;
 
 procedure TCustomEliteManager.ModeDefensif;
@@ -1212,17 +1226,17 @@ begin
   PipeMoteur;
   PipeSystem;
   PipeArmes; PipeArmes;
-  PipeSystem;
+  PipeSystem
 end;
 
 procedure TCustomEliteManager.PousseeHaut(const sTime: Cardinal);
 begin
-  FKeyInventory.KeyTrigger_( 'UpThrustButton' , sTime);
+  FKeyInventory.KeyTrigger_( 'UpThrustButton' , sTime)
 end;
 
 procedure TCustomEliteManager.TrainAtterrissage;
 begin
-  FKeyInventory.KeyTrigger_( 'LandingGearToggle', WITH_KEYUP);
+  FKeyInventory.KeyTrigger_( 'LandingGearToggle', WITH_KEYUP)
 end;
 
 procedure TCustomEliteManager.Decollage;
@@ -1231,7 +1245,7 @@ begin
   TrainAtterrissage;
   PousseeHaut(2000);
   PousseeHaut(1000);
-  PousseeHaut(500);
+  PousseeHaut(500)
 end;
 
 procedure TCustomEliteManager.InverserPropulsion;
@@ -1403,8 +1417,7 @@ procedure TCustomEliteManager.PrimaryFire(tms: Integer);
 
 begin
   case EliteStatus.InSrv of
-    True  : VRSPrimaryFire;
-    False : ShipFire;
+    True : VRSPrimaryFire else ShipFire
   end
 end; {PrimaryFire}
 
@@ -1417,8 +1430,7 @@ procedure TCustomEliteManager.SecondaryFire(tms: Integer);
 
 begin
   case EliteStatus.InSrv of
-    True  : VRSSecondaryFire;
-    False : ShipFire;
+    True : VRSSecondaryFire else ShipFire
   end
 end; {SecondaryFire}
 
@@ -1483,8 +1495,8 @@ end;
 
 procedure TCustomEliteManager.ShieldCell;
 begin
-  if not EliteStatus.ShieldsUp then
-    FKeyInventory.KeyTrigger_( 'UseShieldCell', WITH_KEYUP)
+//  if not EliteStatus.ShieldsUp then
+  FKeyInventory.KeyTrigger_( 'UseShieldCell', WITH_KEYUP)
 end;
 
 procedure TCustomEliteManager.ChaffLauncher;
@@ -1568,7 +1580,10 @@ begin
     cmt_combat      : if not EliteStatus.HudInanalysisMode then Exit;
     cmt_exploration : if EliteStatus.HudInanalysisMode then Exit;
   end;
-  FKeyInventory.KeyTrigger_( 'PlayerHUDModeToggle', WITH_KEYUP)
+  case EliteStatus.InSrv of
+    True : FKeyInventory.KeyTrigger_( 'PlayerHUDModeToggle_Buggy', WITH_KEYUP)
+    else FKeyInventory.KeyTrigger_( 'PlayerHUDModeToggle', WITH_KEYUP)
+  end
 end; {CockpitMode}
 
 procedure TCustomEliteManager.ModeACS;
@@ -2316,14 +2331,14 @@ end;
 
 procedure TCustomEliteManager.SendChar(const Car: Char);
 begin
-  SendKey(Ord(Car), 150, []);
+  SendKey(Ord(Car), 150, [])
 end;
 
 procedure TCustomEliteManager.SendChar(VKCode: SmallInt);
 begin
   keybd_event(VKCode, MapVirtualKey(Ord(VKCode), 0), 0, 0);
   WaitForKey( 150 );
-  keybd_event(Ord(VKCode), MapVirtualKey(Ord(VKCode), 0), KEYEVENTF_KEYUP, 0);
+  keybd_event(Ord(VKCode), MapVirtualKey(Ord(VKCode), 0), KEYEVENTF_KEYUP, 0)
 end;
 
 procedure TCustomEliteManager.AlphaKeyBoard(const Car: Char);
@@ -2335,7 +2350,7 @@ begin
   case EliteStatus.GuiValue of
     gt_galaxymap,
     gt_commspanel : SendChar(Car);
-  end;
+  end
 end;
 
 procedure TCustomEliteManager.AlphaKeyBoard(VKCode: SmallInt);
@@ -2343,7 +2358,7 @@ begin
   case EliteStatus.GuiValue of
     gt_galaxymap,
     gt_commspanel : SendChar(VKCode);
-  end;
+  end
 end;
 
 procedure TCustomEliteManager.AlphaKeyBoard(const Car: Char;
@@ -2352,7 +2367,7 @@ begin
   case EliteStatus.GuiValue of
     gt_galaxymap,
     gt_commspanel : SendKey(Ord(Car), 150, Specials);
-  end;
+  end
 end;
 
 procedure TCustomEliteManager.Coller;
@@ -2381,7 +2396,7 @@ end;
 
 class procedure TEliteManager.KeyInventoryAssign(const Value: TKeyInventory);
 begin
-  if Assigned(EliteManager) then EliteManager.SetKeyInventory( Value );
+  if Assigned(EliteManager) then EliteManager.SetKeyInventory( Value )
 end;
 
 class procedure TEliteManager.TagAssign(const Value: string);
@@ -2401,15 +2416,15 @@ begin
   inherited Create( False );
   {Launch on create}
   FreeOnTerminate := True;
-  Priority        := tpLower;
+  Priority        := tpLower
 end;
 
 procedure TEliteRunningObserver.Execute;
 begin
   while not Terminated and not Application.Terminated do begin
     Synchronize( Process );
-    ThDelay( 500 );
-  end;
+    ThDelay( 500 )
+  end
 end;
 
 procedure TEliteRunningObserver.Process;
@@ -2423,14 +2438,14 @@ begin
   S := GetTickCount + ms;
   with Application do
     repeat
-      Sleep( 10 );
+      Sleep( 10 )
     until Self.Terminated or Terminated or (GetTickCount > S)
 end;
 
 initialization
   { --- Initialize le traitement pour Elite}
   TEliteManager.Initialize;
-  EliteRunningObserver := TEliteRunningObserver.Create;
+  EliteRunningObserver := TEliteRunningObserver.Create
 finalization
-  EliteRunningObserver.Terminate;
+  EliteRunningObserver.Terminate
 end.

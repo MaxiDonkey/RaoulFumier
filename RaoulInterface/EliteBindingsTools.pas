@@ -1,11 +1,10 @@
 {*******************************************************}
 {                                                       }
-{           MaxiDonkey Runtime Library                  }
+{         08/2020 MaxiDonkey Runtime Library            }
 {                                                       }
 {         Elite Dangerous Functions interface           }
 {         Bindings tools for Custom.3.0.Binds           }
 {                                                       }
-{            08/2020 - copyleft GNU licence             }
 {                                                       }
 {*******************************************************}
 
@@ -112,6 +111,11 @@ var
 function GetFrontierSaveGames: string;
 function GetEliteBindingsFolder: string;
 function GetEliteGraphicsFolder: string;
+
+function EncodeKey(const Key, Mod1, Mod2: Word): Cardinal; overload;
+function EncodeKey(const Key, Mod1, Mod2: string): Cardinal; overload;
+procedure DecodeKey(const Value: Cardinal; var Key, Func1, Func2: Word);
+
 
 const
   {$EXTERNALSYM MOUSEEVENTF_XDOWN}
@@ -815,7 +819,7 @@ const
   DFocusRightPanel : TArrayDuplicata = ('FocusRightPanel', 'FocusRightPanel_Buggy', '', '', '', '', '', '', '');
   DGalaxyMapOpen : TArrayDuplicata = ('GalaxyMapOpen', 'GalaxyMapOpen_Buggy', '', '', '', '', '', '', '');
   DSystemMapOpen : TArrayDuplicata = ('SystemMapOpen', 'SystemMapOpen_Buggy', '', '', '', '', '', '', '');
-  DToggleReverseThrottleInput : TArrayDuplicata = ('ToggleReverseThrottleInput', 'BuggyToggleReverseThrottleInput', '', '', '', '', '', '', '');
+  DToggleReverseThrottleInput : TArrayDuplicata = ('ToggleReverseThrottleInput', '', '', '', '', '', '', '', ''); //BuggyToggleReverseThrottleInput
   DFocusLeftPanel : TArrayDuplicata = ('FocusLeftPanel', 'FocusLeftPanel_Buggy', '', '', '', '', '', '', '');
   DFocusCommsPanel : TArrayDuplicata = ('FocusCommsPanel', 'FocusCommsPanel_Buggy', '', '', '', '', '', '', '');
   DFocusRadarPanel : TArrayDuplicata = ('FocusRadarPanel', 'FocusRadarPanel_Buggy', '', '', '', '', '', '', '');
@@ -1211,7 +1215,7 @@ var
 implementation
 
 uses
-  StrUtils;
+  StrUtils, uNewRecorder;
 
 function IsEliteRunning: Boolean;
 begin
@@ -1223,7 +1227,6 @@ procedure EliteForeGround;
 begin
   if HElite = 0 then HElite := FindWindow( PChar(ELITE_CLASS), nil );
   SetForegroundWindow( HElite );
-//  Sleep(30)   { --- Attention pas pour le tobii }
 end;
 
 function SetMessage(const Messages: array of string):string;
@@ -3794,20 +3797,25 @@ end;
 constructor TMouseFactory.Create;
 begin
   inherited Create;
+  { --- Retrouver le moniteur sur lequel Elite tourne }
   RetrieveIndexMonitor
 end;
 
 procedure TMouseFactory.DoAfterMouseDown(Sender: TObject);
 begin
-  with FMousePoint do SetCursorPos(X, Y);
+  if IsEliteRunning then with FMousePoint do SetCursorPos(X, Y)
 end;
 
 procedure TMouseFactory.DoBeforeMouseDown(Sender: TObject);
 begin
-  GetCursorPos( FMousePoint );
-  {TODO: gérer le moniteur où tourne Elite}
-  with Screen.Monitors[IndexMonitor] do SetCursorPos(Left + 300, Top + 200);
-  EliteForeGround;
+  with Recorder do
+    if IsEliteRunning and (CurrentMetier = m_elite) then begin
+      GetCursorPos( FMousePoint );
+      { --- selon le moniteur où tourne Elite}
+      with Screen.Monitors[IndexMonitor] do SetCursorPos(Left + 300, Top + 200);
+      { --- passe Elite en premier plan }
+      EliteForeGround
+    end
 end;
 
 function TMouseFactory.GetIndexMonitor: Integer;

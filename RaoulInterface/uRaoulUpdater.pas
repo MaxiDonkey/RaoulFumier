@@ -115,7 +115,7 @@ var
     with Trace do Add( CurrentFileName )
   end;
 
-  procedure TraceCreateAndSiging; begin
+  procedure TraceCreateAndSigning; begin
     updCount := GetDBgrUpdateCount;
     Trace    := TStringList.Create;
     with Trace do case Action of
@@ -125,7 +125,7 @@ var
   end;
 
 begin
-  TraceCreateAndSiging;
+  TraceCreateAndSigning;
   try
     if Trim(ACatalog) <> EmptyStr then with TStringList.Create do
       try

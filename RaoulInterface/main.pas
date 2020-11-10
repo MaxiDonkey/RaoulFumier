@@ -90,6 +90,7 @@ begin
 
   with ToolsDisplay do KeyInitialize( RaoulKeys );
   TFunctionment.Initialize;                      { --- Initialisattion de la factory }
+  TFunTalk.Initialize;
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);

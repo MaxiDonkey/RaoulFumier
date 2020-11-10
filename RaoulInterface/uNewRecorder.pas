@@ -1,3 +1,9 @@
+{*******************************************************}
+{                                                       }
+{             04/2020  MaxiDonkey  Library              }
+{                                                       }
+{*******************************************************}
+
 unit uNewRecorder;
 
 interface
@@ -5,7 +11,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, SpeechLib_TLB, OleServer, ActiveX, StdCtrls, ComCtrls, StrCopyUtils,
-  uRecorderTools, Math, StrUtils, uEliteManager, 
+  uRecorderTools, Math, StrUtils, uEliteManager, Clipbrd, uWinKeyShortCut,
 
   {devExpress}
   cxProgressBar, cxTrackBar;
@@ -25,8 +31,8 @@ type
   TInterferenceKind = (
     ik_SINone,     ik_SINoise,   ik_SINoSignal,  ik_SITooLoud,
     ik_SITooQuiet, ik_SITooFast, ik_SITooSlow                       );
-  TGramType         = (gt_switch, gt_fumier, gt_gauss, gt_spell, gt_elite);         //A-G
-  TMetiers          = (m_none, m_fumier, m_gauss, m_spell, m_elite);                //A-G
+  TGramType         = (gt_switch, gt_fumier, gt_gauss, gt_spell, gt_elite, gt_pause);        //A-G
+  TMetiers          = (m_none, m_fumier, m_gauss, m_spell, m_elite, m_pause);                //A-G
 
   TArrayOfJobFiles  = array[TGramType] of string;
   TArrayOfNoises    = array[TInterferenceKind] of Integer;
@@ -64,15 +70,17 @@ type
     function  GetModeFonctionnement: TModeFonctionnement;
     function  GetOkExpected: Boolean;
     procedure SetOkExpected(const Value: Boolean);
+    function  GetPrevMetier: TMetiers;
+    procedure SetPrevMetier(const Value: TMetiers);
 
   private
-    { - Constantes d'environnement - }
+    { --- Constantes d'environnement }
     HKMLCategory         : string;
     AGNES_DEFAULT_VOICE  : string;
-    { - Variables d'environnement  - }
+    { --- Variables d'environnement }
     FCategory            : TSpObjectTokenCategory;
     FToken               : TSpObjectToken;
-    { - DATA functionment          - }
+    { --- DATA functionment }
     FLock                : Boolean;
     FGrammars            : TArrayOfGrammars;
     FGramCount           : Integer;
@@ -84,7 +92,7 @@ type
     FNoises              : TArrayOfNoises;
     FInterference        : TInterferenceKind;
 
-    { - Local Events               - }
+    { --- Local Events }
     FOnAudioChanged      : TAudioChanged;
     FOnAudioLevelChange  : TAudioNotifyEvent;
     FOnMetierChanged     : TMetierChanged;
@@ -102,7 +110,7 @@ type
     FOnGramReload        : TRecoNotifyEvent;
     FOnGramStartReload   : TRecoNotifyEvent;
     FOnInterference      : TIntNotifyEvent;
-    { - Metiers events }
+    { --- Metiers events }
     FOnEliteFocus        : TNotifyEvent;
 
   private
@@ -134,7 +142,7 @@ type
     procedure GrammarsDisable; virtual;
 
   public
-    { - Variables d'environnement publiques - }
+    { --- Variables d'environnement publiques }
     Context              : TSpInProcRecoContext;
     Recognizer           : ISpeechRecognizer;
 
@@ -153,19 +161,30 @@ type
     property Noises : TArrayOfNoises read FNoises;
     property ModeFonctionnement: TModeFonctionnement read GetModeFonctionnement write SetModeFonctionnement;
     property OkExpected: Boolean read GetOkExpected write SetOkExpected;
+    property PrevMetier: TMetiers read GetPrevMetier write SetPrevMetier;
 
     constructor Create(AVuMetre: TcxProgressBar = nil); virtual;
   public
-    {for testing}
+    { --- for testing }
     procedure NoneActivate;
     procedure FumierActivate;
     procedure GaussActivate;
     procedure SpellActivate;
     procedure EliteActivate;
+    procedure PauseActivate;
     procedure FumierReload;
 
+    procedure NavExitProc(Sender: TObject);
+    procedure ExitEliteProc(Sender: TObject);
+
   public
-    {fonctionnement courant}
+    { --- Speak }
+    procedure TalkFmt(const Rate, Pitch: Integer; ASt: string); overload;
+    procedure TalkFmt(const Rate, Pitch: Integer; ASt: string;
+      const Rate1, Pitch1: Integer; ASt1: string); overload;
+
+  public
+    { --- fonctionnement courant }
     procedure AppCloseActivate;
     procedure SensibilityActivate;
     procedure OkActivate;
@@ -238,13 +257,13 @@ type
     property OnGramReloaded: TRecoNotifyEvent read FOnGramReload write FOnGramReload;
     property OnGramStartReload: TRecoNotifyEvent read FOnGramStartReload write FOnGramStartReload;
     property OnInterference: TIntNotifyEvent read FOnInterference write FOnInterference;
-    {Metier}
+    { --- Metier }
     property OnEliteFocus: TNotifyEvent read FOnEliteFocus write FOnEliteFocus;
   end;
 
   TCustomNewRecorder = class(TCustomDefRecorder)
   private
-    {Events}
+    { --- Events }
     procedure Hypothesis(ASender: TObject; StreamNumber: Integer;
       StreamPosition: OleVariant; const Result: ISpeechRecoResult);
     procedure Recognition(ASender: TObject; StreamNumber: Integer;
@@ -335,13 +354,15 @@ type
     procedure FumierProcess_(const SML: string; const ARecorder: TNewRecorder);
     procedure GaussProcess_(const SML: string; const ARecorder: TNewRecorder);
     procedure SpellProcess_(const SML: string; const ARecorder: TNewRecorder);
-    procedure EliteProcess_(const SML: string; const ARecorder: TNewRecorder); { --- TODO }
+    procedure EliteProcess_(const SML: string; const ARecorder: TNewRecorder);
+    procedure PauseProcess_(const SML: string; const ARecorder: TNewRecorder);
   public
     class procedure SwitchProcess(const SML: string; const ARecorder: TNewRecorder);
     class procedure FumierProcess(const SML: string; const ARecorder: TNewRecorder);
     class procedure GaussProcess(const SML: string; const ARecorder: TNewRecorder);
     class procedure SpellProcess(const SML: string; const ARecorder: TNewRecorder);
     class procedure EliteProcess(const SML: string; const ARecorder: TNewRecorder);
+    class procedure PauseProcess(const SML: string; const ARecorder: TNewRecorder);
   end;
 
   //TODO: ajouter un mutex
@@ -364,6 +385,7 @@ type
     class function GaussAdd(const ASt: string):Integer;
     class function SpellAdd(const ASt: string):Integer;
     class function EliteAdd(const ASt: string):Integer;
+    class function PauseAdd(const ASt: string):Integer;
   end;
 
   TStrFifoThread = class(TThread)
@@ -387,12 +409,14 @@ type
     procedure GaussInitialize;
     procedure SpellInitialize;
     procedure EliteInitialize;
+    procedure PauseInitialize;
 
     procedure MacrosFinalize;
     procedure FumierFinalize;
     procedure GaussFinalize;
     procedure SpellFinalize;
     procedure EliteFinalize;
+    procedure PauseFinalize;
   public
     class procedure Initialize;
     class procedure Finalize;
@@ -450,6 +474,35 @@ type
     class function  Position:TSensibility;
     class function  Sensibility: Integer;
     class procedure Floors(var High, Middle: Double);
+  end;
+
+  TFunTalk = class
+  private
+    function  GetAleaMeteo: Integer;
+    procedure SetAleaMeteo(const Value: Integer);
+    function  GetAleaNightMare: Integer;
+    procedure SetAleaNightMare(const Value: Integer);
+    function  GetMeteaoAsked: Boolean;
+    procedure SetMeteaoAsked(const Value: Boolean);
+  private
+    procedure NightMare_;
+    procedure ThankYou_;
+    procedure Meteo_;
+    procedure Meteo_we_;
+    procedure OkGoogle_;
+    procedure ThankMission_;
+
+    property AleaMeteo: Integer read GetAleaMeteo write SetAleaMeteo;
+    property AleaNightMare: Integer read GetAleaNightMare write SetAleaNightMare;
+    property MeteaoAsked: Boolean read GetMeteaoAsked write SetMeteaoAsked;
+  public
+    class procedure Initialize;
+    class procedure NightMare;
+    class procedure ThankYou;
+    class procedure Meteo;
+    class procedure Meteo_we;
+    class procedure OkGoogle;
+    class procedure ThankMission;
   end;
 
 procedure Register;
@@ -521,7 +574,7 @@ var
   RaoulIntVumetreHideFunc    : TNotifyEvent = nil;
 
 var
-  ArrayOfJobFiles : TArrayOfJobFiles = ('Switch', 'gr_main', 'Numeration', 'Spelling', 'Elite');    //A-G
+  ArrayOfJobFiles : TArrayOfJobFiles = ('Switch', 'gr_main', 'Numeration', 'Spelling', 'Elite', 'Pause');    //A-G
 
 // IMPORTANT Catalog ---> Raoul.trf=
 
@@ -529,7 +582,7 @@ var
   GrammarPath     : string = 'Grammar';                                     //ver prod
 
   GrammarStrs     : array[0..Integer(High(TGramType))] of string =
-   ('switch', 'fumier', 'gauss', 'spelling', 'elite');     //A-G
+   ('switch', 'fumier', 'gauss', 'spelling', 'elite', 'pause');     //A-G
 var
   {Scruptor Managers}
   PileMacros      : TStrFifoStack;
@@ -546,6 +599,9 @@ var
 
   PileElite       : TStrFifoStack;
   ThElite         : TStrFifoThread;
+
+  PilePause       : TStrFifoStack;
+  ThPause         : TStrFifoThread;
 
 implementation
 
@@ -751,7 +807,9 @@ begin
   FVuMetre            := AVuMetre;
   ModeFonctionnement  := mf_none;
   OkExpected          := False;
-  KeyWrite(ParamKey, 'ModFunctionment', Integer(mf_none))
+  KeyWrite(ParamKey, 'ModFunctionment', Integer(mf_none));
+  ProcExitNav         := NavExitProc;
+  ProcExitElite       := ExitEliteProc;
 end;
 
 procedure TCustomDefRecorder.VuMetreReset;
@@ -773,6 +831,7 @@ begin //A-G
     GrammarActivate(gt_gauss, False);
     GrammarActivate(gt_spell, False);
     GrammarActivate(gt_elite, False);
+    GrammarActivate(gt_pause, False);
     GrammarActivate(gt_switch);
     GrammarActivate(gt_fumier);
 
@@ -787,6 +846,7 @@ begin //A-G
     GrammarActivate(gt_fumier, False);
     GrammarActivate(gt_spell,  False);
     GrammarActivate(gt_elite,  False);
+    GrammarActivate(gt_pause,  False);
     GrammarActivate(gt_switch);
     GrammarActivate(gt_gauss);
 
@@ -797,10 +857,12 @@ end;
 
 procedure TCustomDefRecorder.SpellActivate;
 begin //A-G
+  TSCRepeater.Initialize;
   try
     GrammarActivate(gt_fumier, False);
     GrammarActivate(gt_gauss,  False);
     GrammarActivate(gt_elite,  False);
+    GrammarActivate(gt_pause,  False);
     GrammarActivate(gt_switch);
     GrammarActivate(gt_spell);
 
@@ -815,6 +877,7 @@ begin //A-G
     GrammarActivate(gt_fumier, False);
     GrammarActivate(gt_gauss,  False);
     GrammarActivate(gt_spell,  False);
+    GrammarActivate(gt_pause,  False);
     GrammarActivate(gt_switch);
     GrammarActivate(gt_elite);
 
@@ -831,6 +894,7 @@ begin //A-G
     GrammarActivate(gt_gauss,  False);
     GrammarActivate(gt_spell,  False);
     GrammarActivate(gt_elite,  False);
+    GrammarActivate(gt_pause,  False);
     GrammarActivate(gt_switch);
 
     CurrentMetier := m_none;
@@ -1144,6 +1208,84 @@ begin
   TAppUpdater.TryToRelauch;
 end;
 
+procedure TCustomDefRecorder.PauseActivate;
+begin
+  try
+    PrevMetier := CurrentMetier;
+    GrammarActivate(gt_fumier, False);
+    GrammarActivate(gt_gauss,  False);
+    GrammarActivate(gt_spell,  False);
+    GrammarActivate(gt_switch, False);
+    GrammarActivate(gt_elite,  False);
+    GrammarActivate(gt_pause);
+
+    CurrentMetier := m_pause;
+  except
+  end
+end;
+
+
+function TCustomDefRecorder.GetPrevMetier: TMetiers;
+begin
+  Result := TMetiers(KeyReadInt(ParamKey, 'PrevMetier'))
+end;
+
+procedure TCustomDefRecorder.SetPrevMetier(const Value: TMetiers);
+begin
+  KeyWrite(ParamKey, 'PrevMetier', Integer(Value))
+end;
+
+const
+  TTS_PATERN =
+   '<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="fr-FR">'#10#13 +
+     '<voice name="fr-FR-DeniseNeural">'#10#13 +
+       '<prosody rate="%s" pitch="%s">'#10#13 +
+         '%s' + #10#13 +
+       '</prosody>'#10#13 +
+     '</voice>'#10#13 +
+   '</speak>';
+
+  TTS_PATERN2 =
+   '<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="fr-FR">'#10#13 +
+     '<voice name="fr-FR-DeniseNeural">'#10#13 +
+       '<prosody rate="%s" pitch="%s">'#10#13 +
+         '%s' + #10#13 +
+       '</prosody>'#10#13 +
+       '<prosody rate="%s" pitch="%s">'#10#13 +
+         '%s' + #10#13 +
+       '</prosody>'#10#13 +
+     '</voice>'#10#13 +
+   '</speak>';
+
+function DblFmtTTS(const Value: Integer):string;
+begin
+  if Value > 0 then Result := Format('+%d%s', [Value,  '.00%'])
+    else Result := Format('-%d%s', [Abs(Value),  '.00%'])
+end;
+
+procedure TCustomDefRecorder.TalkFmt(const Rate, Pitch: Integer; ASt: string);
+begin
+  TSpeaker.TalkNP( Format(TTS_PATERN, [DblFmtTTS(Rate), DblFmtTTS(Pitch), ASt]) )
+end;
+
+procedure TCustomDefRecorder.TalkFmt(const Rate, Pitch: Integer; ASt: string;
+  const Rate1, Pitch1: Integer; ASt1: string);
+begin
+  TSpeaker.TalkNP( Format(TTS_PATERN2,
+    [ DblFmtTTS(Rate),  DblFmtTTS(Pitch),  ASt,
+      DblFmtTTS(Rate1), DblFmtTTS(Pitch1), ASt1]) )
+end;
+
+procedure TCustomDefRecorder.NavExitProc(Sender: TObject);
+begin
+  if (Mode = rm_listen) and (CurrentMetier = m_spell) then GrammarsDisable
+end;
+
+procedure TCustomDefRecorder.ExitEliteProc(Sender: TObject);
+begin
+  if Mode = rm_listen then NoneActivate
+end;
+
 { TCustomNewRecorder }
 
 procedure TCustomNewRecorder.Recognition(ASender: TObject;
@@ -1159,6 +1301,7 @@ var
       gt_switch,
       gt_fumier,
       gt_spell,
+      gt_pause,
       gt_elite  : Result := QuoteFix(Speech.PhraseInfo.GetText(0,-1, True));
       gt_gauss  : Result := TSMLCalcul.Operation(SML);
     end;
@@ -1191,6 +1334,7 @@ var
     case GSender of  //A-G
       gt_switch,
       gt_spell,
+      gt_pause,
       gt_elite  : Result := FTaux > Params.CeilSwitch;
       gt_fumier : Result := FTaux > Params.CeilFumier;
       gt_gauss  : Result := FTaux > Params.CeilGauss;
@@ -1215,31 +1359,12 @@ begin
     FOnBuildHypothesis(Self, QuoteFix(Result.PhraseInfo.GetText(0,-1, True)) )
 end;
 
-var
-  S : string =
-   '<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="fr-FR">'#10#13 +
-     '<voice name="fr-FR-DeniseNeural">'#10#13 +
-       '<prosody rate="+18.00%">'#10#13 +                      
-          'Maintnant c''est à jour ! Raoul va s''relancer'#10#13 +
-       '</prosody>'#10#13 +
-     '</voice>'#10#13 +
-   '</speak>';
-
-  S2 : string =
-   '<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="fr-FR">'#10#13 +
-     '<voice name="fr-FR-DeniseNeural">'#10#13 +
-       '<prosody rate="+10.00%">'#10#13 +
-          'je suis prêt'#10#13 +
-       '</prosody>'#10#13 +
-     '</voice>'#10#13 +
-   '</speak>';
-
-
 procedure TCustomNewRecorder.ComomnInitialization;
 begin
-  if KeyReadBoolean(AppKey, 'GrammarUpdated') then TSpeaker.TalkNP(S)
-    else TSpeaker.TalkNP(S2);
-                                                                                        
+  if KeyReadBoolean(AppKey, 'GrammarUpdated')
+    then TalkFmt(18,0, 'Maintnant c''est à jour ! Raoul va s''relancer')
+    else TalkFmt(10,0, 'je suis prêt');
+
   Listen         := True;
   State          := srs_active;
   Mode           := rm_sleep;
@@ -1376,6 +1501,7 @@ begin
     2 : Result := gt_gauss;
     3 : Result := gt_spell;
     4 : Result := gt_elite;
+    5 : Result := gt_pause;
     else raise Exception.Create('nom de grammaire inconnue');
   end
 end;
@@ -1579,6 +1705,7 @@ begin //A-G
     gt_gauss  : TGramFactories.GaussProcess  (SML, ThRecorder);
     gt_spell  : TGramFactories.SpellProcess  (SML, ThRecorder);
     gt_elite  : TGramFactories.EliteProcess  (SML, ThRecorder);
+    gt_pause  : TGramFactories.PauseProcess  (SML, ThRecorder); 
   end;
 end;
 
@@ -1614,6 +1741,7 @@ begin
     GaussFinalize;
     SpellFinalize;
     EliteFinalize;
+    PauseFinalize
   finally
     Free
   end
@@ -1650,6 +1778,7 @@ begin
     GaussInitialize;
     SpellInitialize;
     EliteInitialize;
+    PauseInitialize
   finally
     Free
   end
@@ -1663,7 +1792,18 @@ end;
 procedure TThreadManager.MacrosInitialize;
 begin
   PileMacros := TStrFifoStack.Create;
-  ThMacros   := TStrFifoThread.Create( PileMacros, Recorder, gt_switch );
+  ThMacros   := TStrFifoThread.Create( PileMacros, Recorder, gt_switch )
+end;
+
+procedure TThreadManager.PauseFinalize;
+begin
+  ThPause.Terminate;
+end;
+
+procedure TThreadManager.PauseInitialize;
+begin
+  PilePause  := TStrFifoStack.Create;
+  ThPause    := TStrFifoThread.Create( PilePause, Recorder, gt_pause )
 end;
 
 procedure TThreadManager.SpellFinalize;
@@ -1674,7 +1814,7 @@ end;
 procedure TThreadManager.SpellInitialize;
 begin
   PileSpell  := TStrFifoStack.Create;
-  ThSpell    := TStrFifoThread.Create( PileSpell, Recorder, gt_spell );
+  ThSpell    := TStrFifoThread.Create( PileSpell, Recorder, gt_spell )
 end;
 
 { TLocalStack }
@@ -1687,13 +1827,14 @@ begin //A-D
     gt_gauss  : Result := TLocalStack.GaussAdd(ASt);
     gt_spell  : Result := TLocalStack.SpellAdd(ASt);
     gt_elite  : Result := TLocalStack.EliteAdd(ASt);
+    gt_pause  : Result := TLocalStack.PauseAdd(ASt);
     else Result := -1  
   end
 end;
 
 class function TLocalStack.EliteAdd(const ASt: string): Integer;
 begin
-  with PileElite do Result := Poke(ASt);
+  with PileElite do Result := Poke(ASt)
 end;
 
 class function TLocalStack.FumierAdd(const ASt: string): Integer;
@@ -1709,6 +1850,11 @@ end;
 class function TLocalStack.MacrosAdd(const ASt: string): Integer;
 begin
   with PileMacros do Result := Poke(ASt)
+end;
+
+class function TLocalStack.PauseAdd(const ASt: string): Integer;
+begin
+  with PilePause do Result := Poke(ASt)
 end;
 
 class function TLocalStack.SpellAdd(const ASt: string): Integer;
@@ -1733,8 +1879,8 @@ begin
   Current := TMetiers( KeyReadInt(BufferKey, 'IndexMetier') );
   if Current = m_elite then begin
     LTag := TSMLConfiance.TagStr( SML );
-    ThElite.ThEliteManager.SetTags( LTag );
-  end;
+    ThElite.ThEliteManager.SetTags( LTag )
+  end
 end;
 
 class procedure TGramFactories.FumierProcess(const SML: string;
@@ -1772,7 +1918,39 @@ end;
 
 procedure TGramFactories.GaussProcess_(const SML: string; const ARecorder: TNewRecorder);
 begin
-  //TODO
+  
+end;
+
+class procedure TGramFactories.PauseProcess(const SML: string;
+  const ARecorder: TNewRecorder);
+begin
+  with TGramFactories.Create do try PauseProcess_(SML, ARecorder) finally Free end
+end;
+
+procedure TGramFactories.PauseProcess_(const SML: string;
+  const ARecorder: TNewRecorder);
+begin
+  with ARecorder do
+  try
+    case TSMLConfiance.Tag( SML ) of
+      901 : if (Mode = rm_listen) and (TSMLConfiance.Confidence(SML) > 0.92) then
+              case PrevMetier of
+                m_fumier  : FumierActivate;
+                m_gauss   : GaussActivate;
+                m_spell   : SpellActivate;
+                m_elite   : EliteActivate;
+                else NoneActivate
+              end;
+      { --- fun comments }
+      1001 : if (Mode = rm_listen) and (CurrentMetier <> m_elite) then TFunTalk.NightMare;
+      1002 : if (Mode = rm_listen) and (CurrentMetier <> m_elite) then TFunTalk.ThankYou;
+      1003 : if (Mode = rm_listen) and (CurrentMetier <> m_elite) then TFunTalk.Meteo;
+      1004 : if (Mode = rm_listen) and (CurrentMetier <> m_elite) then TFunTalk.Meteo_we;
+      1005 : if (Mode = rm_listen) and (CurrentMetier <> m_elite) then TFunTalk.OkGoogle;
+      1006 : if (Mode = rm_listen) and (CurrentMetier <> m_elite) then TFunTalk.ThankMission;
+    end
+  finally
+  end
 end;
 
 class procedure TGramFactories.SpellProcess(const SML: string;
@@ -1786,11 +1964,8 @@ procedure TGramFactories.SpellProcess_(const SML: string;
 begin
   with ARecorder do
   try
-    case TSMLConfiance.Tag( SML ) of
-      0   : ToKeyBoard(TSMLConfiance.Text(SML));
-      1   : Mode := rm_sleep;
-      301 : if Mode = rm_listen then if CurrentMetier = m_spell then GrammarsDisable;
-    end
+//    if TSMLConfiance.Confidence(SML) > 0.89 then
+    with TSMLConfiance do TShortCutStacked.Execute( TagStr( SML ), Confidence(SML) )
   except
   end
 end;
@@ -1875,9 +2050,19 @@ begin
       609 : if Mode = rm_listen then RaoulIntVumetreHideActivate;
 
       700 : if Mode = rm_listen then EliteActivate;
-      701 : if Mode = rm_listen then NoneActivate;
 
-      800 : RaoulRelaunching; 
+      800 : RaoulRelaunching;
+
+      900 : if Mode = rm_listen then PauseActivate;
+      901 : if Mode = rm_listen then NoneActivate;
+
+      { --- fun comments }
+      1001 : if (Mode = rm_listen) and (CurrentMetier <> m_elite) then TFunTalk.NightMare;
+      1002 : if (Mode = rm_listen) and (CurrentMetier <> m_elite) then TFunTalk.ThankYou;
+      1003 : if (Mode = rm_listen) and (CurrentMetier <> m_elite) then TFunTalk.Meteo;
+      1004 : if (Mode = rm_listen) and (CurrentMetier <> m_elite) then TFunTalk.Meteo_we;
+      1005 : if (Mode = rm_listen) and (CurrentMetier <> m_elite) then TFunTalk.OkGoogle;
+      1006 : if (Mode = rm_listen) and (CurrentMetier <> m_elite) then TFunTalk.ThankMission;
     end
   except
   end
@@ -2151,4 +2336,190 @@ begin
   while Assigned(X) and not (X is TForm) do X := X.Owner;
   if Assigned(X) and (X is TForm) then Result := TForm(X);
 end;
+{ TFunTalk }
+
+function TFunTalk.GetAleaMeteo: Integer;
+begin
+  Result := KeyReadInt(ParamKey, 'AleaMeteo')
+end;
+
+function TFunTalk.GetAleaNightMare: Integer;
+begin
+  Result := KeyReadInt(ParamKey, 'AleaNightMare')
+end;
+
+function TFunTalk.GetMeteaoAsked: Boolean;
+begin
+  Result := KeyReadBoolean(ParamKey, 'MeteaoAsked')
+end;
+
+class procedure TFunTalk.Initialize;
+begin
+  with TFunTalk.Create do
+  try
+    MeteaoAsked := False
+  finally
+    Free
+  end
+end;
+
+class procedure TFunTalk.Meteo;
+begin
+  with TFunTalk.Create do try Meteo_ finally Free end
+end;
+
+procedure TFunTalk.Meteo_;
+var
+  Ran : Integer;
+begin
+  Randomize;
+  with Recorder do begin
+    MeteaoAsked := True;
+    Ran := Trunc( Random(3) );
+    if Ran = AleaMeteo then Ran := (Ran + 1) mod (3);
+    AleaMeteo := Ran;
+    case Ran of
+      0 : TalkFmt(20, 15, 'demande à google', -8, -10, 'lui il n''a qu''ça à fouttre!!!');
+      1 : TalkFmt(25, 10, 'la météo aujourd''hui!!!', -5, -15, 'facile, ouvr ta fnêtre!!!');
+      2 : TalkFmt(25,  5, 'passe ta tête dehors', -5, -3, 'et tu verras!!!');
+    end
+  end;
+end;
+
+class procedure TFunTalk.Meteo_we;
+begin
+  with TFunTalk.Create do try Meteo_we_ finally Free end
+end;
+
+procedure TFunTalk.Meteo_we_;
+var                                                                
+  Ran : Integer;
+begin
+  Randomize;
+  with Recorder do begin
+    MeteaoAsked := True;
+    Ran := Trunc( Random(3) );
+    if Ran = AleaMeteo then Ran := (Ran + 1) mod (3);
+    AleaMeteo := Ran;
+    case Ran of
+      0 : TalkFmt(20, 15, 'j''en ai rien à battre!!!', -10, -6, 'de toute façon j''bouge jamais!!!');
+      1 : TalkFmt(25, 10, 'la météo du week-end!!!', -5, -15, 'certainement pourri, comme ma prévision!!!');
+      2 : TalkFmt(10,  5, 't''as pa une question plus intelligente ?');
+    end
+  end
+end;
+
+class procedure TFunTalk.NightMare;
+begin
+  with TFunTalk.Create do try NightMare_ finally Free end
+end;
+
+procedure TFunTalk.NightMare_;
+var
+  Ran : Integer;
+begin
+  Randomize;
+  with Recorder do begin
+    Ran := Trunc( Random(5) );
+    if Ran = AleaNightMare then Ran := (Ran + 1) mod (5);
+    AleaNightMare := Ran;
+    case Ran of
+      0 : TalkFmt(38, -8, 'petite nature ?');
+      2 : TalkFmt(15, -5, 'et bin mon pépère ?', 30, 30, 'il a peur ?');
+      4 : TalkFmt(68, 85, 'il a les chocottes, la chochotte ?');
+    end
+  end
+end;
+
+class procedure TFunTalk.OkGoogle;
+begin
+  with TFunTalk.Create do try OkGoogle_ finally Free end
+end;
+
+procedure TFunTalk.OkGoogle_;
+var
+  Ran : Integer;
+begin
+  Randomize;
+  with Recorder do begin
+    Ran := Trunc( Random(3) );
+    if Ran = AleaMeteo then Ran := (Ran + 1) mod (3);
+    AleaMeteo := Ran;
+    case Ran of
+      0 : TalkFmt(12, 10, 'tu sais pas quoi ?', -9, -8, 'Google sait pas jouer à élite !!!');
+      1 : TalkFmt(25, 35, 'Ok Google ? Ok gougou gueule ?', -35, -20, 'OK gou gougoug gueule !');
+      2 : TalkFmt(15, 10, 'Il est pas là ! ', -25, -7, 'pa Ok Google !');
+    end
+  end
+end;
+
+procedure TFunTalk.SetAleaMeteo(const Value: Integer);
+begin
+  KeyWrite(ParamKey, 'AleaMeteo', Value)
+end;
+
+procedure TFunTalk.SetAleaNightMare(const Value: Integer);
+begin
+  KeyWrite(ParamKey, 'AleaNightMare', Value)
+end;
+
+procedure TFunTalk.SetMeteaoAsked(const Value: Boolean);
+begin
+  KeyWrite(ParamKey, 'MeteaoAsked', Value)
+end;
+
+class procedure TFunTalk.ThankMission;
+begin
+  with TFunTalk.Create do try ThankMission_ finally Free end
+end;
+
+procedure TFunTalk.ThankMission_;
+var
+  Ran : Integer;
+begin
+  Randomize;
+  with Recorder do begin
+    Ran := Trunc( Random(5) );
+    if Ran = AleaNightMare then Ran := (Ran + 1) mod (5);
+    AleaNightMare := Ran;
+    case Ran of
+      0 : TalkFmt(12, 10, 'dis plutôt', -9, -8, 'j''me suis bien gavé sur vot''dos !!!');
+      2 : TalkFmt(25, 35, 'tu l''penses vraiment ?', -20, -20, 'moi j''chui pas sûr !');
+      4 : TalkFmt(15,  5, 'tu deviens poli ? ', -5, 10, 'alors là, je dis chapeau ba !');
+    end
+  end
+end;
+
+class procedure TFunTalk.ThankYou;
+begin
+  with TFunTalk.Create do try ThankYou_ finally Free end
+end;
+
+procedure TFunTalk.ThankYou_;
+var
+  Ran : Integer;
+begin
+  Randomize;
+  with Recorder do if MeteaoAsked then begin
+      Ran := Trunc( Random(3) );
+      if Ran = AleaMeteo then Ran := (Ran + 1) mod (3);
+      AleaMeteo := Ran;
+      case Ran of
+        0 : TalkFmt(20, 5,  'toujours un plaisir de t''aider');
+        1 : TalkFmt(10, 5,  'de rien');
+        2 : TalkFmt(15, 10, 'ioure ouelle comme');
+      end;
+      MeteaoAsked := False;
+    end else begin
+      Ran := Trunc( Random(5) );
+      if Ran = AleaNightMare then Ran := (Ran + 1) mod (5);
+      AleaNightMare := Ran;
+      case Ran of
+        0 : TalkFmt(10, 5,  'de rien');
+        2 : TalkFmt(25, 15, 'la politesse, ça fait plaisir!!!');
+        4 : TalkFmt(15, 10, 'ioure ouelle comme');
+      end
+    end
+end;
+
 end.

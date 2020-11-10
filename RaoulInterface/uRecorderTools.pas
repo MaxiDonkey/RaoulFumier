@@ -158,7 +158,7 @@ begin
     with GetEnumerator do
     try
       while MoveNext do if Current = 'null' then Break else ProcessOnKey( Current )
-      //soumettre à option 
+      //soumettre à option
     finally
       Free
     end

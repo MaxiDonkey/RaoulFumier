@@ -155,7 +155,7 @@ begin
     except
     end;
   finally
-    Free;
+    Free
   end;
 end;
 

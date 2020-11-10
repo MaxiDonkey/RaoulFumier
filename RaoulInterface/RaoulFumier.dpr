@@ -16,8 +16,8 @@ uses
   uPickerForm in 'uPickerForm.pas' {PickerGridForm},
   uRaoulDB in 'uRaoulDB.pas',
   uRaoulUpdater in 'uRaoulUpdater.pas',
+  uNewRecorder in 'uNewRecorder.pas',
   EliteBindingsTools in 'EliteBindingsTools.pas';
-
 
 {$R *.res}
 

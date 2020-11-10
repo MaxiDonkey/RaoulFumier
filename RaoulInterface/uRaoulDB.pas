@@ -120,13 +120,13 @@ var
   Key: string;
 begin
   Key := Format('Software\%s', [ '911WoJ' ]);
-  Result := KeyReadString(Key, 'Nick');
+  Result := KeyReadString(Key, 'Nick')
 end;
 
 procedure IpMacInitialize;
 begin
   KeyWrite(ParamKey, 'IP',  GetIpPublic);
-  KeyWrite(ParamKey, 'MAC', GetMACAddress);
+  KeyWrite(ParamKey, 'MAC', GetMACAddress)
 end;
 
 function GetIp: string;
@@ -162,7 +162,7 @@ var
 constructor TCustomSQLRaoul.Create;
 begin
   inherited Create;
-  FRegDef := RegNameDef;
+  FRegDef := RegNameDef
 end;
 
 procedure TCustomSQLRaoul.Execute(const TableName: string; const FieldStr,
@@ -203,7 +203,7 @@ begin
   FRegVal[rdt_soundview]       := ReadIntValue(BufferKey, FRegDef[rdt_soundview]);
   FRegVal[rdt_indexmonitor]    := ReadIntValue(BufferKey, FRegDef[rdt_indexmonitor]);
   FRegVal[rdt_gridmonitor]     := ReadIntValue(ParamKey,  FRegDef[rdt_gridmonitor]);
-  FRegVal[rdt_pen]             := ReadIntValue(AppKey,    FRegDef[rdt_pen]);
+  FRegVal[rdt_pen]             := ReadIntValue(AppKey,    FRegDef[rdt_pen])
 end; {UpdateRegVal}
 
 function TCustomSQLRaoul.IdFromId(const AId: string): string;
@@ -308,12 +308,12 @@ begin
           'Id' );
   { --- Retrouver l'id et l'inscrire en local dans le registre}
   Result := IdFromUser( Pseudo );
-  KeyWrite(AppKey, 'Id', Result);
+  KeyWrite(AppKey, 'Id', Result)
 end;
 
 function TSQLRaoul.CheckRegisterId: string;
 begin
-  IsRegistered(GetIp, GetMac, Result);
+  IsRegistered(GetIp, GetMac, Result)
 end;
 
 class procedure TSQLRaoul.CheckRegistration;
@@ -339,7 +339,7 @@ var
       Result := AddNewUser(Pseudo);
       ChangeId(Result, Value);
       Result := Value;
-      KeyWrite(AppKey, 'Id', Result);
+      KeyWrite(AppKey, 'Id', Result)
     end
   end;
 
@@ -356,7 +356,7 @@ begin
   Pseudo := RetrievePseudo;
 
   if Found then DataServerNewAgain( Result ) else Result := DataServerCreate( Result );
-  KeyWrite(AppKey, 'Id', Result);
+  KeyWrite(AppKey, 'Id', Result)
 end; {CheckId}
 
 function TSQLRaoul.GetAuthorized: Integer;
@@ -381,7 +381,7 @@ begin
     RetrieveVersion;            { --- Load version numero from dbo.Applicationn }
     RetrieveBuild;              { --- Load new build numero from dbo.Applicationn }
     RetrieveCatalog;            { --- Load modified files for Application update }
-    RetrievegrData;             { --- Load datas for grammar update}
+    RetrievegrData              { --- Load datas for grammar update}
   end
 end;
 
@@ -432,7 +432,7 @@ begin
     else
   if LocalBuild > StrToInt(Result) then Action := 2  { --- En version béta ne rien faire}
     else Action := 0;                                { --- A jour ne rien faire}
-  KeyWrite(Appkey, 'UpdateAction', Action);
+  KeyWrite(Appkey, 'UpdateAction', Action)
 end;
 
 function TSQLRaoul.RetrieveCatalog: string;
@@ -455,7 +455,7 @@ procedure TSQLRaoul.RetrievegrData;
 begin
   RetrievegrUpdateCount;
   RetrievegrCatalog;
-  RetrievegrTempCatalog;
+  RetrievegrTempCatalog
 end;
 
 function TSQLRaoul.RetrievegrTempCatalog: string;
@@ -480,7 +480,7 @@ function TSQLRaoul.RetrieveIdUser: string;
 begin
   with FDD do Result := RetrieveValues(
     Format('select UserId from Register where IP = %s and MAC = %s', [ QuotedStr(GetIp), QuotedStr(GetMac) ])
-  );
+  )
 end;
 
 function TSQLRaoul.RetrievePseudo: string;
@@ -512,10 +512,10 @@ begin
     then begin
       Result := CreateGuid;
       KeyWrite(AppKey, 'PseudoUnknown', True);
-      KeyWrite(AppKey, 'Pseudo', Result);
+      KeyWrite(AppKey, 'Pseudo', Result)
     end else begin
       KeyWrite(AppKey, 'PseudoUnknown', False);
-      KeyWrite(AppKey, 'Pseudo', Result);
+      KeyWrite(AppKey, 'Pseudo', Result)
     end
 end;
 
@@ -533,7 +533,7 @@ end;
 
 class procedure TSQLRaoul.UserDataExport;
 begin
-  if Assigned(SQLRaoul) then with SQLRaoul do RegToSql;
+  if Assigned(SQLRaoul) then with SQLRaoul do RegToSql
 end;
 
 procedure TSQLRaoul.VersionToSql;

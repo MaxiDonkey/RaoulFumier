@@ -160,6 +160,7 @@ begin
     m_fumier : CommandText := 'Conversation à l''écoute';
     m_gauss  : CommandText := 'Calcul à l''écoute';
     m_spell  : CommandText := 'Navigation à l''écoute';
+    m_pause  : CommandText := 'Pause';
     m_elite  : begin
        CommandText := 'Ok Commander';
        if IsEliteRunning then EliteForeGround;

@@ -15,12 +15,13 @@ running processes and access to the *Windows* taskbar.
 This software is strongly recommended in addition to the **EDTaupeEye** software (https://github.com/MaxiDonkey/EDTaupeEye) 
 to fully benefit from the commands of Elite Dangerous and thus allow people with disabilities to continue 
 the great adventure offered by *Frontier* through from *Elite Dangerous*.
-s
+
 **RaoulFumier** also allows text entry into the game through the use of the *NATO* alphabet thus allowing 
 the entry of messages to other commanders in the communication panel or the entry of the names of 
 the systems in the card of the galaxy.
 
-Since this first version of the software is only available for the French language, the rest of this document will be drafted temporarily in French.
+Since this first version of the software is only available for the French language, the rest of this document will be drafted 
+temporarily in French.
 
 
 ## Résumé
