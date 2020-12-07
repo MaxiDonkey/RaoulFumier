@@ -16,6 +16,7 @@ object MainForm: TMainForm
   OldCreateOrder = False
   OnActivate = FormActivate
   OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
@@ -42,5 +43,23 @@ object MainForm: TMainForm
     OnPrepare = DistantDataPrepare
     Left = 24
     Top = 88
+  end
+  object ActionList1: TActionList
+    Left = 72
+    Top = 56
+  end
+  object BootDelayed: TTimer
+    Enabled = False
+    Interval = 10000
+    OnTimer = BootDelayedTimer
+    Left = 24
+    Top = 120
+  end
+  object BootFinalize: TTimer
+    Enabled = False
+    Interval = 4000
+    OnTimer = BootFinalizeTimer
+    Left = 24
+    Top = 152
   end
 end

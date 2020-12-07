@@ -40,17 +40,7 @@ Name: desktopicon; Description: {cm:CreateDesktopIcon}; GroupDescription: {cm:Ad
 Source: ..\bin\RaoulFumier.exe; DestDir: {app}; Flags: ignoreversion; Tasks: ; Languages: 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 Source: ..\bin\Raoul.exe; DestDir: {app}; Tasks: ; Languages: ; Flags: 32bit
-Source: ..\bin\Grammar\gr_actions.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gr_adverbes.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gr_clauses.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gr_custom.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gr_custom.grxml; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gr_fix.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gr_insult.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gr_link.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gr_main.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gr_metier.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gr_temps.cfg; DestDir: {app}\Grammar
+Source: ..\bin\Grammar\Elite.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\gram1_0.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\gram2.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\gram2_0.cfg; DestDir: {app}\Grammar
@@ -77,11 +67,31 @@ Source: ..\bin\Grammar\gram3_11.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\gram3_12.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\gram4_0.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\gram5_0.cfg; DestDir: {app}\Grammar
+Source: ..\bin\Grammar\gr_actions.cfg; DestDir: {app}\Grammar
+Source: ..\bin\Grammar\gr_adverbes.cfg; DestDir: {app}\Grammar
+Source: ..\bin\Grammar\gr_clauses.cfg; DestDir: {app}\Grammar
+Source: ..\bin\Grammar\gr_custom.cfg; DestDir: {app}\Grammar
+Source: ..\bin\Grammar\gr_custom.grxml; DestDir: {app}\Grammar
+Source: ..\bin\Grammar\gr_fix.cfg; DestDir: {app}\Grammar
+Source: ..\bin\Grammar\gr_insult.cfg; DestDir: {app}\Grammar
+Source: ..\bin\Grammar\gr_link.cfg; DestDir: {app}\Grammar
+Source: ..\bin\Grammar\gr_main.cfg; DestDir: {app}\Grammar
+Source: ..\bin\Grammar\gr_metier.cfg; DestDir: {app}\Grammar
+Source: ..\bin\Grammar\gr_temps.cfg; DestDir: {app}\Grammar
+Source: ..\bin\Grammar\Numbers.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\Numeration.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\switch.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\Spelling.cfg; DestDir: {app}\Grammar
+Source: ..\bin\Grammar\switch.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\_Spelling.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\Elite.cfg; DestDir: {app}\Grammar
+Source: ..\bin\Grammar\Pause.cfg; DestDir: {app}\Grammar
+Source: ..\bin\Grammar\Gridmode.cfg; DestDir: {app}\Grammar
+Source: ..\bin\Grammar\help.cfg; DestDir: {app}\Grammar
+Source: ..\bin\Help\EliteRoot.roo; DestDir: {app}\Help
+Source: ..\bin\Help\EliteRubriks.dat; DestDir: {app}\Help
+Source: ..\bin\Help\MainRoot.roo; DestDir: {app}\Help
+Source: ..\bin\Help\MainRubriks.dat; DestDir: {app}\Help
+Source: ..\bin\Help\NavRoot.roo; DestDir: {app}\Help
+Source: ..\bin\Help\NavRubriks.dat; DestDir: {app}\Help
 
 [Icons]
 Name: {commonprograms}\{#MyAppName}; Filename: {app}\{#MyAppExeName}

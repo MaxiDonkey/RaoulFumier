@@ -6,6 +6,7 @@ uses
   Dialogs,
   uDosUtils,
   main in 'main.pas' {MainForm},
+  uHelpDlg in 'uHelpDlg.pas' {HelpDlg},
   uRaoulDisplay in 'uRaoulDisplay.pas',
   DisplayTextForm in 'DisplayTextForm.pas' {TalkativeBox},
   ScreenDlg in 'ScreenDlg.pas' {ScreenDialog},
@@ -17,7 +18,10 @@ uses
   uRaoulDB in 'uRaoulDB.pas',
   uRaoulUpdater in 'uRaoulUpdater.pas',
   uNewRecorder in 'uNewRecorder.pas',
-  EliteBindingsTools in 'EliteBindingsTools.pas';
+  EliteBindingsTools in 'EliteBindingsTools.pas',
+  uEliteUtils in 'uEliteUtils.pas',
+  uEliteHelp in 'uEliteHelp.pas',
+  uSplashWaitForm in 'uSplashWaitForm.pas' {SplashWaitForm};
 
 {$R *.res}
 
@@ -38,6 +42,7 @@ begin
   Application.CreateForm(TEmbendedDlg, EmbendedDlg);
   Application.CreateForm(TEmbendedSensibility, EmbendedSensibility);
   Application.CreateForm(TPickerGridForm, PickerGridForm);
+  Application.CreateForm(THelpDlg, HelpDlg);
   Application.Run;
   end
 end.

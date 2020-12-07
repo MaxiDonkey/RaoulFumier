@@ -44,3 +44,6 @@ Numeration.cfg
 Spelling.cfg
 switch.cfg
 _Spelling.cfg
+Pause.cfg
+Gridmode.cfg
+help.cfg

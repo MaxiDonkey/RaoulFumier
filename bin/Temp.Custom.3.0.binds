@@ -498,7 +498,7 @@
 		<Deadzone Value="0.00000000" />
 	</RadarRangeAxis>
 	<RadarIncreaseRange>
-		<Primary Device="SaitekX56Joystick" Key="Joy_POV1Up" />
+		<Primary Device="{NoDevice}" Key="" />
 		<Secondary Device="Keyboard" Key="Key_E">
 			<Modifier Device="Keyboard" Key="Key_RightControl" />
 		</Secondary>
@@ -1309,11 +1309,11 @@
 	<OrderFocusTarget>
 		<Primary Device="{NoDevice}" Key="" />
 		<Secondary Device="Keyboard" Key="Key_Numpad_6">
-			<Modifier Device="Keyboard" Key="Key_LeftAlt"/>
+			<Modifier Device="Keyboard" Key="Key_LeftAlt" />
 		</Secondary>
 	</OrderFocusTarget>
 	<OrderHoldFire>
-		<Primary Device="Mouse" Key="Mouse_1" />
+		<Primary Device="{NoDevice}" Key="" />
 		<Secondary Device="Keyboard" Key="Key_O">
 			<Modifier Device="Keyboard" Key="Key_LeftControl" />
 			<Modifier Device="Keyboard" Key="Key_LeftAlt" />

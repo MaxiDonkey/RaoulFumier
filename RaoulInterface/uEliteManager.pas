@@ -168,7 +168,9 @@ type
     procedure Left(index: Byte; tms: Integer = 0);
     procedure Right(index: Byte; tms: Integer = 0);
     procedure UISelect;
+  public
     procedure UIBack;
+  private
     procedure CloseCarte;
     procedure NextSheet(index: Byte);
     procedure PriorSheet(index: Byte);
@@ -319,6 +321,8 @@ var
 implementation
 
 uses
+  uEliteUtils,
+  uNewRecorder,
   { --- Pour gérer la saisie des textes
         SendKey(iKey: Smallint; Tms: Cardinal; Specials: TSpecials = []); }
   SendKey32;
@@ -477,7 +481,8 @@ begin
     31    : Left(1);
     32    : Right(1);
     33    : UISelect;
-    34    : UIBack;
+    { --- Retour : if grid opened do back on grid else uiback }
+    34    : with Recorder do if IsGridOpened then RetourActivate else UIBack;
     10341 : CloseCarte;
     35    : NextSheet(1);
     10352 : NextSheet(2);
@@ -495,9 +500,9 @@ begin
     113   : DriveAssist;
     114   : TurnLeft(500);
     115   : TurnRight(500);
-    116   : FKeyInventory.KeyTrigger_( 'BuggyRollLeftButton', WITH_KEYUP);      //NA
+    116   : FKeyInventory.KeyTrigger_( 'BuggyRollLeftButton',  WITH_KEYUP);     //NA
     117   : FKeyInventory.KeyTrigger_( 'BuggyRollRightButton', WITH_KEYUP);     //NA
-    118   : FKeyInventory.KeyTrigger_( 'BuggyPitchUpButton', WITH_KEYUP);       //NA
+    118   : FKeyInventory.KeyTrigger_( 'BuggyPitchUpButton',   WITH_KEYUP);     //NA
     119   : FKeyInventory.KeyTrigger_( 'BuggyPitchDownButton', WITH_KEYUP);     //NA
     120   : VerticalThruster(500);
     121   : VRSPrimaryFire;
@@ -519,9 +524,9 @@ begin
     134   : PropulsionAcceleration(200);
     135   : PropulsionDeceleration(200);
     {*** CONDUITE DIVERS; 1056-1099}
-    136   : FKeyInventory.KeyTrigger_( 'IncreaseEnginesPower_Buggy', WITH_KEYUP);    //NA
-    137   : FKeyInventory.KeyTrigger_( 'IncreaseWeaponsPower_Buggy', WITH_KEYUP);    //NA
-    138   : FKeyInventory.KeyTrigger_( 'IncreaseSystemsPower_Buggy', WITH_KEYUP);    //NA
+    136   : FKeyInventory.KeyTrigger_( 'IncreaseEnginesPower_Buggy',   WITH_KEYUP);  //NA
+    137   : FKeyInventory.KeyTrigger_( 'IncreaseWeaponsPower_Buggy',   WITH_KEYUP);  //NA
+    138   : FKeyInventory.KeyTrigger_( 'IncreaseSystemsPower_Buggy',   WITH_KEYUP);  //NA
     139   : FKeyInventory.KeyTrigger_( 'ResetPowerDistribution_Buggy', WITH_KEYUP);  //NA
     140   : VRSCargoScoop;
     141   : VRSCargoEject;
@@ -826,7 +831,7 @@ begin
     ASt    := GetAfterStr(ASt, '.');
     Stack( Buffer )
   end;
-  if Ast <> EmptyStr then Stack( Ast );
+  if Ast <> EmptyStr then Stack( Ast )
 end; {DoWithTag}
 
 procedure TCustomEliteManager.FinalizeMutex;
@@ -2406,11 +2411,6 @@ end;
 
 { TEliteRunningObserver }
 
-function LIsEliteRunning: Boolean;
-begin
-  Result := FindWindow( PChar(ELITE_CLASS), nil ) <> 0;
-end;
-
 constructor TEliteRunningObserver.Create;
 begin
   inherited Create( False );
@@ -2429,7 +2429,7 @@ end;
 
 procedure TEliteRunningObserver.Process;
 begin
-  KeyWrite(AppKey, 'EliteLaunched', LIsEliteRunning);
+  KeyWrite(AppKey, 'EliteLaunched', IsEliteRunningUTLS);
 end;
 
 procedure TEliteRunningObserver.ThDelay(ms: Cardinal);

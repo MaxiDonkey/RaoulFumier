@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, NB30, ShellAPI;
+  Dialogs, NB30, ShellAPI, Sockets, StrCopyUtils;
 
 procedure Delay(ms: Cardinal);
 function  CreateGuid: string;
@@ -13,6 +13,9 @@ function  NullString(const Value: string):Boolean;
 
 function  GetIpPublic: string;
 function  GetMACAddress: string;
+
+function DelaySinceBoot:TTime;
+function DateTimeOfLastBoot:TDateTime;
 
 procedure OpenExecute(AppName: string; AppParams: string; Displayed: Integer = SW_SHOWDEFAULT);
 
@@ -29,7 +32,7 @@ var
 implementation
 
 uses
-  ActiveX, IdHttp, Consts, StdCtrls, ExtCtrls, Math,
+  ActiveX, IdHttp, Consts, StdCtrls, ExtCtrls, Math, DateUtils,
   {dev Express}
   cxButtons;
 
@@ -73,17 +76,16 @@ function GetIpPublic: string;
 var
   AUrl: string;
 begin
-  AUrl  := 'http://dynupdate.no-ip.com/ip.php';
+  Result := EmptyStr;
+  AUrl   := 'http://ipinfo.io/json';
   with TIdHTTP.Create(nil) do
-  try
     try
       Result := Get(AUrl);
-    except
-      Result := EmptyStr;
-    end 
-  finally
-    Free
-  end;
+      Result := GetAfterStr(Result, 'ip": "');
+      Result := GetBeforStr(Result, '"')
+    finally
+      Free
+    end
 end;
 
 
@@ -116,7 +118,7 @@ begin
   NCB.ncb_length := SizeOf(Adapter);
   if Netbios(@NCB) <> Char(NRC_GOODRET) then begin
     Result := 'mac not found';
-    Exit;
+    Exit
   end;
   
   Result :=
@@ -151,6 +153,16 @@ begin
   end;
 end;
 
+
+function DelaySinceBoot:TTime;
+begin
+  Result := GetTickCount / ( 24 * 3600 * 1000 )
+end;
+
+function DateTimeOfLastBoot:TDateTime;
+begin
+  Result := Now - DelaySinceBoot
+end;
 
 {------------------------------------------------------------------------------}
 

@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, uRaoulDisplay, ExtCtrls,
+  Dialogs, StdCtrls, uRaoulDisplay, ExtCtrls, ActnList, ClipBrd,
   {dos utilities}
   uDosUtils,
 
@@ -21,7 +21,10 @@ uses
   uSQLTransaction, uRaoulDB,
 
   {Elite bindings}
-  EliteBindingsTools;
+  EliteBindingsTools,
+
+  {Help}
+  uEliteHelp, uHelpDlg;
 
 
 type
@@ -29,6 +32,12 @@ type
     RaoulKeys: TButton;
     DelayedStart: TTimer;
     DistantData: TDistantData;
+    ActionList1: TActionList;
+    BootDelayed: TTimer;
+    BootFinalize: TTimer;
+    procedure BootFinalizeTimer(Sender: TObject);
+    procedure BootDelayedTimer(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure DistantDataPrepare(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -40,6 +49,8 @@ type
     procedure KeyBack(Sender: TObject);
     procedure KeyReturn(Sender: TObject);
     procedure KeyCtrlReturn(Sender: TObject);
+    function GetCanCloseIdx: Integer;
+    procedure SetCanCloseIdx(const Value: Integer);
 
   private
     FStarter: Boolean;
@@ -48,6 +59,8 @@ type
   public
     procedure AssignKeyFun;
     procedure ForegroundDisplay;
+
+    property CanCloseIdx: Integer read GetCanCloseIdx write SetCanCloseIdx;
   end;
 
 var
@@ -91,10 +104,13 @@ begin
   with ToolsDisplay do KeyInitialize( RaoulKeys );
   TFunctionment.Initialize;                      { --- Initialisattion de la factory }
   TFunTalk.Initialize;
+  CanCloseIdx := 0;
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
+  { --- Reload Help files if not boot process}
+  with THelpDlg do if not RetrieveBootProcess then HelpReload;
   { --- EliteBindings Finalize initialization }
   try
     TKeyInventory.Initialize;
@@ -118,6 +134,7 @@ end;
 procedure TMainForm.KeyBack(Sender: TObject);
 begin
   {for tests pré-peoduction }
+
   //if Assigned(AppCloseFunc) then AppCloseFunc(nil)
 end;
 
@@ -150,7 +167,10 @@ begin
       PostInitialize;
       CommandText := 'En sommeil'
     end;
-  end;
+    { --- Help prepare if not Boot process }
+    with THelpDlg do if not IsBootProcess then HelpDefine
+      else BootDelayed.Enabled := True
+  end
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -189,6 +209,38 @@ begin
   if TAppUpdater.TryGrammarUpdate then TAppUpdater.TryToRelauch;
   { --- Charger la mise à jour }
   if KeyReadInt(Appkey, 'UpdateAction') = 1 then TAppUpdater.TryToLoad;
+end;
+
+function TMainForm.GetCanCloseIdx: Integer;
+begin
+  Result := KeyReadInt(ParamKey, 'CanCloseIdx')
+end;
+
+procedure TMainForm.SetCanCloseIdx(const Value: Integer);
+begin
+  KeyWrite(ParamKey, 'CanCloseIdx', Value)
+end;
+
+procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  { --- Alt+F4 sur application interdit }
+  case CanCloseIdx of
+    0 : CanClose := False else CanClose := True;
+  end
+end;
+
+procedure TMainForm.BootDelayedTimer(Sender: TObject);
+begin
+  BootDelayed.Enabled := False;
+  THelpDlg.HelpReload;
+  BootFinalize.Enabled := True
+end;
+
+procedure TMainForm.BootFinalizeTimer(Sender: TObject);
+begin
+  BootFinalize.Enabled := False;
+  THelpDlg.HelpDefine;
+  KeyWrite(AppKey, 'BootState', False)
 end;
 
 end.

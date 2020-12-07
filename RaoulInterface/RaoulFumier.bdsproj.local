@@ -40,5 +40,10 @@
     <Transaction>2020/08/03 14:57:56.800.pas,H:\2020 Developpement\RaoulInterface\uNewRecorder.pas=</Transaction>
     <Transaction>2020/08/26 10:41:33.545.pas,H:\2020 Developpement\RaoulInterface\Unit1.pas=H:\2020 Developpement\RaoulInterface\uEliteManager.pas</Transaction>
     <Transaction>2020/09/03 15:50:54.223.pas,H:\2020 Developpement\RaoulInterface\Unit1.pas=H:\2020 Developpement\RaoulInterface\uRaoulParameters.pas</Transaction>
+    <Transaction>2020/11/16 10:28:50.418.pas,H:\2020 Developpement\RaoulFumier\RaoulInterface\Unit1.pas=H:\2020 Developpement\RaoulFumier\RaoulInterface\uEliteUtils.pas</Transaction>
+    <Transaction>2020/11/23 19:20:33.167.pas,H:\2020 Developpement\RaoulFumier\RaoulInterface\Unit1.pas=H:\2020 Developpement\RaoulFumier\RaoulInterface\uHelpDlg.pas</Transaction>
+    <Transaction>2020/11/23 19:20:33.167.dfm,H:\2020 Developpement\RaoulFumier\RaoulInterface\Unit1.dfm=H:\2020 Developpement\RaoulFumier\RaoulInterface\uHelpDlg.dfm</Transaction>
+    <Transaction>2020/12/07 13:30:08.111.pas,H:\2020 Developpement\RaoulFumier\RaoulInterface\Unit1.pas=H:\2020 Developpement\RaoulFumier\RaoulInterface\uSplashWaitForm.pas</Transaction>
+    <Transaction>2020/12/07 13:30:08.111.dfm,H:\2020 Developpement\RaoulFumier\RaoulInterface\Unit1.dfm=H:\2020 Developpement\RaoulFumier\RaoulInterface\uSplashWaitForm.dfm</Transaction>
   </Transactions>
 </BorlandProject>

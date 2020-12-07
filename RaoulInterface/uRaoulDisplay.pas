@@ -6,8 +6,12 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, uRegistry, uEmbendedAncestor, uPickerForm,
   StrUtils,
+  {Help}
+  uEliteHelp,
   {vocal}
   uNewRecorder,
+  {Elite bindings}
+  uEliteManager,
   {ShortCuts}
   SendKey32,
   {versioning}
@@ -86,11 +90,13 @@ type
     procedure TextColoration(const Taux: Double; const ASt: string);
     function  isPickerGridVisible:Boolean;
     function  isPickerPointVisible:Boolean;
+    function  isEliteMode:Boolean;
 
     procedure FocusToRaoul;
     procedure ShowDialog(const Message: string; MessageType: TResponseType);
     procedure ShowSensibility;
     procedure ShowClosePanel;
+    procedure ShowHelp;
 
     property TalkativeView: Boolean read GetTalkativeView write SetTalkativeView; {REG}
     property Text: string read GetText write SetText;
@@ -198,9 +204,9 @@ var
 implementation
 
 uses
-  DisplayTextForm, ScreenDlg,
-  uEmbendedDlg, uEmbendedSensibility, cxEdit, uScreenTools,
-  {acces SQL distant}
+  Main, DisplayTextForm, ScreenDlg,
+  uEmbendedDlg, uEmbendedSensibility, cxEdit, uScreenTools, uEliteUtils,
+  {acces SQL distant}                                                         
   uRaoulDB;
 
 function ModVal(const Value: Integer; Divisor: Integer): Integer;
@@ -449,6 +455,11 @@ begin
   DisplayHoriz  := TDisplayHoriz ( KeyReadInt(BufferKey, 'AlignmentHoriz', 0 ) );
 end;
 
+function TTalkativeFacade.isEliteMode: Boolean;
+begin
+  with Recorder do Result := IsEliteMode
+end;
+
 function TTalkativeFacade.isPickerGridVisible: Boolean;
 begin
   Result := KeyReadBoolean(AppKey, 'PickerGridVisible')
@@ -551,17 +562,17 @@ procedure TTalkativeFacade.SetTryRecognize(const Value: Boolean);
 begin
   if Value then begin
     with TalkativeGreen do Visible := False;
-    with TalkativeRed   do Visible := True;
+    with TalkativeRed   do Visible := True
   end else begin
     with TalkativeGreen do Visible := True;
-    with TalkativeRed   do Visible := False;
+    with TalkativeRed   do Visible := False
   end
 end;
 
 procedure TTalkativeFacade.ShowClosePanel;
 begin
   with Recorder do ModeFonctionnement := mf_closeapp;
-  ShowDialog('Tu veux rééllement quitter Fumier ?', rt_yes_no);
+  ShowDialog('Tu veux quitter Raoul ?!!', rt_yes_no)
 end;
 
 procedure TTalkativeFacade.ShowDialog(const Message: string;
@@ -582,6 +593,12 @@ begin
   except
     raise Exception.Create('Pb : de fenêtre embarquée');
   end
+end;
+
+procedure TTalkativeFacade.ShowHelp;
+begin
+  FocusToRaoul;
+  HelpView.Show
 end;
 
 procedure TTalkativeFacade.ShowSensibility;
@@ -628,7 +645,7 @@ begin
         if isPickerGridVisible and not isPickerPointVisible then
           ScreenGrid.BackHome
       end
-    end;
+    end
   end
 end;
 
@@ -657,8 +674,11 @@ begin
   with Recorder do begin
     case ModeFonctionnement of
       mf_sensibility : ;
-      mf_closeapp    : EmbendedDlg.Hide;
-    end;
+      mf_closeapp    : begin
+          with MainForm do CanCloseIdx := 0;
+          EmbendedDlg.Hide
+      end
+    end
   end
 end;
 
@@ -668,7 +688,7 @@ begin
     case ModeFonctionnement of
       mf_sensibility : EmbendedSensibility.Hide;
       mf_closeapp    : with Application.MainForm do Close;
-    end;
+    end
   end
 end;
 
@@ -686,7 +706,11 @@ end;
 
 procedure TFunctionment.DoPickerGridClose(Sender: TObject);
 begin
-  with PickerGridForm, Grid do GridClose
+  { --- Disable Grid Grammar }
+  with Recorder do GridDeactivate;
+  { --- Hide Grid }
+  with PickerGridForm, Grid do GridClose;
+  with TalkativeFacade do if isEliteMode then EliteForeGround
 end;
 
 procedure TFunctionment.DoPickerGridGray(Sender: TObject);
@@ -735,6 +759,9 @@ end;
 
 procedure TFunctionment.DoPickerGridPointHide(Sender: TObject);
 begin
+  { --- Disable Grid Grammar }
+  with Recorder do GridDeactivate;
+  { --- Hide Points and Grid }
   if KeyReadBoolean(BufferKey, 'DirectGridOpenMode') then begin
     DoPickerGridClose(nil);
     KeyWrite(BufferKey, 'DirectGridOpenMode', False)
@@ -757,14 +784,20 @@ end;
 procedure TFunctionment.DoPickerGridPointSelect(Sender: TObject);
 begin
   with TalkativeFacade do if isPickerGridVisible and not isPickerPointVisible then
-    with PickerGridForm, Grid do GridPointSelect
+    with PickerGridForm, Grid do begin
+      with Recorder do GridDeactivate;
+      GridPointSelect
+    end
 end;
 
 procedure TFunctionment.DoPickerGridPointShow(Sender: TObject);
 begin
+  { --- Enable Grid Grammar }
+  with Recorder do GridActivate;
+  { --- Display Grid ans Points }
   with PickerGridForm, Grid do begin
     with TalkativeFacade do KeyWrite(BufferKey, 'DirectGridOpenMode', not isPickerGridVisible);
-    GridPickerMode := gm_point;    {Spécifier ici  le type d'affichage}
+    GridPickerMode := gm_point;    {  --- Specify display mode }
     with TalkativeFacade do if isPickerGridVisible then GridPointShow else PickerGridForm.Show
   end
 end;
@@ -777,9 +810,13 @@ end;
 
 procedure TFunctionment.DoPickerGridShow(Sender: TObject);
 begin
-  {Spécifier ici  le type d'affichage}
+  { --- Enable Grid Grammar }
+  with Recorder do GridActivate;
+  { --- Initialize Level for Flist }
+  ScreenGrid.ResetOnOpen;
+  { --- Spécifier ici  le type d'affichage }
   with PickerGridForm, Grid do GridPickerMode := gm_grid;
-  {Affichage du formulaire supportant la grille}
+  { --- Affichage du formulaire supportant la grille }
   PickerGridForm.Show;
 end;
 
@@ -797,8 +834,11 @@ end;
 
 procedure TFunctionment.DoRetour(Sender: TObject);
 begin
-  with TalkativeFacade do if isPickerGridVisible and not isPickerPointVisible then
-    ScreenGrid.BackLevel
+  with TalkativeFacade do
+    if isPickerGridVisible and not isPickerPointVisible
+      then ScreenGrid.BackLevel
+      else
+    if isEliteMode then EliteManager.UIBack
 end;
 
 procedure TFunctionment.DoSensibility(Sender: TObject);
@@ -811,8 +851,11 @@ begin
   with Recorder do begin
     case ModeFonctionnement of
       mf_sensibility : ;
-      mf_closeapp    : with Application.MainForm do Close;
-    end;
+      mf_closeapp    : with MainForm do begin
+        CanCloseIdx := 1;
+        Close
+      end
+    end
   end
 end;
 
@@ -942,6 +985,11 @@ end;
 
 procedure TFunctionment.DoEchap(Sender: TObject);
 begin
+  if HelpView.Visible then HelpView.Close
+    else
+  if TalkativeFacade.isPickerGridVisible
+    then DoRetour(nil)
+    else
   SendKey(VK_ESCAPE, 10, [])
 end;
 

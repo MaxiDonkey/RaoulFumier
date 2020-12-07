@@ -32,6 +32,9 @@ function RaoulKey: string;
 
 implementation
 
+uses
+  uSplashWaitForm;
+
 function RaoulKey: string;
 begin
   Result := Format('Software\%s', [ 'Raoul' ])
@@ -112,7 +115,8 @@ var
       Format('%s/%s', [GrammarWebFolder, CurrentFileName]) ,
       Format('%s\%s', [GrammarFolder,    CurrentFileName]) );
     { --- Tracer le fichier courant }
-    with Trace do Add( CurrentFileName )
+    with Trace do Add( CurrentFileName );
+    Application.ProcessMessages;
   end;
 
   procedure TraceCreateAndSigning; begin
@@ -125,6 +129,7 @@ var
   end;
 
 begin
+  TSplashWaitForm.Splash('Grammars Update');
   TraceCreateAndSigning;
   try
     if Trim(ACatalog) <> EmptyStr then with TStringList.Create do
@@ -149,6 +154,7 @@ begin
     with Trace do SaveToFile('GrammarUpdateTrace.txt');
   finally
     Trace.Free;
+    SplashWaitForm.Close;
   end
 end; {UpdateLocalGrammar}
 

@@ -6,11 +6,14 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, uEmbendedAncestor, StdCtrls, ExtCtrls,
   {Vocal}
-  uNewRecorder;
+  uNewRecorder, jpeg;
 
 type
   TEmbendedDlg = class(TAncestorEmbendedForm)
     Label1: TLabel;
+    Image1: TImage;
+    Panel4: TPanel;
+    Panel6: TPanel;
   private
     function  GetCaption: string;
     procedure SetCaption(const Value: string);
