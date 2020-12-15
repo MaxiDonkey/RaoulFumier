@@ -5,13 +5,22 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, SpeechLib_TLB, OleServer, ActiveX, StdCtrls, MMSystem, ComCtrls,
-  ShellApi, StrUtils, StrCopyUtils, uregistry;
+  ShellApi, StrUtils, StrCopyUtils, DateUtils, uregistry;
 
 function  DelDir(Dir: String): Boolean;
 procedure SaveRecoAudioFile(const Result: ISpeechRecoResult; FileName: string);
+procedure ToKeyBoard(const ASt: string);
+
+{ --- Date time formating }
 function  WhatTime:string; overload;
 function  WhatTime(Value: TDateTime):string; overload;
-procedure ToKeyBoard(const ASt: string);
+function  WitchDate:string; overload;
+function  WitchDate(Value: TDateTime):string; overload;
+function  WitchFullDate:string; overload;
+function  WitchFullDate(Value: TDateTime):string; overload;
+function  WitchDayOfWeek:string; overload;
+function  WitchDayOfWeek(Value: TDateTime):string; overload;
+
 
 type
   TKeyBoardWriter = class
@@ -62,10 +71,12 @@ begin
   end;
 end;
 
+{............................... TIME .........................................}
+
 function WhatTime(Value: TDateTime):string;
 var
-  h, m, s, ms: word;
-  sh: string;
+  h, m, s, ms : word;
+  sh          : string;
 
   procedure getHeure; begin
     if h = 1 then sh := 'une heure'
@@ -136,19 +147,132 @@ var
       if Random(1000) mod 3 = 0
         then Result := Format('%s %d minutes', [sh, m])
         else Result := Format('%s %d', [sh, m]);
-    end
+    end;
+  end;
+
+  function Extend(const ASt: string): string; begin
+    Result := ASt;
+    case Random(100) div 10 of
+      0 : Result := Format('il é %s', [Result]);
+      1 : Result := Format('en s''moment, il é %s', [Result]);
+      2 : ;
+      3 : Result := Format('actuellement, %s', [Result]);
+      4 : Result := Format('actuellement, il é %s', [Result]);
+      5 : Result := Format('à cet instant précis, il é %s', [Result]);
+      6 : ; 
+      7 : Result := Format('à cet instant, il é %s', [Result]);
+      8 : Result := Format('en s''moment, %s', [Result]);
+      9 : Result := Format('à cet instant, %s', [Result]);
+    end;
   end;
 
 begin
   Randomize;
   DecodeTime(Value, h, m, s, ms);
-  Result := TimeStr
-end;
+  Result := Extend( TimeStr )
+end; {WhatTime}
 
-function  WhatTime:string;
+function WhatTime:string;
 begin
   Result := WhatTime(Now)
 end;
+
+{...............................END TIME ......................................}
+
+
+{............................... DATE .........................................}
+
+var
+  DaysOfWeek : array[1..7] of string =
+    ( 'dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi' );
+
+  MontsOfYear : array[1..12] of string =
+    ( 'janvier', 'février', 'mars',      'avril',   'mai',      'juin',
+      'juillet', 'août',    'septembre', 'octobre', 'novembre', 'décembre' );
+
+function WitchDate(Value: TDateTime):string;
+var
+  y, m, d, dow : word;
+
+  function DateStr: string; begin
+    { --- Day Of Week and day}
+    case Random(50) div 10 of
+      0 : Result := Format('%s %d',       [ DaysOfWeek[dow], d ]);
+      1 : Result := Format('le %s %d',    [ DaysOfWeek[dow], d ]);
+      2 : Result := Format('le %s %d %s', [ DaysOfWeek[dow], d, MontsOfYear[m] ]);
+      3 : Result := Format('%s %d %s',    [ DaysOfWeek[dow], d, MontsOfYear[m] ]);
+      4 : Result := Format('le %d %s',    [ d, MontsOfYear[m] ]);
+    end;
+    if Result[1] = 'l' then
+    case Random(50) div 10 of
+      0 : Result := Format('nous sommes %s', [Result]);
+      1 : Result := Format('c''est %s', [Result]);
+      3 : Result := Format('aujourd''hui c''est %s', [Result]);
+      4 : Result := Format('aujourd''hui nous sommes %s', [Result]);
+    end;
+  end;
+
+begin
+  Randomize;
+  DecodeDateFully(Value, y, m, d, dow);
+  Result := DateStr
+end; {WitchDate}
+
+function WitchDate:string;
+begin
+  Result := WitchDate(Today)
+end;
+
+function WitchFullDate(Value: TDateTime):string;
+var
+  y, m, d, dow : word;
+
+  function DateStr: string; begin
+    Result := Format('%s %d %s %d', [ DaysOfWeek[dow], d, MontsOfYear[m], y ]);
+    case Random(50) div 10 of
+      0 : Result := Format('le %s', [Result]);
+      1 : Result := Format('nous sommes le %s', [Result]);
+      2 : ;
+      3 : Result := Format('aujourd''hui c''est le %s', [Result]);
+      4 : Result := Format('c''est le %s', [Result]);
+    end;
+  end;
+
+begin
+  Randomize;
+  DecodeDateFully(Value, y, m, d, dow);
+  Result := DateStr
+end; {WitchFullDate}
+
+function WitchFullDate:string;
+begin
+  Result := WitchFullDate(Today)
+end;
+
+function WitchDayOfWeek(Value: TDateTime):string;
+var
+  y, m, d, dow : word;
+
+  function DateStr: string; begin
+    Result := DaysOfWeek[dow];
+    case Random(40) div 10 of
+      0 : Result := Format('nous sommes %s', [Result]);
+      2 : Result := Format('aujourd''hui c''est %s', [Result]);
+    end;
+  end;
+
+begin
+  Randomize;
+  DecodeDateFully(Value, y, m, d, dow);
+  Result := DateStr
+end; {WitchDayOfWeek}
+
+function WitchDayOfWeek:string;
+begin
+  Result := WitchDayOfWeek(Today)
+end;
+
+{...............................END DATE ......................................}
 
 procedure SendOne(const ASt: string);
 begin

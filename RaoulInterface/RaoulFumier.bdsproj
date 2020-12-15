@@ -119,7 +119,7 @@
 			<Directories Name="UnitOutputDir">H:\2020 Developpement\RaoulFumier\RaoulInterface\dcu</Directories>
 			<Directories Name="PackageDLLOutputDir"></Directories>
 			<Directories Name="PackageDCPOutputDir"></Directories>
-			<Directories Name="SearchPath">H:\2020 Developpement\RaoulFumier\Persephone\Share</Directories>
+			<Directories Name="SearchPath">H:\2020 Developpement\RaoulFumier\Persephone\Share;H:\2012 Developpement\Parser</Directories>
 			<Directories Name="Packages">rtl;vcl;vcldb;dbrtl;vclx;adortl;dbxcds;dbexpress;vclib;ibxpress;IntrawebDB_72_90;Intraweb_72_90;xmlrtl;vclie;inet;inetdbbde;inetdbxpress;IndySystem;IndyCore;dclOfficeXP;VclSmp;soaprtl;dsnap;IndyProtocols;inetdb;bdertl;vcldbx;vclactnband;vclshlctrls;teeui;teedb;tee;dxCoreD9;dxGDIPlusD9;cxLibraryD9;dxDockingD9;dxBarD9;dxBarDBNavD9;dxBarExtDBItemsD9;dxBarExtItemsD9;dxRibbonD9;cxPageControlD9;cxEditorsD9;dxThemeD9;cxDataD9;cxExtEditorsD9;cxGridD9;cxSchedulerD9;dxLayoutControlD9;cxVerticalGridD9;dxmdsD9;dxComnD9;dxsbD9;dxNavBarD9;dcldxSkinsCoreD9;dxSkinsCoreD9;dxSkinBlackD9;dxSkinBlueD9;dxSkinCaramelD9;dxSkinCoffeeD9;dxSkinDarkRoomD9;dxSkinDarkSideD9;dxSkinFoggyD9;dxSkinGlassOceansD9;dxSkiniMaginaryD9;dxSkinLilianD9;dxSkinLiquidSkyD9;dxSkinLondonLiquidSkyD9;dxSkinMcSkinD9;dxSkinMoneyTwinsD9;dxSkinOffice2007BlackD9;dxSkinOffice2007BlueD9;dxSkinOffice2007GreenD9;dxSkinOffice2007PinkD9;dxSkinOffice2007SilverD9;dxSkinOffice2010BlackD9;dxSkinOffice2010BlueD9;dxSkinOffice2010SilverD9;dxSkinPumpkinD9;dxSkinSevenD9;dxSkinSharpD9;dxSkinSilverD9;dxSkinSpringTimeD9;dxSkinStardustD9;dxSkinSummer2008D9;dxSkinValentineD9;dxSkinXmas2008BlueD9;dxPSCoreD9;dxPSTeeChartD9;dxPSLnksD9;dxPSDBTeeChartD9;dxPScxPCProdD9;cxPivotGridD9;cxPivotGridOLAPD9;cxBarEditItemD9;cxSchedulerGridD9;dxLayoutControlcxEditAdaptersD9;dxSkinscxPCPainterD9;dxSkinscxScheduler3PainterD9;dxSkinsdxBarPainterD9;dxSkinsdxLCPainterD9;dxSkinsdxNavBar2PainterD9;dxSkinsdxRibbonPainterD9;dxSkinsdxDLPainterD9;dxPScxCommonD9;dxPScxExtCommonD9;dxPScxGrid6LnkD9;dxPScxPivotGrid2LnkD9;dxPScxScheduler3LnkD9;dxPScxVGridLnkD9;dxPSdxLCLnkD9;dxPsPrVwAdvD9;dxPSPrVwRibbonD9;cxPivotGridChartD9</Directories>
 			<Directories Name="Conditionals"></Directories>
 			<Directories Name="DebugSourceDirs"></Directories>
@@ -148,7 +148,7 @@
 			<VersionInfo Name="MajorVer">0</VersionInfo>
 			<VersionInfo Name="MinorVer">9</VersionInfo>
 			<VersionInfo Name="Release">1</VersionInfo>
-			<VersionInfo Name="Build">109</VersionInfo>
+			<VersionInfo Name="Build">121</VersionInfo>
 			<VersionInfo Name="Debug">False</VersionInfo>
 			<VersionInfo Name="PreRelease">False</VersionInfo>
 			<VersionInfo Name="Special">False</VersionInfo>
@@ -158,8 +158,8 @@
 			<VersionInfo Name="CodePage">1252</VersionInfo>
 		</VersionInfo>
 		<VersionInfoKeys>
-			<VersionInfoKeys Name="FileVersion">0.9.1.109</VersionInfoKeys>
-			<VersionInfoKeys Name="ProductVersion">0.8.0.23</VersionInfoKeys>
+			<VersionInfoKeys Name="FileVersion">0.9.1.121</VersionInfoKeys>
+			<VersionInfoKeys Name="ProductVersion">0.9</VersionInfoKeys>
 			<VersionInfoKeys Name="CompanyName">MaxiDonkey</VersionInfoKeys>
 			<VersionInfoKeys Name="FileDescription">Assistance vocale</VersionInfoKeys>
 			<VersionInfoKeys Name="InternalName">Voice project</VersionInfoKeys>
@@ -167,11 +167,7 @@
 			<VersionInfoKeys Name="LegalTrademarks">MaxiDonkey</VersionInfoKeys>
 			<VersionInfoKeys Name="OriginalFilename">Persephone</VersionInfoKeys>
 			<VersionInfoKeys Name="ProductName">Raoul Fumieer</VersionInfoKeys>
-		</VersionInfoKeys>  
-    
-    
-    
-    <Excluded_Packages>
+		</VersionInfoKeys>  <Excluded_Packages>
       <Excluded_Packages Name="C:\Users\JANKOWSKI\Documents\Projets Borland Studio\Bpl\SynEdit_D2005.bpl">SynEdit component suite</Excluded_Packages>
     </Excluded_Packages>
   </Delphi.Personality>

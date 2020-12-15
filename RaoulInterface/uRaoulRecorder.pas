@@ -65,7 +65,9 @@ uses
   {acces SQL distant}
   uRaoulDB, uRaoulUpdater,
   {Elite bindings}
-  EliteBindingsTools;
+  EliteBindingsTools,
+  {Divers}
+  uGaussDisplay;
 
 { TInternRecorder }
 
@@ -166,7 +168,8 @@ begin
        if IsEliteRunning then EliteForeGround;
     end
   end;
-  TSQLRaoul.UserDataExport
+  TSQLRaoul.UserDataExport;
+  GaussDisplayForm.UpdateCadenas
 end;
 
 procedure TInternRecorder.PhraseStart(Sender: TObject);
@@ -204,7 +207,7 @@ begin
     {Metier}
     OnEliteFocus        := EliteSetFocus;
   end;
-  TThreadManager.Initialize;
+  TThreadManager.Initialize
 end;
 
 procedure TInternRecorder.RejectRecognize(Sender: TObject);

@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, StdCtrls, ComCtrls, ClipBrd,
+  Dialogs, ExtCtrls, StdCtrls, ComCtrls, ClipBrd, WebAPIs,
   {string utilities}
   StrUtils, StrCopyUtilsA,
   {Database access}
@@ -376,6 +376,8 @@ procedure TDistConnect.Login(Source, Catalog, PassWord: string);
 
 begin
   with FADOConnection do begin
+    { --- Pas de connection internet alors TimeOut de 1 seconde sinon par défaut }
+    if InternetCheck then ConnectionTimeout := 15 else ConnectionTimeout := 1;
     FServer   := Source;
     FCatalog  := Catalog;
     FPassWord := PassWord;

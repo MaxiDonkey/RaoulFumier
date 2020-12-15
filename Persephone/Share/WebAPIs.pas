@@ -3,11 +3,12 @@ unit WebAPIs;
 interface
 
 uses
-  SysUtils, Classes, Forms, Dialogs;
+  SysUtils, Classes, Forms, Dialogs, WinINet;
 
 procedure DownloadHTTP(const AUrl : string; FileName: string); overload;
 function  UrlFileName(const AUrl: string; FileName, Folder: string):string;
 procedure SendPostData;
+function  InternetCheck: Boolean;
 
 implementation
 
@@ -99,6 +100,20 @@ begin
     end;
   except
   end;
+end;
+
+function InternetCheck: Boolean;
+var
+  origin : cardinal;
+begin
+  result := InternetGetConnectedState(@origin,0);
+
+     //connections origins by origin value
+     //NO INTERNET CONNECTION              = 0;
+     //INTERNET_CONNECTION_MODEM           = 1;
+     //INTERNET_CONNECTION_LAN             = 2;
+     //INTERNET_CONNECTION_PROXY           = 4;
+     //INTERNET_CONNECTION_MODEM_BUSY      = 8;
 end;
 
 end.

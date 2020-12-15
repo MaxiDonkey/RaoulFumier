@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, uRaoulDisplay, ExtCtrls, StrUtils, ClipBrd,
+  Dialogs, StdCtrls, uRaoulDisplay, ExtCtrls, StrUtils, ClipBrd, WebAPIs,
   {Register access}
   uRegistry,
   {dos functions, et versioning}
@@ -79,11 +79,15 @@ type
     class procedure Inscription;
     class procedure UserDataExport;
     class function  ImportDataForReg:string;
+    class procedure CheckPseudo;
 
     {Table Register}
     procedure AddIntoRegister(const Fields, Values: array of string);
     function  RetrieveIdUser: string;
     function  GetAuthorized: Integer;
+    function  IdExists: Boolean;
+    function  RetrieveDistantPseudo: string;
+    procedure DistantPseudoUpdate(const APseudo: string);
 
     class procedure CheckRegistration;
 
@@ -109,6 +113,9 @@ var
 
 implementation
 
+uses
+  uEliteUtils;
+
 function RaoulKey: string;
 begin
   Result := Format('Software\%s', [ 'Raoul' ])
@@ -116,11 +123,13 @@ end;
 
 
 function Get911Pseudo:string;
-var
-  Key: string;
+{ --- On relit le pseudo dans les logs et non avec le 911 }
+//var
+//  Key: string;
 begin
-  Key := Format('Software\%s', [ '911WoJ' ]);
-  Result := KeyReadString(Key, 'Nick')
+  Result := GetLogPseudo
+//  Key := Format('Software\%s', [ '911WoJ' ]);
+//  Result := KeyReadString(Key, 'Nick')
 end;
 
 procedure IpMacInitialize;
@@ -311,6 +320,22 @@ begin
   KeyWrite(AppKey, 'Id', Result)
 end;
 
+class procedure TSQLRaoul.CheckPseudo;
+var
+  Target  : string;
+  Confirm : string;
+begin
+  if Assigned(SQLRaoul) and InternetCheck then with SQLRaoul do begin
+    Confirm := GetLogPseudo;
+    Target  := RetrieveDistantPseudo;
+    if Target <> Confirm then begin
+      KeyWrite(AppKey, 'Pseudo', Confirm);
+      KeyWrite(AppKey, 'PseudoUnknown', 0);
+      if IdExists then DistantPseudoUpdate( Confirm )
+    end
+  end
+end;
+
 function TSQLRaoul.CheckRegisterId: string;
 begin
   IsRegistered(GetIp, GetMac, Result)
@@ -359,11 +384,23 @@ begin
   KeyWrite(AppKey, 'Id', Result)
 end; {CheckId}
 
+procedure TSQLRaoul.DistantPseudoUpdate(const APseudo: string);
+begin
+  Execute( Format('update Users set Pseudo = %s where Id = %s', [QuotedStr(APseudo), QuotedStr(GetUserId)]) )
+end;
+
 function TSQLRaoul.GetAuthorized: Integer;
 begin
   with FDD do Result := StrToIntDef( RetrieveValues(
     Format('select Authorized from Register where IP = %s and MAC = %s', [ QuotedStr(GetIp), QuotedStr(GetMac) ])
   ), 0)
+end;
+
+function TSQLRaoul.IdExists: Boolean;
+begin
+  with FDD do Result := RetrieveValues(
+    Format('select Id from Users where Id = %s', [ QuotedStr(GetUserId) ])
+  ) <> EmptyStr
 end;
 
 class function TSQLRaoul.ImportDataForReg:string;
@@ -443,6 +480,13 @@ begin
   KeyWrite(RaoulKey, 'Catalog', Result)
 end;
 
+function TSQLRaoul.RetrieveDistantPseudo: string;
+begin
+  with FDD do Result := RetrieveValues(
+    Format('select Pseudo from Users where Id = %s', [ QuotedStr(GetUserId) ])
+  )
+end;
+
 function TSQLRaoul.RetrievegrCatalog: string;
 begin
   with FDD do Result := RetrieveValues(
@@ -486,7 +530,7 @@ end;
 function TSQLRaoul.RetrievePseudo: string;
 begin
   Result := KeyReadString(AppKey, 'Pseudo');
-  if Result = EmptyStr then Result := TryRetrievePseudo
+  if Result = EmptyStr then Result := TryRetrievePseudo;
 end;
 
 function TSQLRaoul.RetrieveVersion: string;

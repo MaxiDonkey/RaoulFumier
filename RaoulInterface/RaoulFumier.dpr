@@ -21,7 +21,9 @@ uses
   EliteBindingsTools in 'EliteBindingsTools.pas',
   uEliteUtils in 'uEliteUtils.pas',
   uEliteHelp in 'uEliteHelp.pas',
-  uSplashWaitForm in 'uSplashWaitForm.pas' {SplashWaitForm};
+  uSplashWaitForm in 'uSplashWaitForm.pas' {SplashWaitForm},
+  uGauss in 'uGauss.pas',
+  uGaussDisplay in 'uGaussDisplay.pas' {GaussDisplayForm};
 
 {$R *.res}
 
@@ -43,6 +45,7 @@ begin
   Application.CreateForm(TEmbendedSensibility, EmbendedSensibility);
   Application.CreateForm(TPickerGridForm, PickerGridForm);
   Application.CreateForm(THelpDlg, HelpDlg);
+  Application.CreateForm(TGaussDisplayForm, GaussDisplayForm);
   Application.Run;
   end
 end.

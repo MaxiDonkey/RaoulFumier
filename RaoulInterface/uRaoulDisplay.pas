@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, uRegistry, uEmbendedAncestor, uPickerForm,
-  StrUtils,
+  StrUtils, ClipBrd,
   {Help}
   uEliteHelp,
   {vocal}
@@ -133,7 +133,10 @@ type
     procedure DoMouseDouble(Sender: TObject);
     procedure DoMouseMiddle(Sender: TObject);
 
-    procedure DoAppVersionShow(Sennder: TObject);
+    procedure DoAppVersionShow(Sender: TObject);
+    procedure DoStartWithWindows(Sender: TObject);
+    procedure DoNoStartWithWindows(Sender: TObject);
+    procedure DoAskStartWithWindows(Sender: TObject);
 
     procedure DoHautesPerformances(Sender: TObject);
     procedure DoMicroCasque(Sender: TObject);
@@ -172,6 +175,17 @@ type
     procedure DoRaoulIntVumetreShow(Sender: Tobject);
     procedure DoRaoulIntVumetreHide(Sender: TObject);
 
+    procedure DoHelpShow(Sender: Tobject);
+    procedure DoHelpHide(Sender: Tobject);
+    procedure DoCalcFormShow(Sender: Tobject);
+    procedure DoCalcFormHide(Sender: Tobject);
+    procedure DoCalcFormDelete(Sender: Tobject);
+    procedure DoCalcFormRestore(Sender: Tobject);
+    procedure DoCalcResultVoiceRead(Sender: TObject);
+    procedure DoCalcCopy(Sender: TObject);
+
+    procedure DoVoiceRead(Sender: TObject);
+
   public
     procedure Initialize_;
 
@@ -205,8 +219,9 @@ implementation
 
 uses
   Main, DisplayTextForm, ScreenDlg,
-  uEmbendedDlg, uEmbendedSensibility, cxEdit, uScreenTools, uEliteUtils,
-  {acces SQL distant}                                                         
+  uEmbendedDlg, uEmbendedSensibility, cxEdit, uScreenTools, uEliteUtils, uDosUtils,
+  uHelpDlg, uGaussDisplay, uGauss,
+  {acces SQL distant}
   uRaoulDB;
 
 function ModVal(const Value: Integer; Divisor: Integer): Integer;
@@ -710,6 +725,7 @@ begin
   with Recorder do GridDeactivate;
   { --- Hide Grid }
   with PickerGridForm, Grid do GridClose;
+  Windows.SetFocus(0);
   with TalkativeFacade do if isEliteMode then EliteForeGround
 end;
 
@@ -884,6 +900,9 @@ begin
   MouseDoubleFunc            := DoMouseDouble;
   MouseMiddleFunc            := DoMouseMiddle;
   AppVersionShowFunc         := DoAppVersionShow;
+  StartWithWindowsFunc       := DoStartWithWindows;
+  NoStartWithWindowsFunc     := DoNoStartWithWindows;
+  AskStartWithWindowsFunc    := DoAskStartWithWindows;
 
   HautesperformancesFunc     := DoHautesperformances;
   MicroCasqueFunc            := DoMicroCasque;
@@ -921,6 +940,16 @@ begin
   RaoulIntTextHideFunc       := DoRaoulIntTextHide;
   RaoulIntVumetreShowFunc    := DoRaoulIntVumetreShow;
   RaoulIntVumetreHideFunc    := DoRaoulIntVumetreHide;
+
+  HelpShowFunc               := DoHelpShow;
+  HelpHideFunc               := DoHelpHide;
+  CalcFormShowFunc           := DoCalcFormShow;
+  CalcFormHideFunc           := DoCalcFormHide;
+  CalcFormDeleteFunc         := DoCalcFormDelete;
+  CalcFormRestoreFunc        := DoCalcFormRestore;
+  CalcResultVoiceReadFunc    := DoCalcResultVoiceRead;
+  CalcCopyFunc               := DoCalcCopy;
+  VoiceReadFunc              := DoVoiceRead;
 end;
 
 procedure TFunctionment.DoRaoulIntRight(Sender: TObject);
@@ -999,7 +1028,7 @@ begin
     with PickerGridForm, Grid do GridPointClear
 end;
 
-procedure TFunctionment.DoAppVersionShow(Sennder: TObject);
+procedure TFunctionment.DoAppVersionShow(Sender: TObject);
 begin
   with TalkativeFacade do begin
     TextView := True;
@@ -1015,6 +1044,87 @@ end;
 procedure TFunctionment.DoMouseMiddle(Sender: TObject);
 begin
   MouseMiddleClic
+end;
+
+procedure TFunctionment.DoStartWithWindows(Sender: TObject);
+begin
+  if not AppStartWithWindows then begin
+    MakeAppLink;
+    with Recorder do case uDosUtils.AppStartWithWindows of
+      True : TalkFmt(30, 10, 'démarrage avec windows', -9, -8, 'actif');
+      else   TalkFmt(12, 10, 'échec', -9, -8, 'ta pas les droits sur le dossier de démarrage');
+    end
+  end else Recorder.TalkFmt(20, 10, 'c''est déjà le cas');
+end;
+
+procedure TFunctionment.DoAskStartWithWindows(Sender: TObject);
+begin
+  with Recorder do case AppStartWithWindows of
+    True : TalkFmt(12, 10, 'oui', -9, -8, 'je démarre avec Windows');
+    else   TalkFmt(12, 10, 'non', -9, -8, 'je ne démarre pas avec Windows');
+  end
+end;
+
+procedure TFunctionment.DoNoStartWithWindows(Sender: TObject);
+begin
+  if AppStartWithWindows then begin
+    AppStartWithWindowsDelete;
+    with Recorder do case uDosUtils.AppStartWithWindows of
+      False : TalkFmt(12, 10, 'maintnant', -9, -8, 'je ne démar plus avec windows');
+      else    TalkFmt(12, 10, 'échec', -9, -8, 'ta pas les droits sur le dossier de démarrage');
+    end
+  end
+end;
+
+procedure TFunctionment.DoHelpShow(Sender: Tobject);
+begin
+  TalkativeFacade.ShowHelp
+end;
+
+procedure TFunctionment.DoHelpHide(Sender: Tobject);
+begin
+  if HelpView.Visible then begin
+    HelpDlg.SetFocus;
+    HelpView.Close
+  end
+end;
+
+procedure TFunctionment.DoCalcFormShow(Sender: Tobject);
+begin
+  with GaussDisplayForm do show
+end;
+
+procedure TFunctionment.DoCalcFormHide(Sender: Tobject);
+begin
+  with GaussDisplayForm do Close
+end;
+
+procedure TFunctionment.DoCalcFormDelete(Sender: Tobject);
+begin
+  with GaussDisplayForm do Clear
+end;
+
+procedure TFunctionment.DoCalcFormRestore(Sender: Tobject);
+begin
+  with GaussDisplayForm do Restore
+end;
+
+procedure TFunctionment.DoCalcResultVoiceRead(Sender: TObject);
+begin
+  with Recorder do if not TalkVoiceDisabled then
+    TTalkThread.Create(Recorder, TGaussAdditional.VoiceValue)
+end;
+
+procedure TFunctionment.DoVoiceRead(Sender: TObject);
+{ --- TODO étendre cette méthode à d'autres lectures pas uniquement pour le calcul}
+begin
+  { --- Procède même si la voix est inactive }
+  with Recorder do TTalkThread.Create(Recorder, TGaussAdditional.VoiceValue)
+end;
+
+procedure TFunctionment.DoCalcCopy(Sender: TObject);
+begin
+  with Clipboard do AsText := KeyReadString(BufferKey, 'ExprValue')
 end;
 
 initialization

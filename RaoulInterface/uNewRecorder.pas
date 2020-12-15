@@ -17,11 +17,14 @@ uses
   uEliteHelp, uHelpDlg,
 
   {devExpress}
-  cxProgressBar, cxTrackBar;
+  cxLabel, cxProgressBar, cxTrackBar;
 
 const
   FRENCH_ID   = $40c;
   MAX_GRAMMAR = 99;
+
+const
+  MainStartDelayed = 3000;
 
 type
   TArrayOfGrammars  = array[0..MAX_GRAMMAR] of ISpeechRecoGrammar;
@@ -36,7 +39,7 @@ type
     ik_SITooQuiet, ik_SITooFast, ik_SITooSlow                       );
   TGramType         = (gt_switch, gt_fumier, gt_gauss, gt_spell, gt_elite, gt_pause, gt_gridmode, gt_help);   //A-G
   TMetiers          = (m_none, m_fumier, m_gauss, m_spell, m_elite, m_pause, m_grid, m_help);                 //A-G
-  { --- REM :  1) m_grid can't be useed as a metier }
+  { --- REM :  1) m_grid & m_help can't be useed as a metier }
 
   TArrayOfJobFiles  = array[TGramType] of string;
   TArrayOfNoises    = array[TInterferenceKind] of Integer;
@@ -54,8 +57,8 @@ type
 type
   TRaoulRecorder = class(TComponent)
   private
-    FForm: TForm;
-    Fmaprop:Integer;
+    FForm   : TForm;
+    Fmaprop : Integer;
     function  FormRetrieve: TForm;
   public
     constructor Create(AOwner: TComponent); override;
@@ -78,7 +81,12 @@ type
     procedure SetPrevMetier(const Value: TMetiers);
     function  GetIsGridOpened: Boolean;
     procedure SetIsGridOpened(const Value: Boolean);
-    function GetIsEliteMode: Boolean;
+    function  GetIsEliteMode: Boolean;
+    function  GetCalcFormVisible: Boolean;
+    function  GetMetierBeforeGauss: TMetiers;
+    procedure SetMetierBeforeGauss(const Value: TMetiers);
+    function  GetTalkVoiceDisabled: Boolean;
+    procedure SetTalkVoiceDisabled(const Value: Boolean);
 
   private
     { --- Constantes d'environnement }
@@ -133,6 +141,9 @@ type
     procedure NoisesReset;
     procedure NoisesInc(const Item: TInterferenceKind);
 
+  private
+    function CurrentModeInArray(const Values: array of TMetiers): Boolean;
+
   protected
     procedure SetState(const Value: TSRState); virtual;
     procedure SetListen(const Value: Boolean); virtual;
@@ -150,8 +161,8 @@ type
 
   public
     { --- Variables d'environnement publiques }
-    Context              : TSpInProcRecoContext;
-    Recognizer           : ISpeechRecognizer;
+    Context    : TSpInProcRecoContext;
+    Recognizer : ISpeechRecognizer;
 
     procedure Initialize;
     procedure Disable;
@@ -173,6 +184,9 @@ type
     { --- "As a metier" states}
     property IsGridOpened: Boolean read GetIsGridOpened write SetIsGridOpened;
     property IsEliteMode: Boolean read GetIsEliteMode;
+    property CalcFormVisible: Boolean read GetCalcFormVisible;
+    property MetierBeforeGauss: TMetiers read GetMetierBeforeGauss write SetMetierBeforeGauss;
+    property TalkVoiceDisabled: Boolean read GetTalkVoiceDisabled write SetTalkVoiceDisabled;
 
     constructor Create(AVuMetre: TcxProgressBar = nil); virtual;
   public
@@ -190,6 +204,8 @@ type
     procedure HelpActivate;
     procedure HelpDeactivate;
     procedure FumierReload;
+    { --- unactivate metier }
+    procedure GaussDisable;
 
     procedure NavExitProc(Sender: TObject);
     procedure ExitEliteProc(Sender: TObject);
@@ -201,7 +217,13 @@ type
       const Rate1, Pitch1: Integer; ASt1: string); overload;
 
   public
-    { --- fonctionnement courant }
+    { --- Advanced trigger }
+    function IsListen:Boolean;
+    function IsListenCommandCheck(const ASML: string;
+      const Confiance: Double):Boolean; overload;
+    function IsListenCommandCheck(const ASML: string;
+      const Confiance: Double; ModeIgnore : array of TMetiers):Boolean; overload;
+    { --- fonctionnement courant implements in uRaoulDisplay }
     procedure AppCloseActivate;
     procedure SensibilityActivate;
     procedure OkActivate;
@@ -216,6 +238,9 @@ type
     procedure MouseMiddleActivate;
 
     procedure AppVersionShowActivate;
+    procedure StartWithWindowsActivate;
+    procedure NoStartWithWindowsActivate;
+    procedure AskStartWithWindowsActivate;
 
     procedure HighPerfActivate;
     procedure MicroCasqueActivate;
@@ -255,6 +280,18 @@ type
     procedure RaoulIntVumetreHideActivate;
 
     procedure RaoulRelaunching;
+    procedure HelpShowActivate;
+    procedure HelpHideActivate;
+
+    procedure PauseBackActivate;
+    procedure CalcFormShowActivate;
+    procedure CalcFormHideActivate;
+    procedure CalcFormDeleteActivate;
+    procedure CalcFormRestoreActivate;
+    procedure CalcResultVoiceReadActivate;
+    procedure CalcCopyActivate;
+
+    procedure VoiceReadActivate;
 
   published
     property OnAudioChanged: TAudioChanged read FOnAudioChanged write FOnAudioChanged;
@@ -317,7 +354,7 @@ type
   TNewRecorder = class(TCustomNewRecorder)
   protected
   public
-    function DoOnEliteActivate:Boolean; 
+    function  DoOnEliteActivate:Boolean;
     procedure ActionsOnGrid(const ASt: string);
     procedure ActionsOnHelp(const ASt: string);
   published
@@ -341,11 +378,9 @@ type
   TSMLCalcul = class
   private
     FSML: string;
+    FTag: string;
     procedure SetSML(const Value: string);
-    function  Operation_: string;
-    function  Value_: string;
     function  ExtractOperation(const Value: string): string;
-    function  ToDot(const Value: string): string;
   public
     class function Operation(const ASML: string): string;
   end;
@@ -426,7 +461,7 @@ type
     procedure Execute; override;
     constructor Create(const APile: TStrFifoStack; const ARecorder: TNewRecorder;
       AGramType: TGramType);
-  end;                                          
+  end;
 
   TThreadManager = class
   private
@@ -551,6 +586,46 @@ type
     destructor Destroy; override;
   end;
 
+  { --- Censure Part }
+  TCensureThread = class(TThread)
+  private
+    ThSML           : string;
+    ThTalkativeText : TcxLabel;
+
+    procedure ThDelay(ms: Cardinal);
+    procedure Blinking(const Message: string);
+    function  CanProcess:Boolean;
+    procedure Process;
+  public
+    procedure Execute; override;
+    constructor Create(const ASML: string; const ATalkativeText: TcxLabel);
+  end;
+
+  { --- Talking thread process }
+  TTalkThread = class(TThread)
+  private
+    ThRecorder      : TNewRecorder;
+    ThVoiceValue    : string;
+
+    procedure ThDelay(ms: Cardinal);
+    procedure Process;
+  public
+    procedure Execute; override;
+    constructor Create(const ARecorder: TNewRecorder; const AVoiceValue: string);
+  end;
+
+  { --- Write calc résult from register datas }
+  TCalcWriteThread = class(TThread)
+  private
+    ThRichEdit      : TRichEdit;
+
+    procedure ThDelay(ms: Cardinal);
+    procedure Process;
+  public
+    procedure Execute; override;
+    constructor Create(const ARichEdit: TRichEdit);
+  end;
+
 procedure Register;
 
 var
@@ -580,6 +655,10 @@ var
   MouseMiddleFunc            : TNotifyEvent = nil;
   {Versionning}
   AppVersionShowFunc         : TNotifyEvent = nil;
+  {Start with Windows}
+  StartWithWindowsFunc       : TNotifyEvent = nil;
+  NoStartWithWindowsFunc     : TNotifyEvent = nil;
+  AskStartWithWindowsFunc    : TNotifyEvent = nil;
   {Sensibility managment}
   HautesperformancesFunc     : TNotifyEvent = nil;
   MicroCasqueFunc            : TNotifyEvent = nil;
@@ -618,9 +697,20 @@ var
   RaoulIntTextHideFunc       : TNotifyEvent = nil;
   RaoulIntVumetreShowFunc    : TNotifyEvent = nil;
   RaoulIntVumetreHideFunc    : TNotifyEvent = nil;
+  {Help}
+  HelpShowFunc               : TNotifyEvent = nil;
+  HelpHideFunc               : TNotifyEvent = nil;
+  {Gauss}
+  CalcFormShowFunc           : TNotifyEvent = nil;
+  CalcFormHideFunc           : TNotifyEvent = nil;
+  CalcFormDeleteFunc         : TNotifyEvent = nil;
+  CalcFormRestoreFunc        : TNotifyEvent = nil;
+  CalcResultVoiceReadFunc    : TNotifyEvent = nil;
+  VoiceReadFunc              : TNotifyEvent = nil;
+  CalcCopyFunc               : TNotifyEvent = nil;
 
 var
-  ArrayOfJobFiles : TArrayOfJobFiles = ('Switch', 'gr_main', 'Numeration', 'Spelling', 'Elite', 'Pause',  'Gridmode', 'help');    //A-G
+  ArrayOfJobFiles : TArrayOfJobFiles = ('Switch', 'gr_main', 'Arinum', 'Spelling', 'Elite', 'Pause',  'Gridmode', 'help');    //A-G   Numeration
 
 // IMPORTANT Catalog ---> Raoul.trf=
 
@@ -628,7 +718,7 @@ var
   GrammarPath     : string = 'Grammar';                                     //ver prod
 
   GrammarStrs     : array[0..Integer(High(TGramType))] of string =
-   ('switch', 'fumier', 'gauss', 'spelling', 'elite', 'pause', 'gridmode', 'help');   //A-G
+   ('switch', 'fumier', 'arinum', 'spelling', 'elite', 'pause', 'gridmode', 'help');   //A-G     gauss
 var
   {Scruptor Managers}
   PileMacros      : TStrFifoStack;
@@ -658,7 +748,7 @@ var
 implementation
 
 uses
-  uRegistry, uRaoulUpdater, uRaoulDisplay, uEliteUtils;
+  uRegistry, uRaoulUpdater, uRaoulDisplay, uEliteUtils, uDosUtils, uGauss, uGaussDisplay;
 
 var
   InterferenceStr : array[TInterferenceKind] of string =
@@ -764,10 +854,10 @@ begin
   with Recognizer do if Listen <> Value then begin
     case Value of
       True : begin
-               AudioInput := FToken.DefaultInterface;
-               FMicroDescription := AudioInput.GetDescription(0);
-             end;
-      else   AudioInput := nil
+        AudioInput := FToken.DefaultInterface;
+        FMicroDescription := AudioInput.GetDescription(0);
+      end;
+      else AudioInput := nil
     end;
     if Assigned(FOnAudioChanged) then FOnAudioChanged(Self, Value)
   end
@@ -794,7 +884,8 @@ begin
   if IsGridOpened then PickerGridCloseActivate;
   if Assigned(FVuMetre) then with FVuMetre do Visible := False;
   if HelpView.Visible then HelpView.Close;
-  if Assigned(FOnSleepMode) then FOnSleepMode(Self)
+  if Assigned(FOnSleepMode) then FOnSleepMode(Self);
+  if GaussDisplayForm.Visible then GaussDisplayForm.Close
 end;
 
 procedure TCustomDefRecorder.GrammarsDisable;
@@ -845,7 +936,7 @@ end;
 
 procedure TCustomDefRecorder.Enable;
 begin
-  with Context do EventInterests := SREAllEvents;
+  with Context do EventInterests := SREAllEvents
 end;
 
 procedure TCustomDefRecorder.SetTaux(const Value: Double);
@@ -890,7 +981,6 @@ begin //A-G
     GrammarActivate(gt_fumier);
 
     CurrentMetier := m_fumier;
-    CheckGrammar
   except
   end
 end;
@@ -898,6 +988,7 @@ end;
 procedure TCustomDefRecorder.GaussActivate;
 begin //A-G
   try
+    if CurrentMetier <> m_gauss then MetierBeforeGauss := CurrentMetier;
     GrammarActivate(gt_fumier,   False);
     GrammarActivate(gt_spell,    False);
     GrammarActivate(gt_elite,    False);
@@ -906,7 +997,7 @@ begin //A-G
     GrammarActivate(gt_gauss);
 
     CurrentMetier := m_gauss;
-    CheckGrammar
+    GaussDisplayForm.Show
   except
   end
 end;
@@ -923,7 +1014,6 @@ begin //A-G
     GrammarActivate(gt_spell);
 
     CurrentMetier := m_spell;
-    CheckGrammar
   except
   end
 end;
@@ -939,7 +1029,6 @@ begin //A-G
     GrammarActivate(gt_elite);
 
     CurrentMetier := m_elite;
-    CheckGrammar;
     if Assigned(FOnEliteFocus) then FOnEliteFocus(Self)
   except
   end
@@ -949,7 +1038,7 @@ procedure TCustomDefRecorder.NoneActivate;
 begin //A-G
   try
     GrammarActivate(gt_fumier,   False);
-    GrammarActivate(gt_gauss,    False);
+//    GrammarActivate(gt_gauss,    False);
     GrammarActivate(gt_spell,    False);
     GrammarActivate(gt_elite,    False);
     GrammarActivate(gt_pause,    False);
@@ -957,7 +1046,6 @@ begin //A-G
     GrammarActivate(gt_switch);
 
     CurrentMetier := m_none;
-    CheckGrammar
   except
   end
 end;
@@ -1000,8 +1088,8 @@ end;
 
 procedure TCustomDefRecorder.SensibilityActivate;
 begin
-  if (ModeFonctionnement in [mf_none, mf_sensibility]) and Assigned(SensibilityFunc) then
-    SensibilityFunc(nil)
+  if (ModeFonctionnement in [mf_none, mf_sensibility])
+     and Assigned(SensibilityFunc) then SensibilityFunc(nil)
 end;
 
 procedure TCustomDefRecorder.OkActivate;
@@ -1070,8 +1158,6 @@ begin
 end;
 
 procedure TCustomDefRecorder.AppCloseActivate;
-var
-  CanClose: Boolean;
 begin
   if (ModeFonctionnement in [mf_none, mf_closeapp]) and Assigned(AppCloseFunc)
     then AppCloseFunc(nil)
@@ -1284,7 +1370,6 @@ begin
     GrammarActivate(gt_pause);
 
     CurrentMetier := m_pause;
-    CheckGrammar
   except
   end
 end;
@@ -1343,12 +1428,12 @@ end;
 
 procedure TCustomDefRecorder.NavExitProc(Sender: TObject);
 begin
-  if (Mode = rm_listen) and (CurrentMetier = m_spell) then NoneActivate
+  if IsListen and (CurrentMetier = m_spell) then NoneActivate
 end;
 
 procedure TCustomDefRecorder.ExitEliteProc(Sender: TObject);
 begin
-  if Mode = rm_listen then NoneActivate
+  if IsListen then NoneActivate
 end;
 
 procedure TCustomDefRecorder.GridActivate;
@@ -1356,7 +1441,6 @@ begin //A-G
   try
     IsGridOpened := True;
     GrammarActivate(gt_gridmode);
-    CheckGrammar
   except
   end
 end;
@@ -1380,21 +1464,28 @@ begin
   KeyWrite(ParamKey, 'IsGridOpened', Value)
 end;
 
-//var
-//  Comment: OleVariant = 'check';
-
 procedure TCustomDefRecorder.CheckGrammar;
+{ --- main delayed starter of MainStartDelayed value --> let Grammar check process running }
 var
-  S : OleVariant;
+  i : Integer;
 begin
-//  with Recognizer do try EmulateRecognition('check', S, FRENCH_ID) except end
+  try
+    for i := Integer(Low(TGramType)) to Integer(High(TGramType)) do begin
+      GrammarActivate(TGramType(i));
+      Sleep( 60 );
+      GrammarActivate(TGramType(i), False)
+    end;
+    GrammarActivate(gt_switch);
+    GrammarActivate(gt_gauss);
+    GrammarActivate(gt_help);
+  except
+  end;
 end;
 
 procedure TCustomDefRecorder.HelpActivate;
 begin //A-G
   try
     GrammarActivate(gt_help);
-    CheckGrammar
   except
   end
 end;
@@ -1410,6 +1501,158 @@ end;
 function TCustomDefRecorder.GetIsEliteMode: Boolean;
 begin
   Result := CurrentMetier = m_elite
+end;
+
+procedure TCustomDefRecorder.StartWithWindowsActivate;
+begin
+  if Assigned(StartWithWindowsFunc) then StartWithWindowsFunc(nil)
+end;
+
+procedure TCustomDefRecorder.AskStartWithWindowsActivate;
+begin
+  if Assigned(AskStartWithWindowsFunc) then AskStartWithWindowsFunc(nil)
+end;
+
+procedure TCustomDefRecorder.NoStartWithWindowsActivate;
+begin
+  if Assigned(NoStartWithWindowsFunc) then NoStartWithWindowsFunc(nil)
+end;
+
+function TCustomDefRecorder.IsListenCommandCheck(const ASML: string;
+  const Confiance: Double): Boolean;
+begin
+  Result := IsListen and (TSMLConfiance.Confidence( ASML ) > Confiance)
+end;
+
+function TCustomDefRecorder.IsListenCommandCheck(const ASML: string;
+  const Confiance: Double; ModeIgnore: array of TMetiers): Boolean;
+begin
+  Result := False;
+  if not CurrentModeInArray([m_elite])
+    then Result := IsListenCommandCheck( ASML, Confiance )
+end;
+
+function TCustomDefRecorder.CurrentModeInArray(
+  const Values: array of TMetiers): Boolean;
+var
+  i : Integer;
+begin
+  Result := False;
+  for i := Low(Values) to High(Values) do
+    if CurrentMetier = Values[i] then begin
+      Result := True;
+      Break
+    end
+end;
+
+procedure TCustomDefRecorder.HelpShowActivate;
+begin
+  if Assigned(HelpShowFunc) then HelpShowFunc(nil)
+end;
+
+procedure TCustomDefRecorder.HelpHideActivate;
+begin
+  if Assigned(HelpHideFunc) then HelpHideFunc(nil)
+end;
+
+procedure TCustomDefRecorder.PauseBackActivate;
+var
+  PassByNone: Boolean;
+begin
+  PassByNone := False;
+  case PrevMetier of
+    m_fumier  : FumierActivate;
+    m_gauss   : GaussActivate;
+    m_spell   : SpellActivate;
+    m_elite   : EliteActivate;
+    else begin
+      NoneActivate;
+      PassByNone := True
+    end
+  end;
+  if not PassByNone and IsGridOpened then GridActivate
+end;
+
+function TCustomDefRecorder.IsListen: Boolean;
+begin
+  Result := Mode = rm_listen
+end;
+
+procedure TCustomDefRecorder.CalcFormShowActivate;
+begin
+  if Assigned(CalcFormShowFunc) then CalcFormShowFunc(nil)
+end;
+
+procedure TCustomDefRecorder.CalcFormHideActivate;
+begin
+  if Assigned(CalcFormHideFunc) then CalcFormHideFunc(nil)
+end;
+
+procedure TCustomDefRecorder.CalcFormDeleteActivate;
+begin
+  if Assigned(CalcFormDeleteFunc) then CalcFormDeleteFunc(nil)
+end;
+
+procedure TCustomDefRecorder.CalcFormRestoreActivate;
+begin
+  if Assigned(CalcFormRestoreFunc) then CalcFormRestoreFunc(nil)
+end;
+
+function TCustomDefRecorder.GetCalcFormVisible: Boolean;
+begin
+  Result := KeyReadBoolean(BufferKey, 'CalcFormVisible')
+end;
+
+function TCustomDefRecorder.GetMetierBeforeGauss: TMetiers;
+begin
+  Result := TMetiers( KeyReadInt(BufferKey, 'MetierBeforeGauss') )
+end;
+
+procedure TCustomDefRecorder.SetMetierBeforeGauss(const Value: TMetiers);
+begin
+  KeyWrite(BufferKey, 'MetierBeforeGauss', Integer(Value) )
+end;
+
+procedure TCustomDefRecorder.GaussDisable;
+begin
+  { --- Désactiver la grammaire pour le calcul }
+//  GrammarActivate(gt_gauss, False);
+  { --- métiers principaux précédemment actifs }
+  case MetierBeforeGauss of  //A-D
+    m_none   : NoneActivate;
+    m_fumier : FumierActivate;
+    m_spell  : SpellActivate;
+    m_elite  : EliteActivate;
+  end;
+  { --- métiers superposés précédemment actifs }
+  if IsGridOpened then GridActivate;
+  if HelpDlg.Visible then HelpActivate ;
+  Application.ProcessMessages
+end;
+
+function TCustomDefRecorder.GetTalkVoiceDisabled: Boolean;
+begin
+  Result := KeyReadBoolean(AppKey, 'VoiceDisabled')
+end;
+
+procedure TCustomDefRecorder.SetTalkVoiceDisabled(const Value: Boolean);
+begin
+  KeyWrite(AppKey, 'VoiceDisabled', Value)
+end;
+
+procedure TCustomDefRecorder.CalcResultVoiceReadActivate;
+begin
+  if Assigned(CalcResultVoiceReadFunc) then CalcResultVoiceReadFunc(nil)
+end;
+
+procedure TCustomDefRecorder.VoiceReadActivate;
+begin
+  if Assigned(VoiceReadFunc) then VoiceReadFunc(nil)
+end;
+
+procedure TCustomDefRecorder.CalcCopyActivate;
+begin
+  if Assigned(CalcCopyFunc) then CalcCopyFunc(nil)
 end;
 
 { TCustomNewRecorder }
@@ -1431,13 +1674,13 @@ var
       gt_elite,
       gt_gridmode,
       gt_help       : Result := QuoteFix(Speech.PhraseInfo.GetText(0,-1, True));
-      gt_gauss      : Result := TSMLCalcul.Operation(SML);
+      gt_gauss      : if CurrentMetier = m_gauss then Result := TSMLCalcul.Operation(SML);
     end
   end;
 
   procedure Accept; begin
     TLocalStack.AstAdd(SML, GSender);
-    if Mode = rm_listen then if Assigned(FOnRecognizeAccepted) then
+    if IsListen then if Assigned(FOnRecognizeAccepted) then
       FOnRecognizeAccepted(Self, DisplayStr, SML)
   end;
 
@@ -1457,7 +1700,7 @@ var
     Initialize;
     if GSender = gt_switch then if TSMLConfiance.Tag(SML) = 0 then begin
       Result := False;
-      Exit;
+      Exit
     end;
     case GSender of  //A-G
       gt_switch,
@@ -1467,7 +1710,7 @@ var
       gt_gridmode,
       gt_help      : Result := FTaux > Params.CeilSwitch;
       gt_fumier    : Result := FTaux > Params.CeilFumier;
-      gt_gauss     : Result := FTaux > Params.CeilGauss;
+      gt_gauss     : Result := FTaux > Params.CeilGauss;  
     end
   end;
 
@@ -1485,7 +1728,7 @@ end; {Recognition}
 procedure TCustomNewRecorder.Hypothesis(ASender: TObject; StreamNumber: Integer;
   StreamPosition: OleVariant; const Result: ISpeechRecoResult);
 begin
-  if Mode = rm_listen then if Assigned(FOnBuildHypothesis) then
+  if IsListen then if Assigned(FOnBuildHypothesis) then
     FOnBuildHypothesis(Self, QuoteFix(Result.PhraseInfo.GetText(0,-1, True)) )
 end;
 
@@ -1494,6 +1737,8 @@ begin
   if KeyReadBoolean(AppKey, 'GrammarUpdated')
     then TalkFmt(18,0, 'Maintnant c''est à jour ! Raoul va s''relancer')
     else TalkFmt(10,0, 'je suis prêt');
+
+  CheckGrammar;
 
   Listen         := True;
   State          := srs_active;
@@ -1600,7 +1845,7 @@ class function TSMLConfiance.Confidence(const ASML: string): Double;
 begin
   with TSMLConfiance.Create do
   try
-    Result := ExtractConfidence(ASML);
+    Result := ExtractConfidence(ASML)
   finally
     Free
   end
@@ -1619,7 +1864,7 @@ end;
 
 function TSMLConfiance.ExtractSender(const Value: string): TGramType;
 var
-  Buffer: string;
+  Buffer : string;
 begin
   SetSML(Value);
   Buffer := GetBeforStr(FSML,     '</Sender>');
@@ -1716,31 +1961,21 @@ end;
 
 function TSMLCalcul.ExtractOperation(const Value: string): string;
 var
-  x,y : string;
+  DataResult : string;
 begin
   SetSML(Value);
-  x := Operation_;
-  y := ToDot(Value_);
-  if x = EmptyStr then Result := y
-    else
-  if x = y then Result := x else begin
-    if Pos('=', x) > 0 then x := Format('{%s}', [x]);
-    Result := Format('%s = %s', [x, y])
-  end
-end;
-
-function TSMLCalcul.Operation_: string;
-begin
-  Result := GetBeforStr(FSML, '</Operation>');
-  Result := GetAfterStr(Result, '<Operation');
-  Result := GetAfterStr(Result, '>')
+  Result := TStackConvertor.Evalue(FTag, DataResult);
+//  if Recorder.CurrentMetier = m_gauss then
+//    THistoDisplay.AddTo(GaussDisplayForm.RichEdit, Result, DataResult)
 end;
 
 class function TSMLCalcul.Operation(const ASML: string): string;
 begin
   with TSMLCalcul.Create do
   try
-    Result := ExtractOperation(ASML)
+    if TSMLConfiance.Confidence(ASML) > Params.CeilGauss
+      then Result := ExtractOperation(ASML)
+      else Result := 'poor'
   finally
     Free
   end
@@ -1748,20 +1983,8 @@ end;
 
 procedure TSMLCalcul.SetSML(const Value: string);
 begin
-  FSML := Value
-end;
-
-function TSMLCalcul.Value_: string;
-begin
-  Result := GetBeforStr(FSML, '</Value>');
-  Result := GetAfterStr(Result, '<Value');
-  Result := GetAfterStr(Result, '>')
-end;
-
-function TSMLCalcul.ToDot(const Value: string): string;
-begin
-  if Pos(',', Value) = 0 then Result := Value
-    else Result := Trim(SubstrSeplaceInText(Value, ',', '.'))
+  FSML := Value;
+  FTag := TSMLConfiance.TagStr(FSML)
 end;
 
 { TStrFifoStack }
@@ -1849,7 +2072,8 @@ begin
   S := GetTickCount + ms;
   with Application do
     repeat
-      Sleep( 10 )
+      Sleep( 10 );
+      Application.ProcessMessages
     until Self.Terminated or Terminated or (GetTickCount > S)
 end;
 
@@ -2088,7 +2312,14 @@ end;
 
 procedure TGramFactories.GaussProcess_(const SML: string; const ARecorder: TNewRecorder);
 begin
-  
+  with ARecorder do 
+    if CurrentMetier = m_gauss then begin
+      GaussDisable;
+      if KeyReadBoolean(BufferKey, 'CalcFormVisible') then begin
+        TCalcWriteThread.Create( GaussDisplayForm.RichEdit );
+        CalcResultVoiceReadActivate;
+      end
+    end else GaussDisable;
 end;
 
 class procedure TGramFactories.GridProcess(const SML: string;
@@ -2125,33 +2356,11 @@ end;
 
 procedure TGramFactories.PauseProcess_(const SML: string;
   const ARecorder: TNewRecorder);
-var
-  PassByNone: Boolean;
 begin
   with ARecorder do
   try
     case TSMLConfiance.Tag( SML ) of
-      901 : if (Mode = rm_listen) and (TSMLConfiance.Confidence(SML) > 0.92) then begin
-              PassByNone := False;
-              case PrevMetier of
-                m_fumier  : FumierActivate;
-                m_gauss   : GaussActivate;
-                m_spell   : SpellActivate;
-                m_elite   : EliteActivate;
-                else begin
-                  NoneActivate;
-                  PassByNone := True;
-                end
-              end;
-              if not PassByNone and IsGridOpened then GridActivate
-            end;
-      { --- fun comments }
-      1001 : if (Mode = rm_listen) and (CurrentMetier <> m_elite) then TFunTalk.NightMare;
-      1002 : if (Mode = rm_listen) and (CurrentMetier <> m_elite) then TFunTalk.ThankYou;
-      1003 : if (Mode = rm_listen) and (CurrentMetier <> m_elite) then TFunTalk.Meteo;
-      1004 : if (Mode = rm_listen) and (CurrentMetier <> m_elite) then TFunTalk.Meteo_we;
-      1005 : if (Mode = rm_listen) and (CurrentMetier <> m_elite) then TFunTalk.OkGoogle;
-      1006 : if (Mode = rm_listen) and (CurrentMetier <> m_elite) then TFunTalk.ThankMission;
+      901 : if IsListenCommandCheck(SML, 0.90) then PauseBackActivate;
     end
   finally
   end
@@ -2183,6 +2392,8 @@ begin
   with ARecorder do
   try
     case TSMLConfiance.Tag( SML ) of
+      { --- Censured }
+      99999999 : if IsListen then TCensureThread.Create(SML, TalkativeText);
       { --- Main states }
       1   : Mode := rm_sleep;
       2   : Mode := rm_listen;
@@ -2191,69 +2402,86 @@ begin
       4   : CancelActivate;
       5   : YesActivate;
       6   : NoActivate;
-      7   : if (Mode = rm_listen) or HelpDlg.Visible then EchapActivate;
+      7   : if IsListen or HelpDlg.Visible then EchapActivate;
       9   : AppCloseActivate;
       { --- Time function }
-      10  : if Mode = rm_listen then TSpeaker.TalkNP(WhatTime);
+      10  : if IsListenCommandCheck(SML, 0.75) then TSpeaker.TalkNP(WhatTime);
       { --- fun comments }
-      11  : if Mode = rm_listen then TSpeaker.TalkNP('leur');
-      12  : if Mode = rm_listen then TSpeaker.TalkNP('leur qu''il est');
+      11  : if IsListen then TSpeaker.TalkNP('leur');
+      12  : if IsListen then TSpeaker.TalkNP('leur qu''il est');
       { --- Mouse actions }
-      20  : if Mode = rm_listen then MouseLeftActivate;
-      21  : if Mode = rm_listen then MouseRightActivate;
-      22  : if Mode = rm_listen then MouseDoubleActivate;
-      23  : if Mode = rm_listen then MouseMiddleActivate;
+      20  : if IsListen then MouseLeftActivate;
+      21  : if IsListen then MouseRightActivate;
+      22  : if IsListen then MouseDoubleActivate;
+      23  : if IsListen then MouseMiddleActivate;
+      { --- Date function }
+      25  : if IsListenCommandCheck(SML, 0.75) then TSpeaker.TalkNP(WitchDate);
+      26  : if IsListenCommandCheck(SML, 0.75) then TSpeaker.TalkNP(WitchFullDate);
+      27  : if IsListenCommandCheck(SML, 0.75) then TSpeaker.TalkNP(WitchDayOfWeek);
       { --- Dispay app version }
       30  : AppVersionShowActivate;
+      { --- Start with Windows }
+      40  : if IsListenCommandCheck(SML, 0.87) then StartWithWindowsActivate;
+      41  : if IsListenCommandCheck(SML, 0.87) then NoStartWithWindowsActivate;
+      42  : if IsListenCommandCheck(SML, 0.87) then AskStartWithWindowsActivate;
+      { --- Voice control }
+      50  : if IsListen then TalkVoiceDisabled := False; //Voice enabled
+      51  : if IsListen then TalkVoiceDisabled := True;  //Voice disabled
+      52  : if IsListen then CalcResultVoiceReadActivate;
+      53  : if IsListen then VoiceReadActivate;
       { --- Conversation mode }
-      100 : if Mode = rm_listen then FumierActivate;
-      101 : if Mode = rm_listen then if CurrentMetier = m_fumier then NoneActivate;
+      100 : if IsListen then FumierActivate;
+      101 : if IsListen then if CurrentMetier = m_fumier then NoneActivate;
       { --- Calculation mode }
-      200 : if Mode = rm_listen then GaussActivate;
-      201 : if Mode = rm_listen then if CurrentMetier = m_gauss then NoneActivate;
+      200 : if IsListen then GaussActivate;
+      201 : if IsListen then if CurrentMetier = m_gauss then NoneActivate;
+      202 : if IsListen then CalcFormShowActivate;
+      203 : if IsListen then CalcFormHideActivate;
+      204 : if IsListen then CalcFormDeleteActivate;
+      205 : if IsListen then CalcFormRestoreActivate;
+      206 : if IsListen then CalcCopyActivate;
+      207 : if IsListen then TSpeaker.TalkNP('le résultat');
+      208 : if IsListen then TSpeaker.TalkNP('la réponse');
       { --- Navigation mode }
-      300 : if Mode = rm_listen then SpellActivate;
+      300 : if IsListen then SpellActivate;
       { --- Func Raoul }
-      400 : if Mode = rm_listen then SensibilityActivate;
-      401 : if Mode = rm_listen then HighPerfActivate;
-      402 : if Mode = rm_listen then MicroCasqueActivate;
-      403 : if Mode = rm_listen then MicroStudioActivate;
-      404 : if Mode = rm_listen then MicroEnceinteActivate;
+      400 : if IsListen then SensibilityActivate;
+      401 : if IsListen then HighPerfActivate;
+      402 : if IsListen then MicroCasqueActivate;
+      403 : if IsListen then MicroStudioActivate;
+      404 : if IsListen then MicroEnceinteActivate;
       { --- Grid color selection }
-      500 : if Mode = rm_listen then PickerGridShowActivate;
-      502 : if Mode = rm_listen then PickerGridMonitorPrevActivate;
-      503 : if Mode = rm_listen then PickerGridMonitorNextActivate;
-      504 : if Mode = rm_listen then PickerGridPointsShowActivate;
+      500 : if IsListen then PickerGridShowActivate;
+      502 : if IsListen then PickerGridMonitorPrevActivate;
+      503 : if IsListen then PickerGridMonitorNextActivate;
+      504 : if IsListen then PickerGridPointsShowActivate;
       { --- Help }
-      550 : if Mode = rm_listen then TalkativeFacade.ShowHelp;
-      551 : if HelpView.Visible then begin
-              HelpDlg.SetFocus;
-              HelpView.Close
-            end;
+      550 : if IsListen then HelpShowActivate;
+      551 : HelpHideActivate;
       { --- Facade manipulaation }
-      600 : if Mode = rm_listen then RaoulIntRightActivate;
-      601 : if Mode = rm_listen then RaoulIntLeftActivate;
-      602 : if Mode = rm_listen then RaoulIntTopActivate;
-      603 : if Mode = rm_listen then RaoulIntBottomActivate;
-      604 : if Mode = rm_listen then RaoulIntCmdShowActivate;
-      605 : if Mode = rm_listen then RaoulIntCmdHideActivate;
-      606 : if Mode = rm_listen then RaoulIntTextShowActivate;
-      607 : if Mode = rm_listen then RaoulIntTextHideActivate;
-      608 : if Mode = rm_listen then RaoulIntVumetreShowActivate;
-      609 : if Mode = rm_listen then RaoulIntVumetreHideActivate;
+      600 : if IsListen then RaoulIntRightActivate;
+      601 : if IsListen then RaoulIntLeftActivate;
+      602 : if IsListen then RaoulIntTopActivate;
+      603 : if IsListen then RaoulIntBottomActivate;
+      604 : if IsListen then RaoulIntCmdShowActivate;
+      605 : if IsListen then RaoulIntCmdHideActivate;
+      606 : if IsListen then RaoulIntTextShowActivate;
+      607 : if IsListen then RaoulIntTextHideActivate;
+      608 : if IsListen then RaoulIntVumetreShowActivate;
+      609 : if IsListen then RaoulIntVumetreHideActivate;
       { --- Play to Elite Dangerous }
-      700 : if Mode = rm_listen then DoOnEliteActivate;
+      700 : if IsListen then DoOnEliteActivate;
       { --- Func Raoul }
       800 : RaoulRelaunching;
-      900 : if Mode = rm_listen then PauseActivate;
-      901 : if Mode = rm_listen then NoneActivate;
-      { --- fun comments }
-      1001 : if (Mode = rm_listen) and (CurrentMetier <> m_elite) then TFunTalk.NightMare;
-      1002 : if (Mode = rm_listen) and (CurrentMetier <> m_elite) then TFunTalk.ThankYou;
-      1003 : if (Mode = rm_listen) and (CurrentMetier <> m_elite) then TFunTalk.Meteo;
-      1004 : if (Mode = rm_listen) and (CurrentMetier <> m_elite) then TFunTalk.Meteo_we;
-      1005 : if (Mode = rm_listen) and (CurrentMetier <> m_elite) then TFunTalk.OkGoogle;
-      1006 : if (Mode = rm_listen) and (CurrentMetier <> m_elite) then TFunTalk.ThankMission;
+      900 : if IsListen then PauseActivate;
+      901 : if IsListen then NoneActivate;
+      { --- fun comments - not available in elite mode }
+     1001 : if IsListenCommandCheck(SML, 0.75, [m_elite]) then TFunTalk.NightMare;
+     1002 : if IsListenCommandCheck(SML, 0.75, [m_elite]) then TFunTalk.ThankYou;
+     1003 : if IsListenCommandCheck(SML, 0.75, [m_elite]) then TFunTalk.Meteo;
+     1004 : if IsListenCommandCheck(SML, 0.75, [m_elite]) then TFunTalk.Meteo_we;
+     1005 : if IsListenCommandCheck(SML, 0.75, [m_elite]) then TFunTalk.OkGoogle;
+     1006 : if IsListenCommandCheck(SML, 0.75, [m_elite]) then TFunTalk.ThankMission;
     end
   except
   end
@@ -2637,9 +2865,9 @@ begin
     if Ran = AleaMeteo then Ran := (Ran + 1) mod (3);
     AleaMeteo := Ran;
     case Ran of
-      0 : TalkFmt(12, 10, 'tu sais pas quoi ?', -9, -8, 'Google sait pas jouer à élite !!!');
-      1 : TalkFmt(25, 35, 'Ok Google ? Ok gougou gueule ?', -35, -20, 'OK gou gougoug gueule !');
-      2 : TalkFmt(15, 10, 'Il est pas là ! ', -25, -7, 'pa Ok Google !');
+      0 : TalkFmt(12, 10, 'tu sais pas quoi ?', -5, -2, 'Google se tape alexa la ninfo !');
+      1 : TalkFmt(25, 35, 'Ok Google ?', -5, -17, 'tu n''as qu''ça à dire ?');
+      2 : TalkFmt(15, 10, 'Il est pas là ?', -25, -7, 'pa Ok Google !');
     end
   end
 end;
@@ -2674,8 +2902,8 @@ begin
     if Ran = AleaNightMare then Ran := (Ran + 1) mod (20);
     AleaNightMare := Ran;
     case Ran of
-      1  : TalkFmt(12, 10, 'dis plutôt', -9, -8, 'j''me suis bien gavé sur vot''dos !!!');
-      9  : TalkFmt(25, 35, 'tu l''penses vraiment ?', -20, -20, 'moi j''chui pas sûr !');
+      1  : TalkFmt(12, 10, 'dis plutôt', -7, -6, 'j''me suis bien gavé sur vot''dos !!!');
+      9  : TalkFmt(12, 10, 'il t''arrive quoi là ?', 14, 10, 'un début d''anévrisme ?');
       18 : TalkFmt(15,  5, 'tu deviens poli ? ', -5, 10, 'alors là, je dis chapeau ba !');
     end
   end
@@ -2707,7 +2935,7 @@ begin
       AleaNightMare := Ran;
       case Ran of
         0 : TalkFmt(10, 5,  'de rien');
-        2 : TalkFmt(25, 15, 'la politesse, ça fait plaisir!!!');
+        2 : TalkFmt(25, 15, 'la politesse, ça se perd !!!');
         4 : TalkFmt(15, 10, 'ioure ouelle comme');
       end
     end
@@ -2794,40 +3022,43 @@ var
 begin
   try
     Cmd := StrToInt( ASt );
-    case Cmd of
-      7   : EchapActivate;
-      8   : RetourActivate; //Grid level back
-      { --- Mouse actions }
-      20  : if Mode = rm_listen then MouseLeftActivate;
-      21  : if Mode = rm_listen then MouseRightActivate;
-      22  : if Mode = rm_listen then MouseDoubleActivate;
-      23  : if Mode = rm_listen then MouseMiddleActivate;
-      { --- Grid functions }
-      501 : if Mode = rm_listen then PickerGridCloseActivate;
-      505 : if Mode = rm_listen then PickerGridPointsHideActivate;
-      506 : if Mode = rm_listen then PickerGridPointPrevActivate;
-      507 : if Mode = rm_listen then PickerGridPointNextActivate;
-      508 : if Mode = rm_listen then PickerGridPointSelectActivate;
-      509 : if Mode = rm_listen then PickerGridPointAddActivate;
+    if IsListen then
+      case Cmd of
+        7   : EchapActivate;
+        8   : RetourActivate; //Grid level back
+        { --- Mouse actions }
+        20  : MouseLeftActivate;
+        21  : MouseRightActivate;
+        22  : MouseDoubleActivate;
+        23  : MouseMiddleActivate;
+        { --- Grid functions }
+        501 : PickerGridCloseActivate;
+        505 : PickerGridPointsHideActivate;
+        506 : PickerGridPointPrevActivate;
+        507 : PickerGridPointNextActivate;
+        508 : PickerGridPointSelectActivate;
+        509 : PickerGridPointAddActivate;
 
-      510 : if Mode = rm_listen then PickerGridWhiteActivate;
-      511 : if Mode = rm_listen then PickerGridGrayActivate;
-      512 : if Mode = rm_listen then PickerGridBlackActivate;
-      513 : if Mode = rm_listen then PickerGridRedActivate;
-      514 : if Mode = rm_listen then PickerGridGreenActivate;
-      515 : if Mode = rm_listen then PickerGridBlueActivate;
-      516 : if Mode = rm_listen then PickerGridYellowActivate;
-      517 : if Mode = rm_listen then PickerGridOrangeActivate;
-      518 : if Mode = rm_listen then PickerGridPinkActivate;
-      519 : if Mode = rm_listen then PickerGridPointClearActivate;
-    end
+        510 : PickerGridWhiteActivate;
+        511 : PickerGridGrayActivate;
+        512 : PickerGridBlackActivate;
+        513 : PickerGridRedActivate;
+        514 : PickerGridGreenActivate;
+        515 : PickerGridBlueActivate;
+        516 : PickerGridYellowActivate;
+        517 : PickerGridOrangeActivate;
+        518 : PickerGridPinkActivate;
+        519 : PickerGridPointClearActivate;
+      end
+    else
+      { REM : ???? why }
+      case Cmd of
+        7   : EchapActivate;
+        8   : RetourActivate; //Grid level back
+      end
   except
   end
 end;
-
-var
-  EliteMode_FAILED : string =
-     'Echec car Elite Dangerous n''est pas en cours de fonctionnement';
 
 procedure TNewRecorder.ActionsOnHelp(const ASt: string);
 var
@@ -2835,10 +3066,11 @@ var
 
   procedure HeplChange(const Value: THelpKind); begin
     Helps.Current := Value;
-    HelpView.FirstDisplay;
+    HelpView.FirstDisplay
   end;
 
 begin
+  if KeyReadBoolean(AppKey, 'HelpVisible') then 
   try
     Cmd := StrToInt( ASt );
     if Cmd < 600 then HelpView.TitleSelect(Cmd - 551)
@@ -2856,6 +3088,10 @@ begin
   end
 end; {ActionsOnHelp}
 
+var
+  EliteMode_FAILED : string =
+     'Echec car Elite Dangerous n''est pas en cours de fonctionnement';
+
 function TNewRecorder.DoOnEliteActivate: Boolean;
 begin
   Result := IsEliteRunningUTLS;
@@ -2865,4 +3101,139 @@ begin
   end
 end;
 
+{ TCensureThread }
+
+procedure TCensureThread.Blinking(const Message: string);
+var
+  i   : Integer;
+  ASt : string;
+begin
+  if CanProcess then
+  for i := 1 to 5 do begin
+    case i mod 2 of
+      0 : ASt := EmptyStr;
+      1 : ASt := Message;
+    end;
+    ThTalkativeText.Caption := ASt;
+    ThDelay(200);
+  end;
+end;
+
+function TCensureThread.CanProcess: Boolean;
+begin
+  Result := AnsiPos(TSMLConfiance.Text(ThSML), ThTalkativeText.Caption) > 0;
+  Result := Result and (ThTalkativeText.Caption <> 'CENSURED')
+end;
+
+constructor TCensureThread.Create(const ASML: string;
+  const ATalkativeText: TcxLabel);
+begin
+  inherited Create( False );
+  {Launch on create}
+  ThSML           := ASML;
+  ThTalkativeText := ATalkativeText;
+  FreeOnTerminate := True;
+  Priority        := tpLowest
+end;
+
+procedure TCensureThread.Execute;
+begin
+  inherited;
+  ThDelay(2800);
+  Synchronize( Process )
+end;
+
+procedure TCensureThread.Process;
+begin
+  Blinking('CENSURED');
+end;
+
+procedure TCensureThread.ThDelay(ms: Cardinal);
+var S: Cardinal;
+begin
+  S := GetTickCount + ms;
+  with Application do
+    repeat
+      Sleep( 10 );
+      Application.ProcessMessages
+    until Self.Terminated or Terminated or (GetTickCount > S)
+end;
+
+{ TTalkThread }
+
+constructor TTalkThread.Create(const ARecorder: TNewRecorder;
+  const AVoiceValue: string);
+begin
+  inherited Create( False );
+  {Launch on create}
+  ThRecorder      := ARecorder;
+  ThVoiceValue    := AVoiceValue;
+  FreeOnTerminate := True;
+  Priority        := tpLowest
+end;
+
+procedure TTalkThread.Execute;
+begin
+  inherited;
+  ThDelay(350);
+  Synchronize( Process )
+end;
+
+procedure TTalkThread.Process;
+begin
+  with ThRecorder do TSpeaker.TalkNP( ThVoiceValue )
+end;
+
+procedure TTalkThread.ThDelay(ms: Cardinal);
+var S: Cardinal;
+begin
+  S := GetTickCount + ms;
+  with Application do
+    repeat
+      Sleep( 10 );
+      Application.ProcessMessages
+    until Self.Terminated or Terminated or (GetTickCount > S)
+end;
+
+{ TCalcWriteThread }
+
+constructor TCalcWriteThread.Create(const ARichEdit: TRichEdit);
+begin
+  inherited Create( False );
+  {Launch on create}
+  ThRichEdit      := ARichEdit;
+  FreeOnTerminate := True;
+  Priority        := tpLowest
+end;
+
+procedure TCalcWriteThread.Execute;
+begin
+  inherited;
+  ThDelay(90);
+  Synchronize( Process )
+end;
+
+procedure TCalcWriteThread.Process;
+begin
+  THistoDisplay.AddTo(
+    ThRichEdit,
+    KeyReadString(BufferKey, 'ExprStr'),
+    KeyReadString(BufferKey, 'ExprValue')
+  )
+end;
+
+procedure TCalcWriteThread.ThDelay(ms: Cardinal);
+var S: Cardinal;
+begin
+  S := GetTickCount + ms;
+  with Application do
+    repeat
+      Sleep( 10 );
+      Application.ProcessMessages
+    until Self.Terminated or Terminated or (GetTickCount > S)
+end;
+
+initialization
+  KeyWrite(BufferKey, 'IndexMetier', 0)
+finalization
 end.

@@ -39,11 +39,10 @@ gr_link.cfg
 gr_main.cfg
 gr_metier.cfg
 gr_temps.cfg
-Numbers.cfg
-Numeration.cfg
 Spelling.cfg
 switch.cfg
 _Spelling.cfg
 Pause.cfg
 Gridmode.cfg
 help.cfg
+Arinum.cfg

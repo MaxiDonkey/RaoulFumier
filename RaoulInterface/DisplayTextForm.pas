@@ -38,7 +38,7 @@ implementation
 {$R *.dfm}
 
 uses
-  main, uRaoulDisplay, ScreenDlg, EliteBindingsTools;
+  main, uRaoulDisplay, ScreenDlg, EliteBindingsTools, WebAPIs, uEliteUtils;
 
 procedure TTalkativeBox.FormShow(Sender: TObject);
 begin
@@ -81,15 +81,16 @@ var
       VK_End,   VK_Prior,    VK_Next,    VK_Insert,   VK_Delete
   ];
 
-procedure SendTest; begin
-    try EliteForeGround; except end;
-    keybd_event(VK_RCONTROL, MapVirtualKey(VK_RCONTROL,   0), KEYEVENTF_KEYDOWN, 0);
-    keybd_event(VK_LMENU, MapVirtualKey(VK_LMENU,   0), KEYEVENTF_KEYDOWN, 0);
-    keybd_event(VkKeyScan('T'), MapVirtualKey(VkKeyScan('T'),   0), KEYEVENTF_KEYDOWN, 0);
-    Sleep( 10 );
-    keybd_event(VkKeyScan('T'), MapVirtualKey(VkKeyScan('T'),   0), KEYEVENTF_KEYUP, 0);
-    keybd_event(VK_LMENU, MapVirtualKey(VK_LMENU,   0), KEYEVENTF_KEYUP, 0);
-    keybd_event(VK_RCONTROL, MapVirtualKey(VK_RCONTROL,   0), KEYEVENTF_KEYUP, 0)
-  end;
+procedure SendTest;
+begin
+  try EliteForeGround; except end;
+  keybd_event(VK_RCONTROL, MapVirtualKey(VK_RCONTROL,   0), KEYEVENTF_KEYDOWN, 0);
+  keybd_event(VK_LMENU, MapVirtualKey(VK_LMENU,   0), KEYEVENTF_KEYDOWN, 0);
+  keybd_event(VkKeyScan('T'), MapVirtualKey(VkKeyScan('T'),   0), KEYEVENTF_KEYDOWN, 0);
+  Sleep( 10 );
+  keybd_event(VkKeyScan('T'), MapVirtualKey(VkKeyScan('T'),   0), KEYEVENTF_KEYUP, 0);
+  keybd_event(VK_LMENU, MapVirtualKey(VK_LMENU,   0), KEYEVENTF_KEYUP, 0);
+  keybd_event(VK_RCONTROL, MapVirtualKey(VK_RCONTROL,   0), KEYEVENTF_KEYUP, 0)
+end;
 
 end.

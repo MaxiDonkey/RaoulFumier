@@ -78,14 +78,13 @@ Source: ..\bin\Grammar\gr_link.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\gr_main.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\gr_metier.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\gr_temps.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\Numbers.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\Numeration.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\Spelling.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\switch.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\_Spelling.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\Pause.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\Gridmode.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\help.cfg; DestDir: {app}\Grammar
+Source: ..\bin\Grammar\Arinum.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Help\EliteRoot.roo; DestDir: {app}\Help
 Source: ..\bin\Help\EliteRubriks.dat; DestDir: {app}\Help
 Source: ..\bin\Help\MainRoot.roo; DestDir: {app}\Help

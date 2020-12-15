@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, NB30, ShellAPI, Sockets, StrCopyUtils;
+  Dialogs, NB30, ShellAPI, Sockets, ComObj, ShlObj, StrCopyUtils, uRegistry;
 
 procedure Delay(ms: Cardinal);
 function  CreateGuid: string;
@@ -22,6 +22,12 @@ procedure OpenExecute(AppName: string; AppParams: string; Displayed: Integer = S
 function  StrMsg(StrLines: array of const):string;
 function  StrMsgofString(StrLines: array of string):string;
 
+{ --- Make app link file }
+function  MakeAppLink: string;
+function  StartFolder: string;
+function  AppStartWithWindows: Boolean;
+procedure AppStartWithWindowsDelete;
+
 function MsgDlg(const Msg: string; DlgType: TMsgDlgType;
   Buttons: TMsgDlgButtons; HelpCtx: Longint): Integer;
 
@@ -32,7 +38,7 @@ var
 implementation
 
 uses
-  ActiveX, IdHttp, Consts, StdCtrls, ExtCtrls, Math, DateUtils,
+  ActiveX, IdHttp, Consts, StdCtrls, ExtCtrls, Math, DateUtils, WebAPIs,
   {dev Express}
   cxButtons;
 
@@ -77,6 +83,7 @@ var
   AUrl: string;
 begin
   Result := EmptyStr;
+  if not InternetCheck then Exit;
   AUrl   := 'http://ipinfo.io/json';
   with TIdHTTP.Create(nil) do
     try
@@ -137,11 +144,11 @@ var
 begin
   FillChar(NCB, SizeOf(NCB), 0);
   NCB.ncb_command := Char(NCBENUM);
-  NCB.ncb_buffer := @AdapterList;  
-  NCB.ncb_length := SizeOf(AdapterList);  
-  Netbios(@NCB);  
+  NCB.ncb_buffer := @AdapterList;
+  NCB.ncb_length := SizeOf(AdapterList);
+  Netbios(@NCB);
   if Byte(AdapterList.length) > 0 then Result := GetAdapterInfo(AdapterList.lana[0])
-    else Result := 'mac not found';  
+    else Result := 'mac not found'
 end;
 
 procedure OpenExecute(AppName: string; AppParams: string; Displayed: Integer);
@@ -473,5 +480,94 @@ begin
     DividerLine, Message.Caption, sLineBreak, DividerLine, ButtonCaptions,
     sLineBreak, DividerLine]);
 end;
+
+{ --- Make app link file ------------------------------------------------------}
+
+function GetPathWinFolders( _iddossier: integer ): string;
+type	// API non déclarées dans SHFolder.dll
+  TSHGetFolderPath = function (hwnd: HWND; csidl: Integer; hToken: THandle; dwFlags: DWord;
+  pszPath: PAnsiChar): HRESULT; stdcall;
+var
+  FolderNames      : array[ 0..MAX_PATH ] of char;
+  SHGetFolderPath  : TSHGetFolderPath;
+  f_LibHdl         : THandle;
+begin
+  Result := EmptyStr;
+  { --- Load SHFolder.dll }
+  @SHGetFolderPath:= nil;
+  f_LibHdl := LoadLibrary( PChar( 'SHFolder.dll' ) ) ;
+  if f_LibHdl <> 0 then
+    @SHGetFolderPath := GetProcAddress( f_LibHdl, 'SHGetFolderPathA' );
+  { --- API Adress found }
+  if @SHGetFolderPath <> nil then begin
+    SHGetFolderPath ( 0, _iddossier ,0 , 0, FolderNames );
+    Result := FolderNames
+  end;
+  { --- SHFolder.dll free }
+  FreeLibrary( f_LibHdl );
+  { --- Memory free }
+  @SHGetFolderPath := nil ;
+end;
+
+function CreateAppLinkFile(FicSource, FicLink, Description, WorkFolder,
+  AssociatedIcon :string; NumIcone :integer):string;
+var
+  ShellLink : IShellLink;
+begin
+  { --- Add extension if necessary }
+  if UpperCase( ExtractFileExt(FicLink) ) <> '.LNK' then
+     FicLink := Format('%s.lnk', [FicLink]);
+  Result     := FicLink;
+  ShellLink  := CreateComObject(CLSID_ShellLink) as IShellLink;
+  with ShellLink do begin
+    SetDescription      ( PAnsiChar(Description) );
+    SetPath             ( PAnsiChar(FicSource)   );
+    SetWorkingDirectory ( PAnsiChar(WorkFolder)  );
+    SetShowCmd          ( SW_SHOW                );
+    if AssociatedIcon <> EmptyStr then
+      SetIconLocation(PAnsiChar(AssociatedIcon), NumIcone)
+  end;
+  (ShellLink as IpersistFile).Save(StringToOleStr(FicLink), true);
+end;
+
+const
+  CSIDL_COMMON_STARTUP= 24;
+
+function MakeAppLink:string;
+begin
+  Result := ExtractFileName( CreateAppLinkFile(Application.ExeName,
+                ExtractFileName(Application.ExeName), 'RaoulFumier',
+                ExtractFileDir(Application.ExeName), '', 0 ));
+  CopyFile(
+    PansiChar( Result ),
+    PansiChar( StartFolder + '\' + Result ),
+    False)
+end;
+
+function StartFolder: string;
+begin
+  Result := GetPathWinFolders( CSIDL_COMMON_STARTUP )
+end;
+
+function StartFolderAppLink: string;
+begin
+  Result := Format('%s\%s.lnk', [StartFolder, ExtractFileName( Application.ExeName )])
+end;
+
+function AppStartWithWindows: Boolean;
+begin
+  Result := FileExists( StartFolderAppLink )
+end;
+
+procedure AppStartWithWindowsDelete;
+begin
+  DeleteFile( StartFolderAppLink )
+end;
+
+{  --- END App link maker -----------------------------------------------------}
+
+
+
+
 
 end.

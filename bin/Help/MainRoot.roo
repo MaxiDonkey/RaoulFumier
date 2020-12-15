@@ -1,12 +1,13 @@
 Avertissements#"c'est qui raoul ?";"reconnaissance enrichie";"et après ?";"crédits"
-Général#"Ouverture - fermeture";"Interface";"Changer d'écran";"aide"
+Général#"Ouverture - fermeture";"Interface";"Changer d'écran";"aide";"démarrage avec windows"
 Sensibilité#"Ouverture";"Réglages";"Validation"
 Grille#"Ouverture";"Zoom - Dézoom";"Position sélection";"Position enregistrer";"Liste des positions";"Changer d'écran";"Fermer la grille";"Fermer les points"
 Pause#"Mise en pause";"Quitter la pause"
-Modes#"Accueil";"Grille";"Elite Dangerous";"Navigation"
-Divers#"Heure courante";"Version logiciel";"La souris"
+Modes#"Accueil";"Grille";"Elite Dangerous";"Navigation";"Gauss"
+Divers#"Heure courante";"Date du jour";"Version logiciel";"La souris"
 Funnies#"Météo";"Wing";"Ok Google";"Merci"
 Paramètres#"Redémarrage";"Mises-à-jour";"elite bindings"
 Quitter#"Fermer Raoul"
+Mode Calcul - GAUSS#"accès";"la feuille de calcul";"la voix";"les variables";"copier le résultat"
 
 

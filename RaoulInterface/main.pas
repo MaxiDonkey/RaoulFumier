@@ -72,7 +72,8 @@ implementation
 
 uses
  uRegistry, DisplayTextForm, ScreenDlg, uEmbendedAncestor, uEmbendedDlg,
- Math, uRecorderTools, KeysDef, uRaoulUpdater, uEliteManager;
+ Math, uRecorderTools, KeysDef, uRaoulUpdater, uEliteManager, WebAPIs,
+ uSplashWaitForm, uGaussDisplay;
 
 procedure TMainForm.AssignKeyFun;
 begin
@@ -94,7 +95,11 @@ begin
   TAppUpdater.TryReplaceUpdater;                 { --- Remplace l'updater si nécessaire }
   TAppUpdater.TryToUpdate;                       { --- Normalement se referme ici si l'update se lance }
 
+  { --- If Internet connexion failed }
+  if not InternetCheck then TSplashWaitForm.Splash('LOCAL START CHECKED');
+  { --- Define main thread priority }
   SetPriorityClass(GetCurrentProcess, REALTIME_PRIORITY_CLASS );
+  
   { --- INITTIALISATTION INTERNE }
   FStarter := True;
   TKeyMessageSender.Initialize;                  { --- Instantiation des classes  gérant le bindings d'Elite }
@@ -141,7 +146,7 @@ end;
 procedure TMainForm.KeyCtrlReturn(Sender: TObject);
 begin
   {for tests pré-peoduction }
-//  TAppUpdater.TryToRelauch;                      { --- TODO inclure vocalement }
+//  TAppUpdater.TryToRelauch;                      
   ForegroundDisplay
 end;
 
@@ -153,12 +158,14 @@ end;
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+  with GaussDisplayForm do if Visible then Close;
   {Recorder}
   InternRecorder.DoOnClose;
   TSQLRaoul.UserDataExport;
 end;
 
 procedure TMainForm.DelayedStartTimer(Sender: TObject);
+{ --- delayed of MainStartDelayed value --> let Grammar check process running }
 begin
   { --- Lancement retardé après affichage }
   if KeyReadBoolean(BufferKey, 'RecorderStarted') then begin
@@ -170,7 +177,9 @@ begin
     { --- Help prepare if not Boot process }
     with THelpDlg do if not IsBootProcess then HelpDefine
       else BootDelayed.Enabled := True
-  end
+  end;
+  { --- Si éventuellement l'avertissement est ouvert }
+  TSplashWaitForm.SplashHide
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -184,7 +193,10 @@ begin
   FStarter := False;
   TInternRecorder.Initialize;                    { --- Recorder instanciation et initialisaton}
   TRecordLoader.Create(Recorder);                { --- Instantiation et démarrage du thread chargé d'activer le recorder }
-  with DelayedStart do Enabled := True;
+  with DelayedStart do begin
+    Interval := MainStartDelayed + 1500; 
+    Enabled  := True
+  end
 end;
 
 procedure TMainForm.FormActivate(Sender: TObject);
@@ -195,8 +207,11 @@ end;
 procedure TMainForm.DistantDataPrepare(Sender: TObject);
 { --- Evénement réalisé lors de l'instantiation de la classe TDistantData }
 begin
-  { --- Ne se connecte pas au serveur SQL : Les mises à jour automatiques ne sont pas gérées }
-  if DistantData.Password = EmptyStr then Exit;
+  { --- Ne se connecte pas au serveur SQL
+          si mot de passe serveur est absent ou
+          si Internet est inacessible
+     Les mises à jour automatiques ne sont pas gérées, durant toute la session }
+  if (DistantData.Password = EmptyStr) or not InternetCheck then Exit;
 
   { --- Vérification de la version : effectue la mise à jour si nécessaire }
   if not Assigned(SQLRaoul) then SQLRaoul := TSQLRaoul.Create;
@@ -209,6 +224,8 @@ begin
   if TAppUpdater.TryGrammarUpdate then TAppUpdater.TryToRelauch;
   { --- Charger la mise à jour }
   if KeyReadInt(Appkey, 'UpdateAction') = 1 then TAppUpdater.TryToLoad;
+  { --- Confirm user Pseudo }
+  TSQLRaoul.CheckPseudo;
 end;
 
 function TMainForm.GetCanCloseIdx: Integer;

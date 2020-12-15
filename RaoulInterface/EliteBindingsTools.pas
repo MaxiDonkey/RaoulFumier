@@ -88,32 +88,15 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes,
   Graphics, Controls, Forms, Dialogs, ExtCtrls, StdCtrls,
-  uRegistry, StrCopyUtils, Math;
+  uRegistry, StrCopyUtils, Math, uEliteUtils;
 
 const
   KEYEVENTF_KEYDOWN  = 0;
   WITH_KEYUP         = True;
   WITHOUT_KEYUP      = False;
-  SHELL_ACCES        = 'Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders';  //Registry key
-  SAVE_GAMES_KEY     = '{4C5C32FF-BB9D-43B0-B5B4-2D72E54EAAA4}';                            //Registry key
-  BINDING_OPT_KEY    = 'Local AppData';
-  LOCAL_SAVE         = 'SaveBindigs';
-  TEMP_CUSTOM_FILE   = 'Temp.Custom.3.0.binds';
-  CUSTOM_FILE        = 'Custom.3.0.binds';
-  START_PRESET       = 'StartPreset.start';
-  DISPLAY_SETTINGS   = 'DisplaySettings.xml';
 
-var
-  SavedGamesW    : string = 'Frontier Developments\Elite Dangerous';
-  BindingsFolder : string = 'Frontier Developments\Elite Dangerous\Options\Bindings';
-  GraphicsFolder : string = 'Frontier Developments\Elite Dangerous\Options\Graphics';
-
-function GetFrontierSaveGames: string;
-function GetEliteBindingsFolder: string;
-function GetEliteGraphicsFolder: string;
-
-function EncodeKey(const Key, Mod1, Mod2: Word): Cardinal; overload;
-function EncodeKey(const Key, Mod1, Mod2: string): Cardinal; overload;
+function  EncodeKey(const Key, Mod1, Mod2: Word): Cardinal; overload;
+function  EncodeKey(const Key, Mod1, Mod2: string): Cardinal; overload;
 procedure DecodeKey(const Value: Cardinal; var Key, Func1, Func2: Word);
 
 
@@ -125,8 +108,6 @@ const
   XBUTTON1          = $0001;
   XBUTTON2          = $0002;
 
-var
-  ELITE_CLASS : string = 'FrontierDevelopmentsAppWinClass';
 
 function ExtractBalises(const Src: string; Full: Boolean):string;
 
@@ -1240,24 +1221,6 @@ begin
   finally
     Free
   end
-end;
-
-function GetFrontierSaveGames: string;
-begin
-  KeyRead(SHELL_ACCES, SAVE_GAMES_KEY, Result);
-  Result := Format('%s\%s', [Result, SavedGamesW])
-end;
-
-function GetEliteBindingsFolder: string;
-begin
-  KeyRead(SHELL_ACCES, BINDING_OPT_KEY, Result);
-  Result := Format('%s\%s', [Result, BindingsFolder])
-end;
-
-function GetEliteGraphicsFolder: string;
-begin
-  KeyRead(SHELL_ACCES, BINDING_OPT_KEY, Result);
-  Result := Format('%s\%s', [Result, GraphicsFolder])
 end;
 
 const

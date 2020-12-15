@@ -33,7 +33,7 @@ function RaoulKey: string;
 implementation
 
 uses
-  uSplashWaitForm;
+  uSplashWaitForm, uGaussDisplay;
 
 function RaoulKey: string;
 begin
@@ -198,6 +198,7 @@ end;
 
 class procedure TAppUpdater.TryToRelauch;
 begin
+  with GaussDisplayForm do if Visible then Close;
   SetRestart;
   OpenExecute(UPDATER_PROCESS, '-r', SW_HIDE);
   with Application do Terminate

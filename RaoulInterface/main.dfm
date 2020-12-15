@@ -32,7 +32,7 @@ object MainForm: TMainForm
   end
   object DelayedStart: TTimer
     Enabled = False
-    Interval = 200
+    Interval = 30000
     OnTimer = DelayedStartTimer
     Left = 24
     Top = 56
