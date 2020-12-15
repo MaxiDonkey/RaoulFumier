@@ -1475,6 +1475,7 @@ begin
       Sleep( 60 );
       GrammarActivate(TGramType(i), False)
     end;
+
     GrammarActivate(gt_switch);
     GrammarActivate(gt_gauss);
     GrammarActivate(gt_help);

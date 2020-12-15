@@ -49,7 +49,7 @@ type
     procedure KeyBack(Sender: TObject);
     procedure KeyReturn(Sender: TObject);
     procedure KeyCtrlReturn(Sender: TObject);
-    function GetCanCloseIdx: Integer;
+    function  GetCanCloseIdx: Integer;
     procedure SetCanCloseIdx(const Value: Integer);
 
   private
@@ -146,7 +146,7 @@ end;
 procedure TMainForm.KeyCtrlReturn(Sender: TObject);
 begin
   {for tests pré-peoduction }
-//  TAppUpdater.TryToRelauch;                      
+//  TAppUpdater.TryToRelauch;
   ForegroundDisplay
 end;
 
@@ -194,7 +194,7 @@ begin
   TInternRecorder.Initialize;                    { --- Recorder instanciation et initialisaton}
   TRecordLoader.Create(Recorder);                { --- Instantiation et démarrage du thread chargé d'activer le recorder }
   with DelayedStart do begin
-    Interval := MainStartDelayed + 1500; 
+    Interval := MainStartDelayed + 1500;
     Enabled  := True
   end
 end;

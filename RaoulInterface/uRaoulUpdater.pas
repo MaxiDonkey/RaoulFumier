@@ -129,7 +129,7 @@ var
   end;
 
 begin
-  TSplashWaitForm.Splash('Grammars Update');
+  TSplashWaitForm.Splash('Grammars Update'); { --- Pas besoin d'être refermée }
   TraceCreateAndSigning;
   try
     if Trim(ACatalog) <> EmptyStr then with TStringList.Create do
@@ -143,7 +143,7 @@ begin
           { --- Garder la trace de la dernnière sauvegarde }
           SetLocalplCatalog( ACatalog );
           { --- Indiquer que la mmise à jour a effectivement été réalisée }
-          AppParameters.GrammarUpdated := True;
+          AppParameters.GrammarUpdated := True
         finally
           Free
         end
@@ -154,7 +154,6 @@ begin
     with Trace do SaveToFile('GrammarUpdateTrace.txt');
   finally
     Trace.Free;
-    SplashWaitForm.Close;
   end
 end; {UpdateLocalGrammar}
 
@@ -198,7 +197,7 @@ end;
 
 class procedure TAppUpdater.TryToRelauch;
 begin
-  with GaussDisplayForm do if Visible then Close;
+//  try with GaussDisplayForm do if Visible then Close except end;
   SetRestart;
   OpenExecute(UPDATER_PROCESS, '-r', SW_HIDE);
   with Application do Terminate
