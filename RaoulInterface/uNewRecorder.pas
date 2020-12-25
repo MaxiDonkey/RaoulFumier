@@ -973,6 +973,7 @@ end;
 procedure TCustomDefRecorder.FumierActivate;
 begin //A-G
   try
+    { --- Attention Gauss soir être refermé car <item repeat="1-255"> }
     GrammarActivate(gt_gauss,    False);
     GrammarActivate(gt_spell,    False);
     GrammarActivate(gt_elite,    False);
@@ -1007,7 +1008,6 @@ begin //A-G
   TSCRepeater.Initialize;
   try
     GrammarActivate(gt_fumier,   False);
-    GrammarActivate(gt_gauss,    False);
     GrammarActivate(gt_elite,    False);
     GrammarActivate(gt_pause,    False);
     GrammarActivate(gt_switch);
@@ -1022,7 +1022,6 @@ procedure TCustomDefRecorder.EliteActivate;
 begin //A-G
   try
     GrammarActivate(gt_fumier,   False);
-    GrammarActivate(gt_gauss,    False);
     GrammarActivate(gt_spell,    False);
     GrammarActivate(gt_pause,    False);
     GrammarActivate(gt_switch);
@@ -1038,7 +1037,6 @@ procedure TCustomDefRecorder.NoneActivate;
 begin //A-G
   try
     GrammarActivate(gt_fumier,   False);
-//    GrammarActivate(gt_gauss,    False);
     GrammarActivate(gt_spell,    False);
     GrammarActivate(gt_elite,    False);
     GrammarActivate(gt_pause,    False);
@@ -1466,16 +1464,8 @@ end;
 
 procedure TCustomDefRecorder.CheckGrammar;
 { --- main delayed starter of MainStartDelayed value --> let Grammar check process running }
-var
-  i : Integer;
 begin
   try
-    for i := Integer(Low(TGramType)) to Integer(High(TGramType)) do begin
-      GrammarActivate(TGramType(i));
-      Sleep( 60 );
-      GrammarActivate(TGramType(i), False)
-    end;
-
     GrammarActivate(gt_switch);
     GrammarActivate(gt_gauss);
     GrammarActivate(gt_help);
@@ -1735,12 +1725,13 @@ end;
 
 procedure TCustomNewRecorder.ComomnInitialization;
 begin
-  if KeyReadBoolean(AppKey, 'GrammarUpdated')
-    then TalkFmt(18,0, 'Maintnant c''est à jour ! Raoul va s''relancer')
-    else TalkFmt(10,0, 'je suis prêt');
+  if KeyReadBoolean(AppKey, 'GrammarUpdated') then begin
+    TalkFmt(18,0, 'Maintnant c''est à jour ! Raoul va s''relancer');
+    Exit
+  end;
 
   CheckGrammar;
-
+  TalkFmt(10,0, 'je suis prêt');
   Listen         := True;
   State          := srs_active;
   Mode           := rm_sleep;
@@ -2318,9 +2309,9 @@ begin
       GaussDisable;
       if KeyReadBoolean(BufferKey, 'CalcFormVisible') then begin
         TCalcWriteThread.Create( GaussDisplayForm.RichEdit );
-        CalcResultVoiceReadActivate;
+        CalcResultVoiceReadActivate
       end
-    end else GaussDisable;
+    end 
 end;
 
 class procedure TGramFactories.GridProcess(const SML: string;
@@ -2475,7 +2466,7 @@ begin
       { --- Func Raoul }
       800 : RaoulRelaunching;
       900 : if IsListen then PauseActivate;
-      901 : if IsListen then NoneActivate;
+      //901 : if IsListen then NoneActivate; //n'est pas dans la grammaire switch ??
       { --- fun comments - not available in elite mode }
      1001 : if IsListenCommandCheck(SML, 0.75, [m_elite]) then TFunTalk.NightMare;
      1002 : if IsListenCommandCheck(SML, 0.75, [m_elite]) then TFunTalk.ThankYou;
@@ -3235,6 +3226,6 @@ begin
 end;
 
 initialization
-  KeyWrite(BufferKey, 'IndexMetier', 0)
+  KeyWrite(BufferKey, 'IndexMetier', 0);
 finalization
 end.

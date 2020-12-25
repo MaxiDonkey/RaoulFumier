@@ -194,7 +194,7 @@ begin
   TInternRecorder.Initialize;                    { --- Recorder instanciation et initialisaton}
   TRecordLoader.Create(Recorder);                { --- Instantiation et démarrage du thread chargé d'activer le recorder }
   with DelayedStart do begin
-    Interval := MainStartDelayed + 1500;
+    Interval := MainStartDelayed; 
     Enabled  := True
   end
 end;
