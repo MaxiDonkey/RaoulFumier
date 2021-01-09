@@ -48,5 +48,6 @@
     <Transaction>2020/12/11 04:10:53.975.pas,H:\2020 Developpement\RaoulFumier\RaoulInterface\Unit1.pas=H:\2020 Developpement\RaoulFumier\RaoulInterface\uGauss.pas</Transaction>
     <Transaction>2020/12/11 13:23:12.677.pas,H:\2020 Developpement\RaoulFumier\RaoulInterface\Unit1.pas=H:\2020 Developpement\RaoulFumier\RaoulInterface\uGaussDisplay.pas</Transaction>
     <Transaction>2020/12/11 13:23:12.677.dfm,H:\2020 Developpement\RaoulFumier\RaoulInterface\Unit1.dfm=H:\2020 Developpement\RaoulFumier\RaoulInterface\uGaussDisplay.dfm</Transaction>
+    <Transaction>2021/01/09 00:51:18.687.pas,H:\2020 Developpement\RaoulFumier\RaoulInterface\Unit1.pas=H:\2020 Developpement\RaoulFumier\RaoulInterface\uStrComment.pas</Transaction>
   </Transactions>
 </BorlandProject>

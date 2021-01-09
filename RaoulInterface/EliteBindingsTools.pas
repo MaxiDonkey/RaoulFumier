@@ -1086,11 +1086,10 @@ type
     FTimems            : Cardinal;
     FDown              : TStringList;
     FClock             : Cardinal;
-    FSurveyor          : TKeySurveyor;
+    FSurveyor          : TKeySurveyor; //Thread de surveillance du clavier : à revoir
     FOnBeforeMouseDown : TNotifyEvent;
     FOnAfterMouseDown  : TNotifyEvent;
     FMouseFactory      : TMouseFactory;
-    FKeySurveyor       : TKeySurveyor;
     function MouseSignalToEvent(const Value: Word; UpSignal: Boolean;
       var Button: Word):Word;
     procedure DoBeforeMouseSignal;
@@ -1142,6 +1141,7 @@ type
   TKeySurveyor = class(TThread)
   private
     ThKeyMessageSender : TKeyMessageSender;
+    FStop              : Boolean;            
     procedure ThDelay(ms: Cardinal);
     procedure Process;
   protected
@@ -3501,7 +3501,7 @@ begin
   inherited Create;
   FDown         := TStringList.Create;
   FMouseFactory := TMouseFactory.Create;
-  FKeySurveyor  := nil
+  FSurveyor     := nil
 end;
 
 destructor TKeyMessageSender.Destroy;
@@ -3555,7 +3555,8 @@ begin
       Delete(i)
     end;
     FClock := GetTickCount
-  end
+  end;
+  if Assigned(FSurveyor) then FSurveyor.Terminate
 end; {DoKeyUp}
 
 class procedure TKeyMessageSender.Finalize;
@@ -3576,8 +3577,7 @@ end;
 
 class procedure TKeyMessageSender.KeyUp;
 begin
-  if Assigned(KeyMessageSender) then with KeyMessageSender do
-    DoKeyUp
+  if Assigned(KeyMessageSender) then with KeyMessageSender do DoKeyUp
 end;
 
 function TKeyMessageSender.MouseSignalToEvent(const Value: Word;
@@ -3823,7 +3823,8 @@ end;
 
 procedure TKeySurveyor.Execute;
 begin
-  while not Terminated and not Application.Terminated do begin
+  FStop := False;
+  while not Terminated and not Application.Terminated and not Fstop do begin
     Synchronize( Process );
     ThDelay( 2000 )
   end
@@ -3832,7 +3833,10 @@ end;
 procedure TKeySurveyor.Process;
 begin
   { --- 60 seconds for key down before automatic key up }
-  with ThKeyMessageSender do if GetTickCount - Clock > 60000 then DoKeyUp
+  with ThKeyMessageSender do if GetTickCount - Clock > 60000 then begin
+    DoKeyUp;
+    FStop := True
+  end
 end;
 
 procedure TKeySurveyor.ThDelay(ms: Cardinal);

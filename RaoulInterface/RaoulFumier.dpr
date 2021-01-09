@@ -23,7 +23,8 @@ uses
   uEliteHelp in 'uEliteHelp.pas',
   uSplashWaitForm in 'uSplashWaitForm.pas' {SplashWaitForm},
   uGauss in 'uGauss.pas',
-  uGaussDisplay in 'uGaussDisplay.pas' {GaussDisplayForm};
+  uGaussDisplay in 'uGaussDisplay.pas' {GaussDisplayForm},
+  uStrComment in 'uStrComment.pas';
 
 {$R *.res}
 

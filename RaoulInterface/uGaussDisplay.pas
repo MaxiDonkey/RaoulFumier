@@ -40,7 +40,9 @@ type
     FClearIndic : Boolean;
     function GetCalcFormVisible: Boolean;
     procedure SetCalcFormVisible(const Value: Boolean);
+    procedure SetCalcPosition;
   public
+    procedure DisplayUpdate;
     procedure UpdateCadenas;
     procedure Clear;
     procedure Restore;
@@ -48,7 +50,12 @@ type
   end;
 
 var
-  GaussDisplayForm: TGaussDisplayForm;
+  GaussDisplayForm : TGaussDisplayForm;
+  CalcWidth        : Integer = 620;
+  CalcHeight       : Integer = 725;
+  CalcBorderRight  : Integer = 20;
+  CalcBorderBottom : Integer = 70;
+
 
 implementation
 
@@ -75,14 +82,11 @@ begin
     Style := [fsBold];
   end;
   Position := poDesigned;
-  Left    := 1260;
-  Height  := 725;
-  Top     := 250;
-  Width   := 621;
 end;
 
 procedure TGaussDisplayForm.FormShow(Sender: TObject);
 begin
+  SetCalcPosition;
   if IsEliteRunningUTLS then AlphaBlendValue := 120 else AlphaBlendValue := 180;
   FClearIndic := False;
   XVarCont := Label4;
@@ -140,6 +144,24 @@ end;
 procedure TGaussDisplayForm.SetCalcFormVisible(const Value: Boolean);
 begin
   KeyWrite(BufferKey, 'CalcFormVisible', Value)
+end;
+
+procedure TGaussDisplayForm.SetCalcPosition;
+var
+  IndexMonitor : Integer;
+begin
+  IndexMonitor := KeyReadInt(BufferKey, 'IndexMonitor');
+  with Screen.Monitors[IndexMonitor] do begin
+    Self.Width  := CalcWidth;
+    Self.Height := CalcHeight;
+    Self.Left   := Left + Width  - Self.Width  - CalcBorderRight;
+    Self.Top    := Top  + Height - Self.Height - CalcBorderBottom
+  end
+end;
+
+procedure TGaussDisplayForm.DisplayUpdate;
+begin
+  SetCalcPosition
 end;
 
 initialization

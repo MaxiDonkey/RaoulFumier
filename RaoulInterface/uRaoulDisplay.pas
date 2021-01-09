@@ -25,10 +25,11 @@ type
 
   TToolsDisplay = class
   private
-    FStarter: Boolean;
-    FIndexMonitor: Integer;
-    FDisplayVertic: TDisplayVertic;
-    FDisplayHoriz: TDisplayHoriz;
+    FStarter        : Boolean;
+    FIndexMonitor   : Integer;
+    FDisplayVertic  : TDisplayVertic;
+    FDisplayHoriz   : TDisplayHoriz;
+    FMonitorChanged : TNotifyEvent;
     procedure SetIndexMonitor(const Value: Integer);
     procedure GoToMonitor(const index: Integer);
     procedure SetDisplayVertic(const Value: TDisplayVertic);
@@ -43,6 +44,7 @@ type
     property IndexMonitor: Integer read FIndexMonitor write SetIndexMonitor;
     property DisplayVertic: TDisplayVertic read FDisplayVertic write SetDisplayVertic;
     property DisplayHoriz: TDisplayHoriz read FDisplayHoriz write SetDisplayHoriz;
+    property OnMonitorChanged: TNotifyEvent read FMonitorChanged write FMonitorChanged;
 
     constructor Create;
     class procedure Initialize;
@@ -245,8 +247,9 @@ end;
 constructor TToolsDisplay.Create;
 begin
   inherited Create;
-  FDisplayVertic := dv_top;
-  FStarter       := True;
+  FDisplayVertic  := dv_top;
+  FStarter        := True;
+  FMonitorChanged := nil;
 end;
 
 procedure TToolsDisplay.EnlargeDisplay;
@@ -275,12 +278,14 @@ end;
 
 procedure TToolsDisplay.GotoNextMonitor;
 begin
-  with Screen do GoToMonitor( SuccModVal(IndexMonitor, MonitorCount) )
+  with Screen do GoToMonitor( SuccModVal(IndexMonitor, MonitorCount) );
+  if Assigned(FMonitorChanged) then FMonitorChanged(Self)
 end;
 
 procedure TToolsDisplay.GotoPrevMonitor;
 begin
-  with Screen do GoToMonitor( PredModVal( IndexMonitor, MonitorCount ) )
+  with Screen do GoToMonitor( PredModVal( IndexMonitor, MonitorCount ) );
+  if Assigned(FMonitorChanged) then FMonitorChanged(Self)
 end;
 
 class procedure TToolsDisplay.Initialize;
@@ -647,7 +652,11 @@ end;
 
 procedure TFunctionment.DoAppClose(Sender: TObject);
 begin
-  with TalkativeFacade do ShowClosePanel
+  with TalkativeFacade do begin
+    { --- Close calc sheet before display close form --> multi screens Display error }
+    if GaussDisplayForm.Visible then GaussDisplayForm.Close;
+    ShowClosePanel
+  end
 end;
 
 procedure TFunctionment.DoCancel(Sender: TObject);
@@ -1111,15 +1120,18 @@ end;
 
 procedure TFunctionment.DoCalcResultVoiceRead(Sender: TObject);
 begin
-  with Recorder do if not TalkVoiceDisabled then
-    TTalkThread.Create(Recorder, TGaussAdditional.VoiceValue)
+  { --- Voice must be enabled }
+  TTalkThread.Create(Recorder, TGaussAdditional.VoiceValue)
 end;
 
 procedure TFunctionment.DoVoiceRead(Sender: TObject);
-{ --- TODO étendre cette méthode à d'autres lectures pas uniquement pour le calcul}
+{ --- Vocalise le dernier enregistrement vocal de l'historique }
 begin
-  { --- Procède même si la voix est inactive }
-  with Recorder do TTalkThread.Create(Recorder, TGaussAdditional.VoiceValue)
+  case TVoiceEntries.GetGramType(0) of
+    gt_gauss : DoCalcResultVoiceRead( nil );
+    else if TVoiceEntries.IsVoiceResponse(0) then TVoiceEntries.Redo
+           else TSpeaker.TalkNP('répéter quoi ?')
+  end
 end;
 
 procedure TFunctionment.DoCalcCopy(Sender: TObject);

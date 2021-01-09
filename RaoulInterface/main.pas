@@ -55,6 +55,7 @@ type
   private
     FStarter: Boolean;
     procedure StarterProc;
+    procedure MonitorChanged(Sender: TObject);
 
   public
     procedure AssignKeyFun;
@@ -134,6 +135,8 @@ begin
   with TalkativeFacade do
     TalkativeView := KeyReadBoolean(BufferKey, 'TalkativeDialogBoxView', False);
   if FStarter then StarterProc;
+  { --- Events initialization }
+  ToolsDisplay.OnMonitorChanged := MonitorChanged
 end;
 
 procedure TMainForm.KeyBack(Sender: TObject);
@@ -185,6 +188,7 @@ end;
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   TFunctionment.Finalize;
+  TVoiceEntries.Finalize;
 end;
 
 procedure TMainForm.StarterProc;
@@ -258,6 +262,11 @@ begin
   BootFinalize.Enabled := False;
   THelpDlg.HelpDefine;
   KeyWrite(AppKey, 'BootState', False)
+end;
+
+procedure TMainForm.MonitorChanged(Sender: TObject);
+begin
+  GaussDisplayForm.DisplayUpdate
 end;
 
 end.

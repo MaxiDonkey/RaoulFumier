@@ -12,11 +12,13 @@ procedure KeyWrite(AKey: string; KeyName: string; Value: string); overload;
 procedure KeyWrite(AKey: string; KeyName: string; Value: Double); overload;
 procedure KeyWrite(AKey: string; KeyName: string; Value: Integer); overload;
 procedure KeyWrite(AKey: string; KeyName: string; Value: Boolean); overload;
+procedure KeyWrite(AKey: string; KeyName: string; Value: Cardinal); overload;
 
 function KeyReadInt(AKey: string; KeyName: string; Default: Integer = 0):Integer;
 function KeyReadFloat(AKey: string; KeyName: string; Default: Double = 0.0):Double;
 function KeyReadBoolean(AKey: string; KeyName: string; Default: Boolean = False):Boolean;
 function KeyReadString(AKey: string; KeyName: string; Default: string = ''):string;
+function KeyReadCard(AKey: string; KeyName: string; Default: Cardinal = 0):Cardinal;
 
 procedure KeyDeleteValue(AKey: string; KeyName: string);
 
@@ -161,17 +163,22 @@ end;
 
 procedure KeyWrite(AKey: string; KeyName: string; Value: Double);
 begin
-  KeyWrite(AKey, KeyName, FloatToStr(Value) );
+  KeyWrite(AKey, KeyName, FloatToStr(Value) )
 end;
 
 procedure KeyWrite(AKey: string; KeyName: string; Value: Integer);
 begin
-  KeyWrite(AKey, KeyName, IntToStr(Value) );
+  KeyWrite(AKey, KeyName, IntToStr(Value) )
+end;
+
+procedure KeyWrite(AKey: string; KeyName: string; Value: Cardinal);
+begin
+  KeyWrite(AKey, KeyName, IntToStr(Value) )
 end;
 
 procedure KeyWrite(AKey: string; KeyName: string; Value: Boolean);
 begin
-  KeyWrite(AKey, KeyName, Integer(Value) );
+  KeyWrite(AKey, KeyName, Integer(Value) )
 end;
 
 function KeyReadInt(AKey: string; KeyName: string; Default: Integer):Integer;
@@ -182,6 +189,19 @@ begin
   try
     if Value = EmptyStr then Result := Default
       else Result := StrToInt( Value );
+  except
+    Result := Default;
+  end;
+end;
+
+function KeyReadCard(AKey: string; KeyName: string; Default: Cardinal = 0):Cardinal;
+var
+  Value : string;
+begin
+  KeyRead(AKey, KeyName, Value);
+  try
+    if Value = EmptyStr then Result := Default
+      else Result := StrToInt64( Value );
   except
     Result := Default;
   end;

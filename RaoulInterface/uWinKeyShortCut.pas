@@ -198,7 +198,7 @@ function TWShortCut.SCExecute(const grCode: string; AConfiance: Double): Integer
   end;
 
   function CheckCharOk(const ACode: Integer): Boolean; begin
-    Result := IsChar( ACode ) and (AConfiance > 0.87)
+    Result := IsChar( ACode ) and (AConfiance > 0.82) //0.87
   end;
 
   function CheckCodeOk(const ACode: Integer): Boolean; begin

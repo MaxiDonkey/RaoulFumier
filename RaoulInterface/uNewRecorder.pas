@@ -212,9 +212,9 @@ type
 
   public
     { --- Speak }
-    procedure TalkFmt(const Rate, Pitch: Integer; ASt: string); overload;
+    procedure TalkFmt(const Rate, Pitch: Integer; ASt: string; Forced: Boolean = False); overload;
     procedure TalkFmt(const Rate, Pitch: Integer; ASt: string;
-      const Rate1, Pitch1: Integer; ASt1: string); overload;
+      const Rate1, Pitch1: Integer; ASt1: string; Forced: Boolean = False); overload;
 
   public
     { --- Advanced trigger }
@@ -357,6 +357,7 @@ type
     function  DoOnEliteActivate:Boolean;
     procedure ActionsOnGrid(const ASt: string);
     procedure ActionsOnHelp(const ASt: string);
+    function  RecognitionCanProcess(const ASML: string): Boolean;
   published
     property OnAudioChanged;
     property OnAudioLevelChange;
@@ -402,6 +403,113 @@ type
     class function GaussBuffer(const ASML: string): string;
     class function Text(const ASML: string): string;
   end;
+
+  TRecognitionThread = class(TThread)
+  { --- Started by Recorder.Recognition process }
+  private
+    ThRecorder : TNewRecorder;
+    ThSpeech   : ISpeechRecoResult;
+    FSML       : string;
+    FText      : string;
+    FGSender   : TGramType;
+    procedure Initialize;
+    function  CanProcess:Boolean;
+    procedure Process;
+  public
+    procedure Execute; override;
+    constructor Create(const ARecorder: TNewRecorder; const ASpeech: ISpeechRecoResult);
+  end;
+
+  TInterpreteThread = class(TThread)
+  { --- Can be started by Recorder.Recognition process or other }
+  private
+    ThRecorder : TNewRecorder;
+    ThSML      : string;
+    ThText     : string;
+    FGSender   : TGramType;
+    function  DisplayStr:string;
+    procedure Accept;
+    procedure Reject;
+    procedure Initialize;
+    procedure Finalize;
+    function  CanProcess:Boolean;
+    procedure Process;
+  public
+    procedure Execute; override;
+    constructor Create(const ARecorder: TNewRecorder; const ASML, AText: string);
+  end;
+
+  TVoiceItem = class
+  { --- Voice historic Item }
+  private
+    FSML       : string;
+    FText      : string;
+    FVoiResp   : Boolean;  { --- VoiceResponse }
+    FTimeStamp : Cardinal;
+  public
+    constructor Create(const ASML, AText: string);
+  end;
+
+  TVoiceEntries = class(TStringList)
+  { --- Voice historic list }
+  private
+    FLimit    : Integer;
+    FFileName : string;
+    function  GetVoiceResponse(index: Integer): Boolean;
+    procedure SetVoiceResponse(index: Integer; const Value: Boolean);
+    function  GetVoiceItem(index: Integer): TVoiceItem;
+  public
+    procedure Clear; override;
+    procedure Stack(const ASML, AText: string);
+    procedure MarkOut;
+    procedure Save;
+    procedure Redo_;
+    procedure Retalk_;
+    function  IsVoiceResponse_(index: Integer): Boolean;
+    function  GetGramType_(index: Integer): TGramType;
+    property  VoiceItem[index: Integer]: TVoiceItem read GetVoiceItem;
+    property  VoiceResponse[index: Integer]: Boolean read GetVoiceResponse write SetVoiceResponse;
+
+    constructor Create(const AFileName: string);
+    destructor Destroy; override;
+
+    class procedure AddToStack(const ASML, AText: string);
+    class procedure AddToRaoulVoice(const AText: string);
+    class procedure AddVoiceResponse(const index: Integer);
+    class function  IsVoiceResponse(index: Integer): Boolean;
+    class function  GetGramType(index: Integer): TGramType;
+    class procedure Redo;
+    class procedure ReTalk;
+    class procedure RaoulRepeater;
+    class procedure Finalize;
+  end;
+
+  TGuardRail = class
+  { --- Railing for command saving }
+  private
+    function  GetVocalResponse: Boolean;
+    procedure SetVocalResponse(const Value: Boolean);
+    function  GetVoiceTimeStamp: Cardinal;
+    procedure SetVoiceTimeStamp(const Value: Cardinal);
+    function  GetHelpVisible: Boolean;
+    function  GetCalcFormVisible: Boolean;
+    function  GetCalcModeEnable: Boolean;
+  public
+    function IsOnLine_: Boolean;
+    property VoiceResponse: Boolean read GetVocalResponse write SetVocalResponse;
+    property VoiceTimeStamp: Cardinal read GetVoiceTimeStamp write SetVoiceTimeStamp;
+    property HelpVisible: Boolean read GetHelpVisible;
+    property CalcFormVisible: Boolean read GetCalcFormVisible;
+    property CalcModeEnable: Boolean read GetCalcModeEnable;
+
+    class procedure NowToVoiceTimeStamp;
+    class procedure AssignVocalResponse(const Value: Boolean);
+    class function  IsOnLine: Boolean;
+    class procedure Reset;
+    class function  IsHelpVisible: Boolean;
+    class function  IsCalcModeEnable: Boolean;
+  end;
+
 
   TGramFactories = class
   private
@@ -490,10 +598,10 @@ type
   TSpeaker = class
   private
     procedure Talk_(const ASt: string);
-    procedure TalkNP_(const ASt: string); //non protégé
+    procedure TalkNP_(const ASt: string; Forced: Boolean = False); //non protégé
   public
     class procedure Talk(const ASt: string);
-    class procedure TalkNP(const ASt: string);
+    class procedure TalkNP(const ASt: string; Forced: Boolean = False);
   end;
 
   TRecorderParams = class
@@ -637,6 +745,8 @@ var
   LocalNF       : TcxProgressBar;
   LocalVTL      : TcxProgressBar;
   LocalVTR      : TcxProgressBar;
+  VoiceStackCmd : TVoiceEntries = nil;
+  VoiceOutPut   : TStringList = nil;
 
 var
   {App managment}
@@ -748,7 +858,8 @@ var
 implementation
 
 uses
-  uRegistry, uRaoulUpdater, uRaoulDisplay, uEliteUtils, uDosUtils, uGauss, uGaussDisplay;
+  uRegistry, uRaoulUpdater, uRaoulDisplay, uEliteUtils, uDosUtils, uGauss,
+  uGaussDisplay, uStrComment;
 
 var
   InterferenceStr : array[TInterferenceKind] of string =
@@ -1411,17 +1522,17 @@ begin
     else Result := Format('-%d%s', [Abs(Value),  '.00%'])
 end;
 
-procedure TCustomDefRecorder.TalkFmt(const Rate, Pitch: Integer; ASt: string);
+procedure TCustomDefRecorder.TalkFmt(const Rate, Pitch: Integer; ASt: string; Forced: Boolean);
 begin
-  TSpeaker.TalkNP( Format(TTS_PATERN, [DblFmtTTS(Rate), DblFmtTTS(Pitch), ASt]) )
+  TSpeaker.TalkNP( Format(TTS_PATERN, [DblFmtTTS(Rate), DblFmtTTS(Pitch), ASt]), Forced )
 end;
 
 procedure TCustomDefRecorder.TalkFmt(const Rate, Pitch: Integer; ASt: string;
-  const Rate1, Pitch1: Integer; ASt1: string);
+  const Rate1, Pitch1: Integer; ASt1: string; Forced: Boolean);
 begin
   TSpeaker.TalkNP( Format(TTS_PATERN2,
     [ DblFmtTTS(Rate),  DblFmtTTS(Pitch),  ASt,
-      DblFmtTTS(Rate1), DblFmtTTS(Pitch1), ASt1]) )
+      DblFmtTTS(Rate1), DblFmtTTS(Pitch1), ASt1]), Forced )
 end;
 
 procedure TCustomDefRecorder.NavExitProc(Sender: TObject);
@@ -1651,69 +1762,8 @@ end;
 procedure TCustomNewRecorder.Recognition(ASender: TObject;
   StreamNumber: Integer; StreamPosition: OleVariant; RecognitionType: TOleEnum;
   const Result: ISpeechRecoResult);
-var
-  SML     : string;
-  GSender : TGramType;
-  Speech  : ISpeechRecoResult;
-
-  function DisplayStr:string; begin
-    case GSender of //A-G
-      gt_switch,
-      gt_fumier,
-      gt_spell,
-      gt_pause,
-      gt_elite,
-      gt_gridmode,
-      gt_help       : Result := QuoteFix(Speech.PhraseInfo.GetText(0,-1, True));
-      gt_gauss      : if CurrentMetier = m_gauss then Result := TSMLCalcul.Operation(SML);
-    end
-  end;
-
-  procedure Accept; begin
-    TLocalStack.AstAdd(SML, GSender);
-    if IsListen then if Assigned(FOnRecognizeAccepted) then
-      FOnRecognizeAccepted(Self, DisplayStr, SML)
-  end;
-
-  procedure Reject; begin
-    if Assigned(FOnRecognizeReject) then FOnRecognizeReject(Self)
-  end;
-
-  procedure Initialize; begin
-    Speech  := Result;
-    SML     := (Result as ISpeechXMLRecoResult).GetXMLResult( SPXRO_SML );
-    Taux    := TSMLConfiance.Confidence(SML);
-    GSender := TSMLConfiance.Sender(SML)
-  end;
-
-  function CanProcess:Boolean; begin
-    Result := False;
-    Initialize;
-    if GSender = gt_switch then if TSMLConfiance.Tag(SML) = 0 then begin
-      Result := False;
-      Exit
-    end;
-    case GSender of  //A-G
-      gt_switch,
-      gt_spell,
-      gt_pause,
-      gt_elite,
-      gt_gridmode,
-      gt_help      : Result := FTaux > Params.CeilSwitch;
-      gt_fumier    : Result := FTaux > Params.CeilFumier;
-      gt_gauss     : Result := FTaux > Params.CeilGauss;  
-    end
-  end;
-
-  procedure Finalize; begin
-    {réinitialise le suivi des interférences}
-    FInterference := ik_SINone;
-    NoisesReset
-  end;
-
 begin
-  if CanProcess then Accept else Reject;
-  Finalize
+  TRecognitionThread.Create(Recorder, Result);
 end; {Recognition}
 
 procedure TCustomNewRecorder.Hypothesis(ASender: TObject; StreamNumber: Integer;
@@ -1957,8 +2007,6 @@ var
 begin
   SetSML(Value);
   Result := TStackConvertor.Evalue(FTag, DataResult);
-//  if Recorder.CurrentMetier = m_gauss then
-//    THistoDisplay.AddTo(GaussDisplayForm.RichEdit, Result, DataResult)
 end;
 
 class function TSMLCalcul.Operation(const ASML: string): string;
@@ -2397,7 +2445,7 @@ begin
       7   : if IsListen or HelpDlg.Visible then EchapActivate;
       9   : AppCloseActivate;
       { --- Time function }
-      10  : if IsListenCommandCheck(SML, 0.75) then TSpeaker.TalkNP(WhatTime);
+      10  : if IsListenCommandCheck(SML, 0.75) then TimeCommentBuilder.TryTopronounce;
       { --- fun comments }
       11  : if IsListen then TSpeaker.TalkNP('leur');
       12  : if IsListen then TSpeaker.TalkNP('leur qu''il est');
@@ -2407,9 +2455,9 @@ begin
       22  : if IsListen then MouseDoubleActivate;
       23  : if IsListen then MouseMiddleActivate;
       { --- Date function }
-      25  : if IsListenCommandCheck(SML, 0.75) then TSpeaker.TalkNP(WitchDate);
-      26  : if IsListenCommandCheck(SML, 0.75) then TSpeaker.TalkNP(WitchFullDate);
-      27  : if IsListenCommandCheck(SML, 0.75) then TSpeaker.TalkNP(WitchDayOfWeek);
+      25  : if IsListenCommandCheck(SML, 0.75) then DateCommentBuilder.TryTopronounce;
+      26  : if IsListenCommandCheck(SML, 0.75) then FullDateCommentBuilder.TryTopronounce;  
+      27  : if IsListenCommandCheck(SML, 0.75) then DOWCommentBuilder.TryTopronounce;  
       { --- Dispay app version }
       30  : AppVersionShowActivate;
       { --- Start with Windows }
@@ -2417,10 +2465,10 @@ begin
       41  : if IsListenCommandCheck(SML, 0.87) then NoStartWithWindowsActivate;
       42  : if IsListenCommandCheck(SML, 0.87) then AskStartWithWindowsActivate;
       { --- Voice control }
-      50  : if IsListen then TalkVoiceDisabled := False; //Voice enabled
-      51  : if IsListen then TalkVoiceDisabled := True;  //Voice disabled
-      52  : if IsListen then CalcResultVoiceReadActivate;
-      53  : if IsListen then VoiceReadActivate;
+      50  : if IsListen then TalkVoiceDisabled := False;   //Voice enabled
+      51  : if IsListen then TalkVoiceDisabled := True;    //Voice disabled
+      52  : if IsListen then RepeatCommentBuilder.TryTopronounce; 
+      53  : if IsListen then ResultatCommentBuilder.TryTopronounce; 
       { --- Conversation mode }
       100 : if IsListen then FumierActivate;
       101 : if IsListen then if CurrentMetier = m_fumier then NoneActivate;
@@ -2467,6 +2515,9 @@ begin
       800 : RaoulRelaunching;
       900 : if IsListen then PauseActivate;
       //901 : if IsListen then NoneActivate; //n'est pas dans la grammaire switch ??
+      { --- Redo }
+      910 : if IsListen then RedoCommentBuilder.TryTopronounce; 
+      911 : if IsListen then ReTalkCommentBuilder.TryTopronounce;
       { --- fun comments - not available in elite mode }
      1001 : if IsListenCommandCheck(SML, 0.75, [m_elite]) then TFunTalk.NightMare;
      1002 : if IsListenCommandCheck(SML, 0.75, [m_elite]) then TFunTalk.ThankYou;
@@ -2486,17 +2537,28 @@ begin
   with TSpeaker.Create do try Talk_(ASt) finally Free end
 end;
 
-class procedure TSpeaker.TalkNP(const ASt: string);
+class procedure TSpeaker.TalkNP(const ASt: string; Forced: Boolean = False);
 begin
-  with TSpeaker.Create do try TalkNP_(ASt) finally Free end
+  with TSpeaker.Create do try TalkNP_(ASt, Forced) finally Free end
 end;
 
-procedure TSpeaker.TalkNP_(const ASt: string);
+procedure TSpeaker.TalkNP_(const ASt: string; Forced: Boolean);
 begin
   with TSpVoice.Create(nil) do
   try
     try
-      Speak(ASt, SVSFDefault); //SVSFPersistXML); //SVSFDefault);  //SVSFIsXML);
+      { --- Only if voice is enabled }
+      if Forced then begin
+        Speak(ASt, SVSFDefault);
+        Exit
+      end;
+      TGuardRail.AssignVocalResponse( True );
+      if not Recorder.TalkVoiceDisabled then begin
+        { --- Stack voice response }
+        TVoiceEntries.AddToRaoulVoice( ASt );
+        { --- Speak message }
+        Speak(ASt, SVSFDefault); //SVSFPersistXML); //SVSFDefault); //SVSFIsXML);
+      end
     except
     end
   finally
@@ -2508,6 +2570,7 @@ procedure TSpeaker.Talk_(const ASt: string);
 begin
   Recorder.Disable;
   try
+    TGuardRail.AssignVocalResponse(True);
     TalkNP_(ASt);
     Sleep(10)
   finally
@@ -3093,6 +3156,29 @@ begin
   end
 end;
 
+function TNewRecorder.RecognitionCanProcess(const ASML : string): Boolean;
+var
+  GSender : TGramType;
+begin
+  Result  := False;
+  GSender := TSMLConfiance.Sender(ASML);
+  case GSender of
+    gt_switch : if TSMLConfiance.Tag(ASML) = 0 then Exit;
+    gt_gauss  : if not TGuardRail.IsCalcModeEnable then Exit;
+    gt_help   : if not TGuardRail.IsHelpVisible then Exit;
+  end;
+  case GSender of  //A-G
+    gt_switch,
+    gt_spell,
+    gt_pause,
+    gt_elite,
+    gt_gridmode,
+    gt_help      : Result := Taux > Params.CeilSwitch;
+    gt_fumier    : Result := Taux > Params.CeilFumier;
+    gt_gauss     : Result := Taux > Params.CeilGauss;
+  end
+end;
+
 { TCensureThread }
 
 procedure TCensureThread.Blinking(const Message: string);
@@ -3224,6 +3310,384 @@ begin
       Application.ProcessMessages
     until Self.Terminated or Terminated or (GetTickCount > S)
 end;
+
+{ TRecognitionThread }
+
+function TRecognitionThread.CanProcess: Boolean;
+begin
+  with ThRecorder do Result := RecognitionCanProcess(FSML) and TGuardRail.IsOnLine
+end;
+
+constructor TRecognitionThread.Create(const ARecorder: TNewRecorder;
+  const ASpeech: ISpeechRecoResult);
+begin
+  inherited Create( False );
+  {Launch on create}
+  ThRecorder      := ARecorder;
+  ThSpeech        := ASpeech;
+  Initialize;
+  FreeOnTerminate := True;
+  Priority        := tpLowest
+end;
+
+procedure TRecognitionThread.Execute;
+begin
+  inherited;
+  Synchronize( Process )
+end;
+
+procedure TRecognitionThread.Initialize;
+begin
+  FSML            := (ThSpeech as ISpeechXMLRecoResult).GetXMLResult( SPXRO_SML );
+  FText           := QuoteFix(ThSpeech.PhraseInfo.GetText(0,-1, True));
+  ThRecorder.Taux := TSMLConfiance.Confidence(FSML);
+  FGSender        := TSMLConfiance.Sender(FSML)
+end;
+
+procedure TRecognitionThread.Process;
+var
+  LTag  : Cardinal;
+  Indic : Boolean;
+begin
+  try
+    LTag  := TSMLConfiance.Tag(FSML);
+    Indic := (LTag <> 52) and (LTag <> 910) and (LTag <> 911) and (LTag <> 99999999)
+  except
+    Indic := False
+  end;
+  { --- Stack voice command after recognition }
+  if Indic and CanProcess then TVoiceEntries.AddToStack(FSML, FText);
+  { --- Call execute process }
+  TInterpreteThread.Create(ThRecorder, FSML, FText)
+end;
+
+{ TInterpreteThread }
+
+procedure TInterpreteThread.Accept;
+begin
+  TLocalStack.AstAdd(ThSML, FGSender);
+  with ThRecorder do
+    if IsListen then if Assigned(OnRecognizeAccepted) then
+      OnRecognizeAccepted(ThRecorder, DisplayStr, ThSML)
+end;
+
+function TInterpreteThread.CanProcess: Boolean;
+begin
+  with ThRecorder do Result := RecognitionCanProcess(ThSML)
+end;
+
+constructor TInterpreteThread.Create(const ARecorder: TNewRecorder;
+  const ASML, AText: string);
+begin
+  inherited Create( False );
+  {Launch on create}
+  ThRecorder      := ARecorder;
+  ThSML           := ASML;
+  ThText          := AText;
+  Initialize;
+  FreeOnTerminate := True;
+  Priority        := tpLowest
+end;
+
+function TInterpreteThread.DisplayStr: string;
+begin
+  with ThRecorder do case FGSender of //A-G
+    gt_switch,
+    gt_fumier,
+    gt_spell,
+    gt_pause,
+    gt_elite,
+    gt_gridmode,
+    gt_help       : Result := ThText;
+    gt_gauss      : if CurrentMetier = m_gauss then Result := TSMLCalcul.Operation(ThSML);
+  end
+end;
+
+procedure TInterpreteThread.Execute;
+begin
+  inherited;
+  Synchronize( Process )
+end;
+
+procedure TInterpreteThread.Finalize;
+begin
+  with ThRecorder do begin
+    { --- Réinitialise le suivi des interférences }
+    FInterference := ik_SINone;
+    NoisesReset
+  end
+end;
+
+procedure TInterpreteThread.Initialize;
+begin
+  ThRecorder.Taux := TSMLConfiance.Confidence(ThSML);
+  FGSender        := TSMLConfiance.Sender(ThSML);
+  { --- Set TimeStamp and VoiceResponse disable }
+  TGuardRail.Reset
+end;
+
+procedure TInterpreteThread.Process;
+begin
+  if CanProcess then Accept else Reject;
+  Finalize
+end;
+
+procedure TInterpreteThread.Reject;
+begin
+  with ThRecorder do
+    if Assigned(OnRecognizeReject) then OnRecognizeReject(ThRecorder)
+end;
+
+{ TVoiceEntries }
+
+class procedure TVoiceEntries.AddToRaoulVoice(const AText: string);
+begin
+  if not Assigned(VoiceOutPut) then VoiceOutPut := TStringList.Create;
+  with VoiceOutPut do if Count = 0 then Insert(0, AText)
+    else if not SameStr(Strings[0], AText) then Insert(0, AText)
+end;
+
+class procedure TVoiceEntries.AddToStack(const ASML, AText: string);
+begin
+  if not Assigned(VoiceStackCmd) then VoiceStackCmd := TVoiceEntries.Create('session.txt');
+  with VoiceStackCmd do Stack(ASML, AText);
+end;
+
+class procedure TVoiceEntries.AddVoiceResponse(const index: Integer);
+begin
+  if Assigned(VoiceStackCmd) then with VoiceStackCmd do VoiceResponse[index] := True
+end;
+
+procedure TVoiceEntries.Clear;
+var
+  i : Integer;
+begin
+  for i := Pred(Self.Count) downto 0 do
+    if Assigned(Objects[i]) then Objects[i].Free;
+  inherited
+end;
+
+constructor TVoiceEntries.Create(const AFileName: string);
+begin
+  Inherited Create;
+  FLimit    := 100;
+  FFileName := AFileName
+end;
+
+destructor TVoiceEntries.Destroy;
+begin
+  Clear;
+  inherited
+end;
+
+class procedure TVoiceEntries.Finalize;
+begin
+  if Assigned(VoiceStackCmd) then VoiceStackCmd.Free;
+  if Assigned(VoiceOutPut) then VoiceOutPut.Free
+end;
+
+class function TVoiceEntries.GetGramType(index: Integer): TGramType;
+begin
+  if Assigned(VoiceStackCmd) then Result := VoiceStackCmd.GetGramType_(index)
+    else Result := gt_pause
+end;
+
+function TVoiceEntries.GetGramType_(index: Integer): TGramType;
+begin
+  try
+    Result := TSMLConfiance.Sender( VoiceItem[ index ].FSML )
+  except
+    { --- Do nothing in this mode }
+    Result := gt_pause
+  end
+end;
+
+function TVoiceEntries.GetVoiceItem(index: Integer): TVoiceItem;
+begin
+  Result := TVoiceItem( Self.Objects[index] )
+end;
+
+function TVoiceEntries.GetVoiceResponse(index: Integer): Boolean;
+begin
+  try
+    Result := VoiceItem[ index ].FVoiResp
+  except
+    Result := False
+  end
+end;
+
+class function TVoiceEntries.IsVoiceResponse(index: Integer): Boolean;
+begin
+  if Assigned(VoiceStackCmd) then Result := VoiceStackCmd.IsVoiceResponse_(index)
+    else Result := False
+end;
+
+function TVoiceEntries.IsVoiceResponse_(index: Integer): Boolean;
+begin
+  Result := VoiceResponse[index]
+end;
+
+procedure TVoiceEntries.MarkOut;
+begin
+  while Self.Count >= FLimit do Delete( Pred(Self.Count) )
+end;
+
+class procedure TVoiceEntries.RaoulRepeater;
+begin
+  with Recorder do
+    if TalkVoiceDisabled then TCommentBuilder.CantSpeak
+      else
+    if not Assigned(VoiceOutPut) then TCommentBuilder.NothingToSay
+      else
+    with VoiceOutPut do if Count > 0 then TalkFmt(5, 8, Strings[0])
+      else TCommentBuilder.NothingToSay
+end;
+
+class procedure TVoiceEntries.Redo;
+begin
+  if Assigned(VoiceStackCmd) then with VoiceStackCmd do Redo_
+end;
+
+procedure TVoiceEntries.Redo_;
+begin
+  if Count > 0 then with VoiceItem[0] do
+    TInterpreteThread.Create( Recorder, FSML, FText )
+end;
+
+class procedure TVoiceEntries.ReTalk;
+begin
+  if Assigned(VoiceStackCmd) then with VoiceStackCmd do Retalk_
+end;
+
+procedure TVoiceEntries.Retalk_;
+begin
+  if Count > 0 then
+    Recorder.TalkFmt( 15, 0, TCommentBuilder.LastSentence(VoiceItem[0].FText) )
+end;
+
+procedure TVoiceEntries.Save;
+var
+  i : Integer;
+begin
+  with TStringList.Create do
+  try
+    for i := 0 to Pred(Self.Count) do
+      try Add( Format('%s', [VoiceItem[i].FText]) ) except end;
+    SaveToFile( FFileName )
+  finally
+    Free
+  end
+end;
+
+procedure TVoiceEntries.SetVoiceResponse(index: Integer; const Value: Boolean);
+begin
+  try VoiceItem[ index ].FVoiResp := Value except end
+end;
+
+procedure TVoiceEntries.Stack(const ASML, AText: string);
+begin
+  InsertItem(0, AText, TVoiceItem.Create(ASML, AText));
+  MarkOut;
+  Save;
+end;
+
+{ TVoiceItem }
+
+constructor TVoiceItem.Create(const ASML, AText: string);
+begin
+  inherited Create;
+  FSML       := ASML;
+  FText      := AText;
+  FVoiResp   := False;
+  FTimeStamp := GetTickCount
+end;
+
+{ TGuardRail }
+
+class procedure TGuardRail.AssignVocalResponse(const Value: Boolean);
+begin
+  with TGuardRail.Create do
+  try
+    VoiceResponse := Value;
+    if Value then TVoiceEntries.AddVoiceResponse(0)
+  finally
+    Free
+  end;
+end;
+
+function TGuardRail.GetCalcFormVisible: Boolean;
+begin
+  Result := KeyReadBoolean(BufferKey, 'CalcFormVisible')
+end;
+
+function TGuardRail.GetCalcModeEnable: Boolean;
+begin
+  Result := TMetiers( KeyReadInt(BufferKey, 'IndexMetier') ) = m_gauss
+end;
+
+function TGuardRail.GetHelpVisible: Boolean;
+begin
+  Result := KeyReadBoolean(AppKey, 'HelpVisible')
+end;
+
+function TGuardRail.GetVocalResponse: Boolean;
+begin
+  Result := KeyReadBoolean(BufferKey, 'VocalResponse')
+end;
+
+function TGuardRail.GetVoiceTimeStamp: Cardinal;
+begin
+  Result := KeyReadCard(BufferKey, 'VoiceTimeStamp')
+end;
+
+class function TGuardRail.IsCalcModeEnable: Boolean;
+begin
+  with TGuardRail.Create do try Result := CalcModeEnable finally Free end
+end;
+
+class function TGuardRail.IsHelpVisible: Boolean;
+begin
+  with TGuardRail.Create do try Result := HelpVisible finally Free end
+end;
+
+class function TGuardRail.IsOnLine: Boolean;
+begin
+  with TGuardRail.Create do try Result := IsOnLine_ finally Free end
+end;
+
+function TGuardRail.IsOnLine_: Boolean;
+{ --- OnLine = True -> command can be saved }
+begin
+  Result := not ( VoiceResponse and ( GetTickCount - VoiceTimeStamp < 3200 ) )
+end;
+
+class procedure TGuardRail.NowToVoiceTimeStamp;
+begin
+  with TGuardRail.Create do try VoiceTimeStamp := GetTickCount finally Free end
+end;
+
+class procedure TGuardRail.Reset;
+begin
+  with TGuardRail.Create do
+  try
+    VoiceTimeStamp := GetTickCount;
+    VoiceResponse  := False
+  finally
+    Free
+  end
+end;
+
+procedure TGuardRail.SetVocalResponse(const Value: Boolean);
+begin
+  KeyWrite(BufferKey, 'VocalResponse', Value)
+end;
+
+procedure TGuardRail.SetVoiceTimeStamp(const Value: Cardinal);
+begin
+  KeyWrite(BufferKey, 'VoiceTimeStamp', Value)
+end;
+
+
 
 initialization
   KeyWrite(BufferKey, 'IndexMetier', 0);

@@ -48,8 +48,8 @@ object AncestorEmbendedForm: TAncestorEmbendedForm
       object Label2: TLabel
         Left = 1
         Top = 1
-        Width = 183
-        Height = 39
+        Width = 35
+        Height = 25
         Align = alClient
         Alignment = taCenter
         Caption = 'Oui'
@@ -74,8 +74,8 @@ object AncestorEmbendedForm: TAncestorEmbendedForm
       object Label3: TLabel
         Left = 1
         Top = 1
-        Width = 183
-        Height = 39
+        Width = 29
+        Height = 25
         Align = alClient
         Alignment = taCenter
         Caption = 'Ok'
@@ -100,8 +100,8 @@ object AncestorEmbendedForm: TAncestorEmbendedForm
       object Label4: TLabel
         Left = 1
         Top = 1
-        Width = 183
-        Height = 39
+        Width = 42
+        Height = 25
         Align = alClient
         Alignment = taCenter
         Caption = 'Non'
