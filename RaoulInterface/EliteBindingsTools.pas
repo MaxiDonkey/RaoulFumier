@@ -1,10 +1,12 @@
 {*******************************************************}
 {                                                       }
-{         08/2020 MaxiDonkey Runtime Library            }
+{             08/2020 MaxiDonkey  Library               }
 {                                                       }
 {         Elite Dangerous Functions interface           }
 {         Bindings tools for Custom.3.0.Binds           }
+{          or Custom.4.0.Binds for Odyssey              }
 {                                                       }
+{              rev-2 06/2021 for Odyssey                }
 {                                                       }
 {*******************************************************}
 
@@ -37,6 +39,7 @@
    StoreCamZoomOut                        StoreToggle
    CommanderCreator_Undo                  CommanderCreator_Redo
    CommanderCreator_Rotation_MouseToggle
+
 
 
    2/ Display managed functions by code
@@ -79,6 +82,8 @@
       if changes are made to Temp.Custom.3.0.binds then a copy of this file is
       send to ...Elite...Options\Bindings\Custom.3.0.binds
 
+   7/ Les Binds avancer et reculer au sol doivent impérativement être respectivement
+      les touches Z('W' qwerty) et S.
 ...............................................................................}
 
 unit EliteBindingsTools;
@@ -86,19 +91,49 @@ unit EliteBindingsTools;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes,
-  Graphics, Controls, Forms, Dialogs, ExtCtrls, StdCtrls,
-  uRegistry, StrCopyUtils, Math, uEliteUtils;
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, ExtCtrls, StdCtrls, Math,
+  {Spec}
+  uRegistry, StrCopyUtils;
 
 const
   KEYEVENTF_KEYDOWN  = 0;
   WITH_KEYUP         = True;
   WITHOUT_KEYUP      = False;
+  SHELL_ACCES        = 'Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders';  //Registry key
+  SAVE_GAMES_KEY     = '{4C5C32FF-BB9D-43B0-B5B4-2D72E54EAAA4}';                            //Registry key
+  BINDING_OPT_KEY    = 'Local AppData';
+  LOCAL_SAVE         = 'SaveBindigs';
+  START_PRESET       = 'StartPreset.start';
+  DISPLAY_SETTINGS   = 'DisplaySettings.xml';
 
-function  EncodeKey(const Key, Mod1, Mod2: Word): Cardinal; overload;
-function  EncodeKey(const Key, Mod1, Mod2: string): Cardinal; overload;
-procedure DecodeKey(const Value: Cardinal; var Key, Func1, Func2: Word);
+const
+  SPEC_FORWARD  = 0;
+  SPEC_BACKWARD = 1;
+  SPEC_FIRE     = 2;
 
+type
+  TOdysseyTypeSpecKey = (ots_forward, ots_backward, ots_fire);
+
+var
+  TEMP_CUSTOM_FILE   : string = 'Temp.Custom.3.0.binds';   { *** rev-2 06/2021 Odyssey }
+  CUSTOM_FILE        : string = 'Custom.3.0.binds';        { *** rev-2 06/2021 Odyssey }
+  CustomVersion      : Integer = 3;                        { *** rev-2 06/2021 Odyssey }
+
+var
+  SavedGamesW    : string = 'Frontier Developments\Elite Dangerous';
+  BindingsFolder : string = 'Frontier Developments\Elite Dangerous\Options\Bindings';
+  GraphicsFolder : string = 'Frontier Developments\Elite Dangerous\Options\Graphics';
+
+function GetFrontierSaveGames: string;
+function GetEliteBindingsFolder: string;
+function GetEliteGraphicsFolder: string;
+
+function EncodeKey(const Key, Mod1, Mod2: Word): Cardinal; overload;
+function EncodeKey(const Key, Mod1, Mod2: string): Cardinal; overload;
+
+procedure UpadateBindFileNameTo4;
+function  StartOnOsyssey: Boolean;
 
 const
   {$EXTERNALSYM MOUSEEVENTF_XDOWN}
@@ -108,6 +143,8 @@ const
   XBUTTON1          = $0001;
   XBUTTON2          = $0002;
 
+var
+  ELITE_CLASS : string = 'FrontierDevelopmentsAppWinClass';
 
 function ExtractBalises(const Src: string; Full: Boolean):string;
 
@@ -654,7 +691,7 @@ type
       bct_conduitemode,      bct_chasseurorder,      bct_explorationfss,
       bct_surfacedetaillee,  bct_manuallanding,      bct_multicrew,
       bct_galaxymap,         bct_camsystem,          bct_galnetreader,
-      bct_camfree );
+      bct_camfree,           bct_humanoid,           bct_humanoidMode );
   TBindCategoriesArea    = 0..Integer(high(TBindCategoriesType));
   TArrayOfBindCategories = array[TBindCategoriesArea] of string;
 
@@ -668,12 +705,106 @@ var
      'Conduite modes',       'Ordres au chasseur',   'ACS',
      'Détecteur de surface', 'Atterrissage manuel',  'Equipage multiple',
      'Carte de la galaxie',  'Système de caméras',   'Liste de lecture',
-     'Camera libre'
+     'Camera libre',         'Au sol',               'Au sol - modes'
    );
 
 function GetBindCategories(const Value: string): TBindCategoriesType;
 function IsBindCategories(const Value: string):Boolean;
 
+{+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+                      CUSTOM.4.0.BINDS DEFINE
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++}
+
+{*** AU SOL }
+
+type
+  THumanoidSolType =
+   ( hs_ForwardButton,                         hs_BackwardButton,
+     hs_StrafeLeftButton,                      hs_StrafeRightButton,
+     hs_RotateLeftButton,                      hs_RotateRightButton,
+     hs_PitchUpButton,                         hs_PitchDownButton,
+     hs_SprintButton,                          hs_WalkButton,
+     hs_CrouchButton,                          hs_JumpButton,
+     hs_PrimaryInteractButton,                 hs_SecondaryInteractButton,
+     hs_ItemWheelButton,                       hs_ItemWheelButton_XAxis,
+     hs_ItemWheelButton_XLeft,                 hs_ItemWheelButton_XRight,
+     hs_ItemWheelButton_YAxis,                 hs_ItemWheelButton_YUp,
+     hs_ItemWheelButton_YDown,                 hs_PrimaryFireButton,
+     hs_ZoomButton,                            hs_ThrowGrenadeButton,
+     hs_MeleeButton,                           hs_ReloadButton,
+     hs_SwitchWeapon,                          hs_SelectPrimaryWeaponButton,
+     hs_SelectSecondaryWeaponButton,           hs_SelectUtilityWeaponButton,
+     hs_SelectNextWeaponButton,                hs_SelectPreviousWeaponButton,
+     hs_HideWeaponButton,                      hs_SelectNextGrenadeTypeButton,
+     hs_SelectPreviousGrenadeTypeButton,       hs_ToggleFlashlightButton,
+     hs_ToggleNightVisionButton,               hs_ToggleShieldsButton,
+     hs_ClearAuthorityLevel,                   hs_HealthPack,
+     hs_Battery,                               hs_SelectFragGrenade,
+     hs_SelectEMPGrenade,                      hs_SelectShieldGrenade,
+     hs_SwitchToRechargeTool,                  hs_SwitchToCompAnalyser,
+     hs_SwitchToSuitTool,                      hs_ToggleToolModeButton,
+     hs_ToggleMissionHelpPanelButton
+   );
+   THumanoidSolArea    = 0..Integer(high(THumanoidSolType));
+   TArrayOfHumanoidSol = array[THumanoidSolArea] of string;
+
+var
+  HOSOL : TArrayOfHumanoidSol =
+   ( 'HumanoidForwardButton',                   'HumanoidBackwardButton',
+     'HumanoidStrafeLeftButton',                'HumanoidStrafeRightButton',
+     'HumanoidRotateLeftButton',                'HumanoidRotateRightButton',
+     'HumanoidPitchUpButton',                   'HumanoidPitchDownButton',
+     'HumanoidSprintButton',                    'HumanoidWalkButton',
+     'HumanoidCrouchButton',                    'HumanoidJumpButton',
+     'HumanoidPrimaryInteractButton',           'HumanoidSecondaryInteractButton',
+
+     'HumanoidItemWheelButton',                 'HumanoidItemWheelButton_XAxis',
+     'HumanoidItemWheelButton_XLeft',           'HumanoidItemWheelButton_XRight',
+     'HumanoidItemWheelButton_YAxis',           'HumanoidItemWheelButton_YUp',
+     'HumanoidItemWheelButton_YDown',           'HumanoidPrimaryFireButton',
+
+     'HumanoidZoomButton',                      'HumanoidThrowGrenadeButton',
+     'HumanoidMeleeButton',                     'HumanoidReloadButton',
+     'HumanoidSwitchWeapon',                    'HumanoidSelectPrimaryWeaponButton',
+     'HumanoidSelectSecondaryWeaponButton',     'HumanoidSelectUtilityWeaponButton',
+     'HumanoidSelectNextWeaponButton',          'HumanoidSelectPreviousWeaponButton',
+     'HumanoidHideWeaponButton',                'HumanoidSelectNextGrenadeTypeButton',
+     'HumanoidSelectPreviousGrenadeTypeButton', 'HumanoidToggleFlashlightButton',
+     'HumanoidToggleNightVisionButton',         'HumanoidToggleShieldsButton',
+     'HumanoidClearAuthorityLevel',             'HumanoidHealthPack',
+     'HumanoidBattery',                         'HumanoidSelectFragGrenade',
+     'HumanoidSelectEMPGrenade',                'HumanoidSelectShieldGrenade',
+     'HumanoidSwitchToRechargeTool',            'HumanoidSwitchToCompAnalyser',
+     'HumanoidSwitchToSuitTool',                'HumanoidToggleToolModeButton',
+     'HumanoidToggleMissionHelpPanelButton'
+   );
+
+   function GetBindHumanoidSol(const Value: string): THumanoidSolType;
+   function IsBindHumanoidSol(const Value: string):Boolean;
+
+type
+   THumanoidSolModeType =
+   (
+     hsm_GalaxyMapOpen, hsm_SystemMapOpen, hsm_FocusCommsPanel,
+     hsm_QuickCommsPanel, hsm_OpenAccessPanelButton,
+     hsm_ConflictContextualUIButton
+   );
+   THumanoidSolModeArea    = 0..Integer(high(THumanoidSolModeType));
+   TArrayOfHumanoidSolMode = array[THumanoidSolModeArea] of string;
+
+var
+   HOSOLMODE : TArrayOfHumanoidSolMode =
+    ( 'GalaxyMapOpen_Humanoid',        'SystemMapOpen_Humanoid',
+      'FocusCommsPanel_Humanoid',      'QuickCommsPanel_Humanoid',
+      'HumanoidOpenAccessPanelButton', 'HumanoidConflictContextualUIButton'
+    );
+
+   function GetBindHumanoidSolMode(const Value: string): THumanoidSolModeType;
+   function IsBindHumanoidSolMode(const Value: string):Boolean;
+
+{CUSTOM.4.0..BINDS End define -------------------------------------------------}
 
 {*** Elite keys dedined }
 type
@@ -750,7 +881,6 @@ function GetKeyFuncNext(const Value:TEliteKeyType):TEliteKeyType;
 function KeyTypeToStr(const Value:TEliteKeyType): string;
 function IdKeyToStr(const IdKey: Cardinal):string;
 
-
 {*** Duplicatas pour un même signal de combinaison de touches }
 type
   TKeyDuplicataType =
@@ -766,6 +896,7 @@ type
      kdt_FocusLeftPanel,       kdt_FocusCommsPanel,             kdt_FocusRadarPanel,
      kdt_PitchUp,              kdt_PitchDown,                   kdt_YawRight,
      kdt_YawLeft );
+
   TKeyDuplicataArea = 0..Integer(high(TKeyDuplicataType));
   TArrayDuplicata   = array[1..9] of string;
   TDuplicata        = array[TKeyDuplicataType] of TArrayDuplicata;
@@ -800,7 +931,7 @@ const
   DFocusRightPanel : TArrayDuplicata = ('FocusRightPanel', 'FocusRightPanel_Buggy', '', '', '', '', '', '', '');
   DGalaxyMapOpen : TArrayDuplicata = ('GalaxyMapOpen', 'GalaxyMapOpen_Buggy', '', '', '', '', '', '', '');
   DSystemMapOpen : TArrayDuplicata = ('SystemMapOpen', 'SystemMapOpen_Buggy', '', '', '', '', '', '', '');
-  DToggleReverseThrottleInput : TArrayDuplicata = ('ToggleReverseThrottleInput', '', '', '', '', '', '', '', ''); //BuggyToggleReverseThrottleInput
+  DToggleReverseThrottleInput : TArrayDuplicata = ('ToggleReverseThrottleInput', '', '', '', '', '', '', '', '');  //BuggyToggleReverseThrottleInput
   DFocusLeftPanel : TArrayDuplicata = ('FocusLeftPanel', 'FocusLeftPanel_Buggy', '', '', '', '', '', '', '');
   DFocusCommsPanel : TArrayDuplicata = ('FocusCommsPanel', 'FocusCommsPanel_Buggy', '', '', '', '', '', '', '');
   DFocusRadarPanel : TArrayDuplicata = ('FocusRadarPanel', 'FocusRadarPanel_Buggy', '', '', '', '', '', '', '');
@@ -852,6 +983,8 @@ type
     FCamSystem               : TArrayCamSystem;
     FGalnetReader            : TArrayGalnetReader;
     FCamFree                 : TArrayCamFree;
+    FHumanoid                : TArrayOfHumanoidSol;
+    FHumanoidMode            : TArrayOfHumanoidSolMode;
     function ToStringEx(const AValues: array of string): string;
     function GetBindsXMLtext: string;
     function ExtractXMLByBind(const BindValue: string):string;
@@ -949,7 +1082,7 @@ type
     function IsCombinationJoyBusy: Boolean;
     function IsCombinatonFree: Boolean;
   private
-    { --- Build availaible conbibnation}
+    { --- Build availaible conbibnation }
     function FindFreeCombination(var Key, Func1, Func2: TEliteKeyType;
       var UseTwoFunc: Boolean; var NewSignal: Cardinal):Boolean;
   private
@@ -982,6 +1115,29 @@ type
     constructor Create(const AOwner: TKeyInventory);
   end;
 
+  TKeyOdysseySpecial = class
+  private
+    FOwner       : TKeyInventory;
+    FSpecialsKey : TStringList;
+    procedure SetForward(const BindStr: string);
+    procedure SetBackward(const BindStr: string);
+    procedure SetFire(const BindStr: string);
+    function GetForward: string;
+    function GetBackward: string;
+    function GetFire: string;
+    function GetCode(KeyType: TOdysseyTypeSpecKey): string;
+  public
+    function CombinaisonExists(const Value: Cardinal): Boolean;
+
+    property Forward: string read GetForward;
+    property Backward: string read GetBackward;
+    property Fire: string read GetFire;
+    property Code[KeyType: TOdysseyTypeSpecKey]: string read GetCode;
+
+    constructor Create(const AOwner: TKeyInventory);
+    destructor Destroy; override;
+  end;
+
 
   TKeyInventory = class(TStringList)
   private
@@ -993,6 +1149,7 @@ type
     FErrors           : TstringList;
     FDblUsed          : TstringList;
     FHashTable        : TstringList;
+    FKeyOdysseySpec   : TKeyOdysseySpecial;
 
     function GetXML(Bind: string): string;
     function GetTextEx(Bind: string): string;
@@ -1047,12 +1204,15 @@ type
     { --- La synchronisation à Vrai implique la recopie du Temp.Custom.3.0 sur le Custom3.0 }
     function  IsSynchronization:Boolean;
     procedure SetSynchronization(const Value: Boolean);
+  private
+    { --- On initialize les touches avance et recule au sol dans les combinaisons spéciales }
+    procedure ForBackWardInitialize;
   public
     procedure Refresh_;
     procedure SetSource(Value: string);
     function  AddKey(const Binds: string): Integer;
     procedure AssignToFree;
-    procedure KeyTrigger_(const BindStr: string; UpKey: Boolean); overload;
+    procedure KeyTrigger_(const BindStr: string; UpKey: Boolean; Cumul: Boolean = False); overload;
     procedure KeyTrigger_(const BindStr: string; pDelay: Integer); overload;
 
     property XML[Bind: string]: string read GetXML;
@@ -1086,10 +1246,11 @@ type
     FTimems            : Cardinal;
     FDown              : TStringList;
     FClock             : Cardinal;
-    FSurveyor          : TKeySurveyor; //Thread de surveillance du clavier : à revoir
+    FSurveyor          : TKeySurveyor;
     FOnBeforeMouseDown : TNotifyEvent;
     FOnAfterMouseDown  : TNotifyEvent;
     FMouseFactory      : TMouseFactory;
+    FKeySurveyor       : TKeySurveyor;
     function MouseSignalToEvent(const Value: Word; UpSignal: Boolean;
       var Button: Word):Word;
     procedure DoBeforeMouseSignal;
@@ -1104,8 +1265,10 @@ type
     procedure SetOnBeforeMouseDown(const Value: TNotifyEvent);
     procedure SetOnAfterMouseDown(const Value: TNotifyEvent);
     function  TimeBeforeUpKey: Cardinal;
-    procedure SendSignal(UpKey: Boolean);
-    procedure DoKeyUp;
+    { --- Cumul = True more combination don't keyup before signal }
+    procedure SendSignal(UpKey: Boolean; Cumul: Boolean);
+    procedure DoKeyUp(Forced: Boolean = False); overload;
+    procedure DoKeyUp(KeyType: TOdysseyTypeSpecKey); overload;
 
     property Clock: Cardinal read FClock write FClock;
     property IndexMonitor: Integer read GetIndexMonitor write SetIndexMonitor;
@@ -1117,10 +1280,9 @@ type
     destructor Destroy; override;
     class procedure Initialize;
     class procedure Finalize;
-    class procedure Signal(const KeyValue, TimeMs: Cardinal; UpKey: Boolean = WITH_KEYUP);
+    class procedure Signal(const KeyValue, TimeMs: Cardinal; UpKey: Boolean; Cumul: Boolean = False);
     class procedure BeforeMouseDown(const Value: TNotifyEvent);
     class procedure AfterMouseDown(const Value: TNotifyEvent);
-    class procedure KeyUp;
   end;
 
   TMouseFactory = class
@@ -1141,7 +1303,6 @@ type
   TKeySurveyor = class(TThread)
   private
     ThKeyMessageSender : TKeyMessageSender;
-    FStop              : Boolean;            
     procedure ThDelay(ms: Cardinal);
     procedure Process;
   protected
@@ -1179,35 +1340,26 @@ var
   ];
 
 var
-  KeyInventory     : TKeyInventory = nil;       { --- Singleton }
-  KeyMessageSender : TKeyMessageSender = nil;   { --- Singleton }
-  HElite           : THandle = 0;
-
-
-
-
-
-
-
-
-
+  KeyInventory      : TKeyInventory = nil;       { --- Singleton }
+  KeyMessageSender  : TKeyMessageSender = nil;   { --- Singleton }
+  HElite            : THandle = 0;
 
 
 implementation
 
 uses
-  StrUtils, uNewRecorder;
+  StrUtils;
 
 function IsEliteRunning: Boolean;
 begin
   if HElite = 0 then HElite := FindWindow( PChar(ELITE_CLASS), nil );
-  Result :=  HElite <> 0;
+  Result :=  HElite <> 0
 end;
 
 procedure EliteForeGround;
 begin
   if HElite = 0 then HElite := FindWindow( PChar(ELITE_CLASS), nil );
-  SetForegroundWindow( HElite );
+  SetForegroundWindow( HElite )
 end;
 
 function SetMessage(const Messages: array of string):string;
@@ -1221,6 +1373,24 @@ begin
   finally
     Free
   end
+end;
+
+function GetFrontierSaveGames: string;
+begin
+  KeyRead(SHELL_ACCES, SAVE_GAMES_KEY, Result);
+  Result := Format('%s\%s', [Result, SavedGamesW])
+end;
+
+function GetEliteBindingsFolder: string;
+begin
+  KeyRead(SHELL_ACCES, BINDING_OPT_KEY, Result);
+  Result := Format('%s\%s', [Result, BindingsFolder])
+end;
+
+function GetEliteGraphicsFolder: string;
+begin
+  KeyRead(SHELL_ACCES, BINDING_OPT_KEY, Result);
+  Result := Format('%s\%s', [Result, GraphicsFolder])
 end;
 
 const
@@ -1261,20 +1431,16 @@ var
   Buffer: string;
 begin
   Buffer := TBindsArrayTools.Extract(Src, Balise);
-  Result := AnsiPos('Primary', Buffer) > 0;
+  Result := AnsiPos('Primary', Buffer) > 0
 end;
 
 function OrderExchange(const ASt: string; Order: TKeyOrder):string;
-var
-  Buffer : string;
-  FindSt : string;
-  NewSt  : string;
 begin
   Result := ASt;
   case Order of
     ko_primary   : while AnsiPos('Primary',   Result) > 0 do Result := StrUtils.ReplaceStr(Result,'Primary',   'Secondary');
     ko_secondary : while AnsiPos('Secondary', Result) > 0 do Result := StrUtils.ReplaceStr(Result,'Secondary', 'Primary');
-  end;
+  end
 end;
 
 function ExtractBalises(const Src: string; Full: Boolean):string;
@@ -1328,14 +1494,14 @@ begin
   Result := Format('%d%0.2d%0.2dT%0.2d%0.2d%0.2d', [Y, M, D, H, Min, S])
 end;
 
-function EncodeKey(const Key, Mod1, Mod2: Word): Cardinal; overload;
+function EncodeKey(const Key, Mod1, Mod2: Word): Cardinal;
 { --- Value = Mod1 * 10^6 + Mod2 * 10^3 + Key
       avec Mod1 le premier Modifier rencontré }
 begin
   Result := Trunc( Mod1 * Power(10, 6) + Mod2 * Power(10, 3) + Key )
 end;
 
-function EncodeKey(const Key, Mod1, Mod2: string): Cardinal; overload;
+function EncodeKey(const Key, Mod1, Mod2: string): Cardinal;
 begin
   Result := EncodeKey(
     EliteKeyToScanValue(Key),
@@ -1378,7 +1544,7 @@ begin
   Duplicatas[kdt_PitchUp] := DPitchUp;
   Duplicatas[kdt_PitchDown] := DPitchDown;
   Duplicatas[kdt_YawRight] := DYawRight;
-  Duplicatas[kdt_YawLeft] := DYawLeft;
+  Duplicatas[kdt_YawLeft] := DYawLeft
 end;
 
 procedure PreferenceKeysInitialize;
@@ -1416,7 +1582,7 @@ begin
   PreferenceKeys[kdt_PitchUp] := VK_PRIOR;
   PreferenceKeys[kdt_PitchDown] := VK_NEXT;
   PreferenceKeys[kdt_YawRight] := VK_END;
-  PreferenceKeys[kdt_YawLeft] := VK_HOME;
+  PreferenceKeys[kdt_YawLeft] := VK_HOME
 end;
 
 function DuplicataItemsCount(const Value: TKeyDuplicataType):Integer;
@@ -1442,9 +1608,37 @@ begin
   end
 end;
 
+function GetBindHumanoidSol(const Value: string): THumanoidSolType;
+begin
+  try
+    Result := THumanoidSolType( IndexStr(Value, HOSOL) )
+  except
+    raise
+  end
+end;
+
+function GetBindHumanoidSolMode(const Value: string): THumanoidSolModeType;
+begin
+  try
+    Result := THumanoidSolModeType( IndexStr(Value, HOSOLMODE) )
+  except
+    raise
+  end
+end;
+
 function IsBindCategories(const Value: string):Boolean;
 begin
   Result := IndexStr(Value, MCR) > -1
+end;
+
+function IsBindHumanoidSol(const Value: string):Boolean;
+begin
+  Result := IndexStr(Value, HOSOL) > -1
+end;
+
+function IsBindHumanoidSolMode(const Value: string):Boolean;
+begin
+  Result := IndexStr(Value, HOSOLMODE) > -1
 end;
 
 function GetVolRotation(const Value: string):TVolRotationType;
@@ -1815,10 +2009,8 @@ function EliteKeyToScanValue(const Value: string):SmallInt;
 begin
   Result := 0;
   if IsEliteKey( Value ) then
-    Result := EliteKeyToScanValue( GetEliteKey( Value ) );
+    Result := EliteKeyToScanValue( GetEliteKey( Value ) )
 end;
-
-
 
 function EliteKeyToScanValue(const Value: TEliteKeyType):SmallInt;
 begin
@@ -1931,8 +2123,8 @@ begin
       Mouse_3              : Result := VK_MBUTTON;
       Mouse_4              : Result := VK_XBUTTON1;
       Mouse_5              : Result := VK_XBUTTON2;
-      else Result := 0;
-  end;
+      else Result := 0
+  end
 end;
 
 
@@ -2047,7 +2239,7 @@ begin
     345 : Result := 'Key_Y';
     346 : Result := 'Key_Z';
     else  Result := EmptyStr
-  end;
+  end
 end;
 
 function IdKeyToStr(const IdKey: Cardinal):string;
@@ -2060,7 +2252,7 @@ begin
   s2     := KeyScanToEliteString(Func1);
   s3     := KeyScanToEliteString(Func2);
   if s3 <> EmptyStr then s2     := Format('%s + %s', [s2, s3]);
-  if s2 <> emptyStr then Result := Format('%s + %s', [s2, Result]);
+  if s2 <> emptyStr then Result := Format('%s + %s', [s2, Result])
 end;
 
 function GetKeyNext(const Value:TEliteKeyType):TEliteKeyType;
@@ -2104,13 +2296,13 @@ end;
 procedure TBindCategoryManager.CheckIndex(const index: Integer);
 begin
   if (index < 0) or (index > High(TBindCategoriesArea)) then
-    raise Exception.CreateFmt('%d hors limites', [index]);
+    raise Exception.CreateFmt('%d hors limites', [index])
 end;
 
 constructor TBindCategoryManager.Create;
 begin
   inherited Create;
-  FMCR := MCR;
+  FMCR := MCR
 end;
 
 function TBindCategoryManager.GetCount: Integer;
@@ -2121,7 +2313,7 @@ end;
 function TBindCategoryManager.GetString(index: Integer): string;
 begin
   CheckIndex(index);
-  Result := FMCR[index];
+  Result := FMCR[index]
 end;
 
 { TBindsArrayTools }
@@ -2174,6 +2366,8 @@ begin
       bct_camsystem           : Add( ToStringEx( FCamSystem            ) );
       bct_galnetreader        : Add( ToStringEx( FGalnetReader         ) );
       bct_camfree             : Add( ToStringEx( FCamFree              ) );
+      bct_humanoid            : Add( ToStringEx( FHumanoid             ) );
+      bct_humanoidMode        : Add( ToStringEx( FHumanoidMode         ) );
     end;
     Result := Trim( Text );
   finally
@@ -2188,7 +2382,7 @@ begin
     Result := BindsXMLtext_
   finally
     Free
-  end;
+  end
 end;
 
 constructor TBindsArrayTools.Create;
@@ -2219,6 +2413,8 @@ begin
   FCamSystem               := CamSystem;
   FGalnetReader            := GalnetReader;
   FCamFree                 := CamFree;
+  FHumanoid                := HOSOL;
+  FHumanoidMode            := HOSOLMODE;
 end;
 
 class function TBindsArrayTools.Extract(const ASource,
@@ -2230,7 +2426,7 @@ begin
     Result := ExtractXMLByBind(BindValue)
   finally
     Free
-  end;
+  end
 end;
 
 
@@ -2270,10 +2466,12 @@ begin
     Add( ToStringEx( FCamSystem            ) );
     Add( ToStringEx( FGalnetReader         ) );
     Add( ToStringEx( FCamFree              ) );
+    Add( ToStringEx( FHumanoid             ) );
+    Add( ToStringEx( FHumanoidMode         ) );
     Result := Trim( Text )
   finally
     Free
-  end;
+  end
 end;
 
 procedure TBindsArrayTools.SetSource(const Value: string);
@@ -2291,7 +2489,7 @@ begin
     Result := Trim( Text )
   finally
     Free
-  end;
+  end
 end;
 
 { TKeyItemInventory }
@@ -2309,14 +2507,14 @@ begin
   end;
   case Order of
     ko_primary   : Indic := IndexStr(FPrimary.MainKey.Device,   ['Keyboard', 'Mouse']) > -1;
-    else Indic := IndexStr(FSecondary.MainKey.Device, ['Keyboard', 'Mouse']) > -1;
+    else Indic := IndexStr(FSecondary.MainKey.Device, ['Keyboard', 'Mouse']) > -1
   end;
   with FOwner do if Indic then begin
     { --- Eviter les doublons si le primary et le secondary sont compatibles avec le clavier }
     if FIndexCatalog.indexOf(Bind) = -1 then begin
       FIndexCatalog.Add(Bind);
-      FCatalog.Add( ASt );
-    end;
+      FCatalog.Add( ASt )
+    end
   end
 end;
 
@@ -2339,7 +2537,7 @@ begin
     ko_primary    : if IsJoyUsed(FPrimary)   then Exit;
     ko_secondary  : if IsJoyUsed(FSecondary) then Exit;
   end;
-  with FOwner, FHashTable do if FHashTable.IndexOf(Ids) = -1 then Add(Ids);
+  with FOwner, FHashTable do if FHashTable.IndexOf(Ids) = -1 then Add(Ids)
 end;
 
 procedure TKeyItemInventory.AssignToKey(ACount: Byte;
@@ -2358,7 +2556,7 @@ end;
 procedure TKeyItemInventory.CheckCombination;
 begin
   if IsCombinationJoyBusy then AddToErrors('(0002) Joystick full');
-  if IsCombinatonFree     then AddToErrors('(0003) Free');
+  if IsCombinatonFree     then AddToErrors('(0003) Free')
 end;
 
 procedure AddToStringList(const List: TStrings; const ASt: string);
@@ -2374,7 +2572,7 @@ begin
     end;
   finally
     Free
-  end;
+  end
 end;
 
 function TKeyItemInventory.ConcatXML: string;
@@ -2386,7 +2584,7 @@ begin
     AddToStringList(OutStr, FXMLPrimary);
     AddToStringList(OutStr, FXMLSecondary);
     if FToggle then AddToStringList(OutStr, FXMLToggleOn);
-    Result := OutStr.Text;
+    Result := OutStr.Text
   finally
     OutStr.Free
   end;
@@ -2415,13 +2613,13 @@ function TKeyItemInventory.EliteKeyToKeyBoard(
       {--- Traduire les touches "modifier" si nécessaire }
       if Count > 1 then with KeyResult do begin
         Func1 := EliteKeyToScanValue(Modifier1.Key);
-        if Count > 2 then Func2 := EliteKeyToScanValue(Modifier2.Key);
+        if Count > 2 then Func2 := EliteKeyToScanValue(Modifier2.Key)
       end
     end
   end;
 
   function KeyBoardProcess: Boolean; begin
-    Result := Process(False);
+    Result := Process(False)
   end;
 
   function MouseProcess: Boolean; begin
@@ -2433,8 +2631,8 @@ begin
     0  : Result := KeyBoardProcess;
     1  : Result := MouseProcess;
     2  : Result := False;
-    else Result := True;
-  end;
+    else Result := True
+  end
 end; {EliteKeyToKeyBoard}
 
 procedure TKeyItemInventory.ExtractData;
@@ -2451,7 +2649,7 @@ begin
   AddToCatalog(ko_secondary);
   if not PrimaryAvailable then AddToHashTable(ko_primary);
   if not SecondaryAvailable then AddToHashTable(ko_secondary);
-  CheckCombination;
+  CheckCombination
 end;
 
 procedure TKeyItemInventory.ExtractPrimary;
@@ -2479,7 +2677,7 @@ begin
   {Second modifier}
   if AnsiPos('Modifier', ASt) > 0 then begin
     GetDeviceKey(ASt, ADevice, AKey);
-    AssignToKey(3, FPrimary, FPrimary.Modifier2, ADevice, AKey);
+    AssignToKey(3, FPrimary, FPrimary.Modifier2, ADevice, AKey)
   end
 end;
 
@@ -2512,8 +2710,8 @@ begin
   {Second modifier}
   if AnsiPos('Modifier', ASt) > 0 then begin
     GetDeviceKey(ASt, ADevice, AKey);
-    AssignToKey(3, FSecondary, FSecondary.Modifier2, ADevice, AKey);
-  end;
+    AssignToKey(3, FSecondary, FSecondary.Modifier2, ADevice, AKey)
+  end
 end;
 
 procedure TKeyItemInventory.ExtractToggle;
@@ -2557,7 +2755,7 @@ begin
         Func2      := GetKeyFuncNext(Func2);
         if func2 = Key_LeftAlt then begin
           Result := False;
-          Break;
+          Break
         end
       end
     end;
@@ -2565,8 +2763,8 @@ begin
       then NewSignal := IdSigning(Trans(Key), Trans(Func1), Trans(Func2))
       else NewSignal := IdSigning(Trans(Key), Trans(Func1), 0);
     Result := FOwner.FHashTable.IndexOf(Format('%d', [NewSignal])) = -1;
-    Again := not Result;
-  end;
+    Again := not Result
+  end
 end; {FindFreeCombination}
 
 procedure TKeyItemInventory.GetDeviceKey(const Src: string; var Device,
@@ -2575,7 +2773,7 @@ begin
   Key    := GetAfterStr(Src,    'Key="');
   Key    := GetBeforStr(Key,    '"');
   Device := GetAfterStr(Src,    'Device="');
-  Device := GetBeforStr(Device, '"');
+  Device := GetBeforStr(Device, '"')
 end;
 
 function TKeyItemInventory.GetPrimaryAvailable: Boolean;
@@ -2649,7 +2847,7 @@ begin
     Result := Text
   finally
     Free
-  end;
+  end
 end;
 
 function TKeyItemInventory.GetUsable: Boolean;
@@ -2676,7 +2874,7 @@ begin
             (FSecondary.MainKey.Device = '{NoDevice}');
   Indic1 := IsJoyUsed(FPrimary) and (FSecondary.MainKey.Device = '{NoDevice}');
   Indic2 := (FSecondary.MainKey.Device = '{NoDevice}') and IsJoyUsed(FSecondary);
-  Result := Result or Indic1 or Indic2;
+  Result := Result or Indic1 or Indic2
 end;
 
 function TKeyItemInventory.IsJoyUsed(const Value: TRecordKeySection): Boolean;
@@ -2700,10 +2898,10 @@ begin
       FSource := Text;
       Result  := Text;
       SaveToFile( TEMP_CUSTOM_FILE );
-      SetCustomModified;
+      SetCustomModified
     finally
       Free
-    end;
+    end
   end;
 
 end; {ReplaceSourceXML}
@@ -2728,8 +2926,7 @@ var
   function CleanStr(const ASt: string):string; var i: Integer; begin
   { --- Retirer les caractères "tab" avant d'imposer l'indentation }
     Result := EmptyStr;
-    for i := 1 to Length(ASt) do
-      if ASt[i] <> #9 then Result := Result + ASt[i]
+    for i := 1 to Length(ASt) do if ASt[i] <> #9 then Result := Result + ASt[i]
   end;
 
 begin
@@ -2748,10 +2945,10 @@ begin
     end;
     Insert(0, Format(#9'<%s>', [Bind]));
     Add( Format(#9'</%s>', [Bind]));
-    Result := Trim(Text);
+    Result := Trim(Text)
   finally
     Free
-  end;
+  end
 end; {XMLIndentation}
 
 { TKeyInventory }
@@ -2763,9 +2960,9 @@ begin
   Item   := TKeyItemInventory.Create(Self);
   with Item do begin
     Bind      := Binds;
-    XMLSource := TBindsArrayTools.Extract(FSource, Binds);
+    XMLSource := TBindsArrayTools.Extract(FSource, Binds)
   end;
-  Result := AddObject(Binds, Item);
+  Result := AddObject(Binds, Item)
 end;
 
 function BuildXMLKey(const BaliseName: string; Key, Func1, Func2: string;
@@ -2788,10 +2985,10 @@ begin
         Add( Format(#9'<Modifier Device="Keyboard" Key="%s"/>', [Func2]) );
       Add( Format('</%s>', [BaliseName]) );
     end;
-    Result := Text;
+    Result := Text
   finally
     Free
-  end;
+  end
 end;
 
 procedure TKeyInventory.AssignToFree;
@@ -2832,7 +3029,7 @@ begin
       { --- Réinitialise la keyItem courante }
       SetXmlSource( ConcatXML );
       { --- Modifier le fichier source }
-      ReplaceSourceXML;
+      ReplaceSourceXML
     end
   end
 end;
@@ -2841,7 +3038,7 @@ end;
 procedure TKeyInventory.BuildLocalSaveFolder;
 begin
   if not DirectoryExists(LOCAL_SAVE) then
-    try MkDir(LOCAL_SAVE) except end;
+    try MkDir(LOCAL_SAVE) except end
 end;
 
 procedure TKeyInventory.BuildMutiUsageKeyList;
@@ -2883,7 +3080,7 @@ begin
 
   Result := BuildXMLKey(Balise, KeyScanToEliteString(Key),
     KeyScanToEliteString(Func1),
-    KeyScanToEliteString(Func2), UseTwoFunc, KeyOnly );
+    KeyScanToEliteString(Func2), UseTwoFunc, KeyOnly )
 end;
 
 
@@ -2919,8 +3116,8 @@ var
     if Item.PrimaryAvailable then Result := ko_primary
       else begin
         FErrors.Text := Format('002 - %s : delete one of the joystick or mouse inputs', [Item.FBind]);
-        raise Exception.Create(FErrors.Text);
-      end;
+        raise Exception.Create(FErrors.Text)
+      end
   end;
 
   procedure DoIfAvailaible; begin
@@ -2944,7 +3141,7 @@ var
       { --- Modifier le fichier source }
       ReplaceSourceXML;
       SetMultiUsageModified( True )
-    end;
+    end
   end;
 
   procedure CheckReference; begin
@@ -2954,7 +3151,7 @@ var
     with ItemA do case AOrder of
       ko_primary   : if PrimaryAvailable   then DoIfAvailaible;
       ko_secondary : if SecondaryAvailable then DoIfAvailaible;
-    end;
+    end
   end;
 
   procedure Initialize; begin
@@ -2962,9 +3159,9 @@ var
     ItemB := Item[ToBind];
     if not Assigned(ItemA) or not Assigned(ItemB) then begin
       FErrors.Text := Format('004 - %s vs %s : Incorrect instantiation of doublets', [RefBind, ToBind]);
-      raise Exception.Create(FErrors.Text);
+      raise Exception.Create(FErrors.Text)
     end;
-    CheckReference;
+    CheckReference
   end;
 
   function priVSpri: Boolean; begin
@@ -3001,7 +3198,7 @@ var
         case AOrder of
           ko_primary   : Modified := secVSpri;
           ko_secondary : Modified := secVSsec;
-        end;
+        end
     end;
     with ItemB do if Modified then begin
       { --- Réinitialise la keyItem courante }
@@ -3014,8 +3211,8 @@ var
 
 begin
   Initialize;
-  Update;
-end;
+  Update
+end; {CheckDupicataBinds}
 
 procedure TKeyInventory.Copy_locally;
 var
@@ -3024,24 +3221,23 @@ var
 begin
   FromFile := Format('%s\%s', [GetEliteBindingsFolder, CUSTOM_FILE]);
   ToFile   := Format('%s\%s', [ExtractFileDir(Application.ExeName), TEMP_CUSTOM_FILE]);
-  CopyFile(PChar(FromFile), PChar(ToFile), False);
+  CopyFile(PChar(FromFile), PChar(ToFile), False)
 end;
-
-{CheckDupicataBinds}
 
 constructor TKeyInventory.Create;
 begin
   inherited Create;
   { --- Sorted pour le gain de rapidité lors d'une recherche par indexof }
-  FCatalog       := TStringList.Create;
+  FCatalog        := TStringList.Create;
   with FCatalog do Sorted := True;
-  FIndexCatalog  := TStringList.Create;
+  FIndexCatalog   := TStringList.Create;
   with FIndexCatalog do Sorted := True;
-  FIgnored       := TstringList.Create;
-  FErrors        := TstringList.Create;
-  FDblUsed       := TstringList.Create;
-  FHashTable     := TstringList.Create;
-  with FHashTable do Sorted := True;
+  FIgnored        := TstringList.Create;
+  FErrors         := TstringList.Create;
+  FDblUsed        := TstringList.Create;
+  FHashTable      := TstringList.Create;
+  FKeyOdysseySpec := TKeyOdysseySpecial.Create(Self);
+  with FHashTable do Sorted := True
 end;
 
 function TKeyInventory.Custom3Exists: Boolean;
@@ -3051,6 +3247,7 @@ end;
 
 destructor TKeyInventory.Destroy;
 begin
+  FKeyOdysseySpec.Free;
   FCatalog.Free;
   FIndexCatalog.Free;
   FIgnored.Free;
@@ -3073,7 +3270,7 @@ end;
 class procedure TKeyInventory.Finalize;
 begin
   KeyInventory.Finalize_;
-  FreeAndNil( KeyInventory );
+  FreeAndNil( KeyInventory )
 end;
 
 procedure TKeyInventory.Finalize_;
@@ -3081,7 +3278,7 @@ var
   i : Integer;
 begin
   for I := Pred(Count) downto 0 do Objects[i].Free;
-  Clear;
+  Clear
 end;
 
 function TKeyInventory.GetCatalogTxt: string;
@@ -3141,7 +3338,7 @@ begin
     if index > -1 then Result := TKeyItemInventory(Objects[index]).Text;
   except
     Result := EmptyStr
-  end;
+  end
 end;
 
 function TKeyInventory.GetXML(Bind: string): string;
@@ -3153,7 +3350,7 @@ begin
     if index > -1 then Result := TKeyItemInventory(Objects[index]).XMLSource;
   except
     Result := EmptyStr
-  end;
+  end
 end;
 
 function TKeyInventory.HasReference(const Dup: TKeyDuplicataType;
@@ -3174,15 +3371,16 @@ begin
     ItemX := Item[ASt];
     if not Assigned(ItemX) then begin
       FErrors.Text := Format('005 - %s : uninstantiated object', [ASt]);
-      raise Exception.Create(FErrors.Text);
+      raise Exception.Create(FErrors.Text)
     end;
     if (ItemX.FId1 = Target) or (ItemX.FId2 = Target) then begin
       FirstBindValue := ASt;
       Result         := True;
-      Break;
+      Break
     end
   end
 end;
+
 class procedure TKeyInventory.Initialize;
 begin
   if not Assigned(KeyInventory) then begin
@@ -3192,13 +3390,10 @@ begin
 end;
 
 procedure TKeyInventory.Initialize_;
-var
-  indic : Boolean;
 begin
   { --- Si une erreur survient alors pas d'initialisation
         On doit impérativement refermer l'applicatif }
   Pre_Initilialization;
-
   FSource    := ReadSource;
   FSourceAlt := FSource;
   with TStringList.Create do
@@ -3215,7 +3410,9 @@ begin
       end;
       { *** BuildMutiUsageKeyList; Utile en conception
             --> permet de construire la liste des combinaisons partagées }
-      RetrieveModifications
+      RetrieveModifications;
+      { *** Initialisation des touches avec Without_keyup Odyssey au sol }
+      ForBackWardInitialize;
     except
     end;
     UpdateValidation
@@ -3270,7 +3467,7 @@ begin
   Result := FHashTable.IndexOf( Format('%d', [IdKey])) = -1
 end;
 
-procedure TKeyInventory.KeyTrigger_(const BindStr: string; UpKey: Boolean);
+procedure TKeyInventory.KeyTrigger_(const BindStr: string; UpKey: Boolean; Cumul: Boolean);
 var
   IdStr : Cardinal;
 begin
@@ -3278,7 +3475,7 @@ begin
   IdStr := GetIdFromCatalog(BindStr);
   { --- Selon la commande et le contexte définir le temps d'appui de la touche }
 
-  if IdStr > 0 then TKeyMessageSender.Signal(IdStr, 30, UpKey);
+  if IdStr > 0 then TKeyMessageSender.Signal(IdStr, 30, UpKey, Cumul);
 end;
 
 procedure TKeyInventory.MultiUsageAssign;
@@ -3303,7 +3500,6 @@ function TKeyInventory.Pre_Initilialization:Boolean;
 var
   StMessage: string;
 begin
-  Result := False;
   try
     StMessage := SetMessage([
       'Elite Dangerous commands settings : Please choose CUSTOM.',
@@ -3335,7 +3531,7 @@ end;
 
 class procedure TKeyInventory.Refresh;
 begin
-  KeyInventory.Refresh_;
+  KeyInventory.Refresh_
 end;
 
 procedure TKeyInventory.Refresh_;
@@ -3482,6 +3678,15 @@ begin
   if IdStr > 0 then TKeyMessageSender.Signal(IdStr, pDelay, WITH_KEYUP);
 end;
 
+procedure TKeyInventory.ForBackWardInitialize;
+begin
+  with FKeyOdysseySpec do begin
+    SetForward('HumanoidForwardButton');
+    SetBackward('HumanoidBackwardButton');
+    SetFire('HumanoidPrimaryFireButton');
+  end
+end;
+
 { TKeyMessageSender }
 
 class procedure TKeyMessageSender.AfterMouseDown(const Value: TNotifyEvent);
@@ -3501,13 +3706,13 @@ begin
   inherited Create;
   FDown         := TStringList.Create;
   FMouseFactory := TMouseFactory.Create;
-  FSurveyor     := nil
+  FKeySurveyor  := nil
 end;
 
 destructor TKeyMessageSender.Destroy;
 begin
   { --- On s'assure que les touches sont relâchées }
-  DoKeyUp;
+  DoKeyUp(True);
   FDown.Free;
   FMouseFactory.Free;
   inherited;
@@ -3523,7 +3728,7 @@ begin
   if Assigned(FOnBeforeMouseDown) then FOnBeforeMouseDown(Self);
 end;
 
-procedure TKeyMessageSender.DoKeyUp;
+procedure TKeyMessageSender.DoKeyUp(Forced: Boolean);
 var
   i          : Integer;
   Key        : Word;
@@ -3539,24 +3744,85 @@ var
   end;
 
   procedure MouseReleased; begin
-    MEUp := MouseSignalToEvent(FKey, True, MButtonEx);
+    MEUp := MouseSignalToEvent(Key, True, MButtonEx);      //FKey à vérifier
     mouse_event(MEUp, 0, 0, MButtonEx, 0)
   end;
 
+  procedure ProcessOn(item: Integer); begin
+    case Key of
+      1,2,4,5,6 : MouseReleased;
+      else KeyReleased;
+    end;
+    { --- Supprime l'entrée une fois traité }
+    FDown.Delete(Item)
+  end;
+
+  function NotSpecialCaseOdysseyDeleted(item: Integer): Boolean; begin
+    { --- ne peut pas être "avancer" ou "reculer" pour être supprimé }
+    with KeyInventory.FKeyOdysseySpec do Result := CombinaisonExists( Key );
+    { --- ce n'est ni "avancer" ni "reculer"}
+    if not Result then ProcessOn(Item);
+  end;
+
 begin
+  { --- Traiter les cas particuliers Avancer, Reculer au sol qui ne peuvent être
+        supprimés que par une commande Stop ou le surveyor pour assurer le cumul
+        des commandes ... }
   with FDown do if Count > 0 then begin
     for i := Pred(Count) downto 0 do begin
       { --- non contrôlé car ne peut-être qu'un word transformé en string }
-      Key        := StrToInt( Strings[i] );
-      case Key of
-        1,2,4,5,6 : MouseReleased;
-        else KeyReleased;
-      end;
-      Delete(i)
+      Key := StrToInt( Strings[i] );
+      { --- forçage à True on supprime toutes les entrées }
+      if Forced then ProcessOn(i) else NotSpecialCaseOdysseyDeleted(i);
     end;
     FClock := GetTickCount
+  end
+end; {DoKeyUp}
+
+procedure TKeyMessageSender.DoKeyUp(KeyType: TOdysseyTypeSpecKey);
+var
+  i          : Integer;
+  Key        : Word;
+  keySearch  : Word;
+  MapVirtual : Cardinal;
+  MeUp       : Word;
+  MButtonEx  : Word;
+
+  procedure KeyReleased; begin
+    MapVirtual := MapVirtualKey(Key, 0);
+    if Key in ExtendedVKeys
+      then keybd_event(Key, MapVirtual, KEYEVENTF_EXTENDEDKEY or KEYEVENTF_KEYUP, 0)
+      else keybd_event(Key, MapVirtual, KEYEVENTF_KEYUP, 0);
   end;
-  if Assigned(FSurveyor) then FSurveyor.Terminate
+
+  procedure MouseReleased; begin
+    MEUp := MouseSignalToEvent(Key, True, MButtonEx);
+    mouse_event(MEUp, 0, 0, MButtonEx, 0)
+  end;
+
+  procedure ProcessOn(item: Integer); begin
+    case Key of
+      1,2,4,5,6 : MouseReleased;
+      else KeyReleased;
+    end;
+    { --- Supprime l'entrée une fois traité }
+    FDown.Delete(Item)
+  end;
+
+begin
+  { --- Permet de relâcher une touche "avancer", "reculer" ou "fire" donnée par
+        la valeur KeyType: TOdysseyTypeSpecKey ... }
+  with FDown do if Count > 0 then begin
+    for i := Pred(Count) downto 0 do begin
+      { --- non contrôlés car ne peut-être qu'un word transformé en string }
+      Key := StrToInt( Strings[i] );
+      with KeyInventory.FKeyOdysseySpec do keySearch := StrToInt( Code[KeyType] );
+      { --- si la touche est réellement enfoncée alors la relâcher } 
+      if Key = KeySearch then ProcessOn(i);
+    end;
+    { ??? influence sur le surveyor à observer } 
+    FClock := GetTickCount
+  end
 end; {DoKeyUp}
 
 class procedure TKeyMessageSender.Finalize;
@@ -3573,11 +3839,6 @@ class procedure TKeyMessageSender.Initialize;
 begin
   if not Assigned(KeyMessageSender) then
     KeyMessageSender := TKeyMessageSender.Create
-end;
-
-class procedure TKeyMessageSender.KeyUp;
-begin
-  if Assigned(KeyMessageSender) then with KeyMessageSender do DoKeyUp
 end;
 
 function TKeyMessageSender.MouseSignalToEvent(const Value: Word;
@@ -3601,7 +3862,7 @@ begin
   end;
 end; {MouseSignalToEvent}
 
-procedure TKeyMessageSender.SendSignal(UpKey: Boolean);
+procedure TKeyMessageSender.SendSignal(UpKey: Boolean; Cumul: Boolean);
 var
   MapVirtual0  : Cardinal;
   MapVirtual1  : Cardinal;
@@ -3623,7 +3884,9 @@ var
       if FKey in ExtendedVKeys
         then keybd_event(Ord(KeyCar), MapVirtual0, KEYEVENTF_EXTENDEDKEY or KEYEVENTF_KEYUP, 0)
         else keybd_event(Ord(KeyCar), MapVirtual0, KEYEVENTF_KEYUP,                          0)
-    end else FDown.Add( Format('%d', [FKey]) )
+    end else
+      { --- on enregistre le code de la touche restant enfoncée }
+      FDown.Add( Format('%d', [FKey]) )
   end;
 
   procedure SendSingleToMouse; begin
@@ -3636,7 +3899,9 @@ var
     if UpKey then begin
       Sleep( TimeBeforeUpKey );
       mouse_event(MEUp, 0, 0, MButtonEx, 0);
-    end else FDown.Add( Format('%d', [FKey]) );
+    end else
+      { --- on enregistre le code de la touche restant enfoncée }
+      FDown.Add( Format('%d', [FKey]) );
     { --- Finalize Mouse signal }
     DoAfterMouseSignal;
   end;
@@ -3660,7 +3925,9 @@ var
       if FFunc1 in ExtendedVKeys
         then keybd_event(FFunc1, MapVirtual1, KEYEVENTF_EXTENDEDKEY or KEYEVENTF_KEYUP, 0)
         else keybd_event(FFunc1, MapVirtual1, KEYEVENTF_KEYUP, 0)
-    end  else FDown.Add( Format('%d', [FFunc1]) )
+    end else
+      { --- on enregistre le code de la touche restant enfoncée }
+      FDown.Add( Format('%d', [FFunc1]) )
   end;
 
   { --- Deux touches de fonction dans la combinaison de touches }
@@ -3673,12 +3940,15 @@ var
       if FFunc2 in ExtendedVKeys
       then keybd_event(FFunc2, MapVirtual2, KEYEVENTF_EXTENDEDKEY or KEYEVENTF_KEYUP, 0)
       else keybd_event(FFunc2, MapVirtual2, KEYEVENTF_KEYUP, 0)
-    end else FDown.Add( Format('%d', [FFunc2]) )
+    end else
+      { --- on enregistre le code de la touche restant enfoncée }
+      FDown.Add( Format('%d', [FFunc2]) )
   end;
 
   procedure Initialize; begin
-    { --- Avant une nouvelle combinaison on s'assure que les touches sont relâchées }
-    DoKeyUp;
+    { --- Avant une nouvelle combinaison on s'assure que les touches sont relâchées
+          s'il n'y a pas de cumul de combinaisons }
+    if not Cumul then DoKeyUp;
     { --- Initialisation des virtualkey map }
     KeyCar := Chr(FKey mod 256);
     if not (FKey in [1,2,4,5,6]) then begin
@@ -3735,19 +4005,19 @@ begin
 end;
 
 class procedure TKeyMessageSender.Signal(const KeyValue, TimeMs: Cardinal;
-  UpKey: Boolean);
+  UpKey: Boolean; Cumul: Boolean);
 begin
   if Assigned(KeyMessageSender) then with KeyMessageSender do begin
-    SetIdKey   ( KeyValue );
-    SetTimems  ( TimeMs   );
-    SendSignal ( UpKey    );
+    SetIdKey   ( KeyValue     );
+    SetTimems  ( TimeMs       );
+    SendSignal ( UpKey, Cumul );
   end
 end;
 
 procedure TKeyMessageSender.StartSurveyor;
 begin
   FSurveyor := TKeySurveyor.Create(Self);
-  FSurveyor .Resume;
+  FSurveyor.Resume; //depreciated
 end;
 
 function TKeyMessageSender.TimeBeforeUpKey: Cardinal;
@@ -3760,25 +4030,20 @@ end;
 constructor TMouseFactory.Create;
 begin
   inherited Create;
-  { --- Retrouver le moniteur sur lequel Elite tourne }
   RetrieveIndexMonitor
 end;
 
 procedure TMouseFactory.DoAfterMouseDown(Sender: TObject);
 begin
-  if IsEliteRunning then with FMousePoint do SetCursorPos(X, Y)
+  with FMousePoint do SetCursorPos(X, Y);
 end;
 
 procedure TMouseFactory.DoBeforeMouseDown(Sender: TObject);
 begin
-  with Recorder do
-    if IsEliteRunning and (CurrentMetier = m_elite) then begin
-      GetCursorPos( FMousePoint );
-      { --- selon le moniteur où tourne Elite}
-      with Screen.Monitors[IndexMonitor] do SetCursorPos(Left + 300, Top + 200);
-      { --- passe Elite en premier plan }
-      EliteForeGround
-    end
+  GetCursorPos( FMousePoint );
+  {TODO: gérer le moniteur où tourne Elite}
+  with Screen.Monitors[IndexMonitor] do SetCursorPos(Left + 300, Top + 200);
+  EliteForeGround;
 end;
 
 function TMouseFactory.GetIndexMonitor: Integer;
@@ -3823,8 +4088,7 @@ end;
 
 procedure TKeySurveyor.Execute;
 begin
-  FStop := False;
-  while not Terminated and not Application.Terminated and not Fstop do begin
+  while not Terminated and not Application.Terminated do begin
     Synchronize( Process );
     ThDelay( 2000 )
   end
@@ -3833,10 +4097,7 @@ end;
 procedure TKeySurveyor.Process;
 begin
   { --- 60 seconds for key down before automatic key up }
-  with ThKeyMessageSender do if GetTickCount - Clock > 60000 then begin
-    DoKeyUp;
-    FStop := True
-  end
+  with ThKeyMessageSender do if GetTickCount - Clock > 60000 then DoKeyUp(True)
 end;
 
 procedure TKeySurveyor.ThDelay(ms: Cardinal);
@@ -3847,6 +4108,85 @@ begin
   with Application do repeat
       Sleep( 10 );
   until Self.Terminated or Terminated or (GetTickCount > S)
+end;
+
+procedure UpadateBindFileNameTo4;
+begin
+  if StartOnOsyssey then begin
+    CustomVersion      := 4;
+    TEMP_CUSTOM_FILE   := 'Temp.Custom.4.0.binds';
+    CUSTOM_FILE        := 'Custom.4.0.binds';
+  end;
+end;
+
+function  StartOnOsyssey: Boolean;
+var
+  OdysseyName: string;
+begin
+  OdysseyName := 'Custom.4.0.binds';
+  Result := FileExists( Format('%s\%s', [GetEliteBindingsFolder, OdysseyName]) );
+end;
+
+
+{ TKeyOdysseySpecial }
+
+function TKeyOdysseySpecial.CombinaisonExists(const Value: Cardinal): Boolean;
+begin
+  Result := FSpecialsKey.IndexOf( Format('%d', [Value]) ) > -1
+end;
+
+constructor TKeyOdysseySpecial.Create(const AOwner: TKeyInventory);
+begin
+  FOwner       := AOwner;
+  FSpecialsKey := TStringList.Create;
+  FSpecialsKey.Add('NULL'); //Item 0  --> Null initialized
+  FSpecialsKey.Add('NULL'); //Item 1  --> Null initialized
+  FSpecialsKey.Add('NULL'); //Item 2  --> Null initialized
+end;
+
+destructor TKeyOdysseySpecial.Destroy;
+begin
+  FSpecialsKey.Free;
+  inherited;
+end;
+
+function TKeyOdysseySpecial.GetBackward: string;
+begin
+  Result := FSpecialsKey[SPEC_BACKWARD];
+end;
+
+function TKeyOdysseySpecial.GetCode(KeyType: TOdysseyTypeSpecKey): string;
+begin
+  case KeyType of
+    ots_forward  : Result := Forward;
+    ots_backward : Result := Backward;
+    ots_fire     : Result := Fire;
+  end;
+end;
+
+function TKeyOdysseySpecial.GetFire: string;
+begin
+  Result := FSpecialsKey[SPEC_FIRE];
+end;
+
+function TKeyOdysseySpecial.GetForward: string;
+begin
+  Result := FSpecialsKey[SPEC_FORWARD];
+end;
+
+procedure TKeyOdysseySpecial.SetBackward(const BindStr: string);
+begin
+  FSpecialsKey[SPEC_BACKWARD] := Format('%d', [FOwner.GetIdFromCatalog(BindStr)]);
+end;
+
+procedure TKeyOdysseySpecial.SetFire(const BindStr: string);
+begin
+  FSpecialsKey[SPEC_FIRE] := Format('%d', [FOwner.GetIdFromCatalog(BindStr)]);
+end;
+
+procedure TKeyOdysseySpecial.SetForward(const BindStr: string);
+begin
+  FSpecialsKey[SPEC_FORWARD] := Format('%d', [FOwner.GetIdFromCatalog(BindStr)]);
 end;
 
 initialization

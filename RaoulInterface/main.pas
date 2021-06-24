@@ -100,7 +100,10 @@ begin
   if not InternetCheck then TSplashWaitForm.Splash('LOCAL START CHECKED');
   { --- Define main thread priority }
   SetPriorityClass(GetCurrentProcess, REALTIME_PRIORITY_CLASS );
-  
+
+  { --- Initialiser le bon custom.bind - Horizon/Odyssey }
+  EliteBindingsTools.UpadateBindFileNameTo4;
+
   { --- INITTIALISATTION INTERNE }
   FStarter := True;
   TKeyMessageSender.Initialize;                  { --- Instantiation des classes  gérant le bindings d'Elite }
@@ -109,7 +112,7 @@ begin
 
   with ToolsDisplay do KeyInitialize( RaoulKeys );
   TFunctionment.Initialize;                      { --- Initialisattion de la factory }
-  TFunTalk.Initialize;
+  TFunTalk.Initialize;                                                      
   CanCloseIdx := 0;
 end;
 
@@ -189,6 +192,7 @@ procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   TFunctionment.Finalize;
   TVoiceEntries.Finalize;
+  TEliteManager.Finalize;
 end;
 
 procedure TMainForm.StarterProc;

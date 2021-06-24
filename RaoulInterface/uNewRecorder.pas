@@ -3153,7 +3153,7 @@ begin
   case Result of
     False : with TalkativeFacade do Text := EliteMode_FAILED
     else EliteActivate
-  end
+  end;
 end;
 
 function TNewRecorder.RecognitionCanProcess(const ASML : string): Boolean;

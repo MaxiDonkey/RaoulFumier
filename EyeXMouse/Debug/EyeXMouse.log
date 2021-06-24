@@ -1,0 +1,26 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(513,5): warning MSB8028: Le répertoire intermédiaire (Debug\) contient des fichiers partagés provenant d'un autre projet (MinimalGazeDataStream.vcxproj). Cela peut entraîner un comportement de nettoyage et de regénération incorrect.
+  EyeXMouse.c
+D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\EyeXMouse.c(72,46): warning C4133: 'fonction' : types incompatibles - de 'TX_STRING' à 'LPCWSTR'
+D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\EyeXMouse.c(91,79): warning C4047: 'fonction' : les niveaux d'indirection de 'DWORD' et de 'void *' sont différents
+D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\EyeXMouse.c(91,75): warning C4024: 'RegOpenKeyExW' : types différents pour le paramètre formel et réel 3
+D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\EyeXMouse.c(94,44): warning C4133: 'fonction' : types incompatibles - de 'TX_STRING' à 'LPCWSTR'
+D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\EyeXMouse.c(94,50): warning C4047: 'fonction' : les niveaux d'indirection de 'DWORD' et de 'void *' sont différents
+D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\EyeXMouse.c(94,46): warning C4024: 'RegSetValueExW' : types différents pour le paramètre formel et réel 3
+D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\EyeXMouse.c(229,22): warning C4244: 'fonction' : conversion de 'float' en 'int', perte possible de données
+D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\EyeXMouse.c(229,42): warning C4244: 'fonction' : conversion de 'float' en 'int', perte possible de données
+D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\EyeXMouse.c(242,25): warning C4244: 'fonction' : conversion de 'float' en 'int', perte possible de données
+D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\EyeXMouse.c(244,16): warning C4244: 'fonction' : conversion de 'float' en 'int', perte possible de données
+D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\EyeXMouse.c(245,16): warning C4244: 'fonction' : conversion de 'float' en 'int', perte possible de données
+D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\EyeXMouse.c(249,62): warning C4244: '=' : conversion de 'int' en 'float', perte possible de données
+D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\EyeXMouse.c(250,64): warning C4244: '=' : conversion de 'int' en 'float', perte possible de données
+D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\EyeXMouse.c(298,33): warning C4133: 'fonction' : types incompatibles - de 'unsigned short [12]' à 'TX_STRING'
+D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\EyeXMouse.c(307,41): warning C4133: 'fonction' : types incompatibles - de 'unsigned short [7]' à 'TX_STRING'
+D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\EyeXMouse.c(321,49): warning C4133: 'fonction' : types incompatibles - de 'unsigned short [13]' à 'TX_STRING'
+D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\EyeXMouse.c(322,47): warning C4133: 'fonction' : types incompatibles - de 'unsigned short [12]' à 'TX_STRING'
+D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\EyeXMouse.c(324,35): warning C4133: 'fonction' : types incompatibles - de 'unsigned short [6]' à 'TX_STRING'
+D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\EyeXMouse.c(326,28): warning C4133: 'fonction' : types incompatibles - de 'unsigned short [7]' à 'TX_STRING'
+D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\EyeXMouse.c(340,34): warning C4133: 'fonction' : types incompatibles - de 'unsigned short [12]' à 'TX_STRING'
+D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\EyeXMouse.c(342,42): warning C4133: 'fonction' : types incompatibles - de 'unsigned short [9]' à 'TX_STRING'
+D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\EyeXMouse.c(344,51): warning C4133: 'fonction' : types incompatibles - de 'unsigned short [7]' à 'TX_STRING'
+D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\EyeXMouse.c(83): warning C4715: 'GetRegistryValue' : les chemins de contrôle ne retournent pas tous une valeur
+  EyeXMouse.vcxproj -> D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\Debug\EyeXMouse.exe

@@ -148,7 +148,7 @@
 			<VersionInfo Name="MajorVer">0</VersionInfo>
 			<VersionInfo Name="MinorVer">9</VersionInfo>
 			<VersionInfo Name="Release">1</VersionInfo>
-			<VersionInfo Name="Build">135</VersionInfo>
+			<VersionInfo Name="Build">153</VersionInfo>
 			<VersionInfo Name="Debug">False</VersionInfo>
 			<VersionInfo Name="PreRelease">False</VersionInfo>
 			<VersionInfo Name="Special">False</VersionInfo>
@@ -158,7 +158,7 @@
 			<VersionInfo Name="CodePage">1252</VersionInfo>
 		</VersionInfo>
 		<VersionInfoKeys>
-			<VersionInfoKeys Name="FileVersion">0.9.1.135</VersionInfoKeys>
+			<VersionInfoKeys Name="FileVersion">0.9.1.153</VersionInfoKeys>
 			<VersionInfoKeys Name="ProductVersion">0.9</VersionInfoKeys>
 			<VersionInfoKeys Name="CompanyName">MaxiDonkey</VersionInfoKeys>
 			<VersionInfoKeys Name="FileDescription">Assistance vocale</VersionInfoKeys>
@@ -167,8 +167,7 @@
 			<VersionInfoKeys Name="LegalTrademarks">MaxiDonkey</VersionInfoKeys>
 			<VersionInfoKeys Name="OriginalFilename">Persephone</VersionInfoKeys>
 			<VersionInfoKeys Name="ProductName">Raoul Fumieer</VersionInfoKeys>
-		</VersionInfoKeys>  
-    <Excluded_Packages>
+		</VersionInfoKeys>  <Excluded_Packages>
       <Excluded_Packages Name="C:\Users\JANKOWSKI\Documents\Projets Borland Studio\Bpl\SynEdit_D2005.bpl">SynEdit component suite</Excluded_Packages>
     </Excluded_Packages>
   </Delphi.Personality>
