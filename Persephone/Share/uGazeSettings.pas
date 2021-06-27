@@ -51,7 +51,12 @@ type
     procedure SetCombat(const Value: Boolean);
     procedure Configure(W, S, N, C: Integer); overload;
     procedure Configure(V : TConfigArray); overload;
+    function  GetGazeEnabled: Boolean;
+    procedure SetGazeEnabled(const Value: Boolean);
+    function  CurrentConfig: TConfigArray;
+    function  CurrentConfigToText: string;
   public
+    procedure EyeXMouseRun;
     {*** State }
     procedure Update;
     procedure GazeReset;
@@ -66,6 +71,8 @@ type
     procedure ConfigACutter;
     procedure ConfigDivers1;
     procedure ConfigDivers2;
+    procedure SaveConfigToSet1;
+    procedure SaveConfigToSet2;
     {*** Manager }
     procedure Start;
     procedure Stop;
@@ -78,6 +85,7 @@ type
     property Sensibility: Integer read GetSensibility write SetSensibility;
     property Noise: Integer read GetNoise write SetNoise;
     property Combat: Boolean read GetCombat write SetCombat;
+    property GazeEnabled: Boolean read GetGazeEnabled write SetGazeEnabled;
 
     constructor Create;
     destructor Destroy; override;
@@ -110,6 +118,37 @@ implementation
 var
   HElite      : THandle = 0;
   ELITE_CLASS : string = 'FrontierDevelopmentsAppWinClass';
+
+function ConfigToText(const Value: TConfigArray): string;
+var
+  i : Integer;
+begin
+  with TStringList.Create do
+  try
+    for i := 0 to 3 do Add( Format('%d', [Value[i]]) );
+    Result := Text;
+  finally
+    Free
+  end;
+end;
+
+function TextToConfig(const ASt: string): TConfigArray;
+var
+  i : Integer;
+begin
+  with TStringList.Create do
+  try
+    Text := ASt;
+    try
+      for i := 0 to 3 do Result[i] := StrToInt(Strings[i]);
+    except
+      {*** si erreur alors rendre la config 1 }
+      Result := ConfigDivers1_
+    end
+  finally
+    Free
+  end;
+end;
 
 procedure OpenExecute(AppName: string; AppParams: string; Displayed: Integer);
 begin
@@ -144,7 +183,7 @@ end;
 
 procedure TEyesGazeMouseSettings.ConfigDivers2;
 begin
-  Configure(ConfigDivers2_);
+  Configure( TextToConfig(KeyReadString(AppKey, 'GazeConfig2')) );
 end;
 
 procedure TEyesGazeMouseSettings.ConfigCombat;
@@ -154,7 +193,7 @@ end;
 
 procedure TEyesGazeMouseSettings.ConfigDivers1;
 begin
-  Configure(ConfigDivers1_);
+  Configure( TextToConfig(KeyReadString(AppKey, 'GazeConfig1')) );
 end;
 
 procedure TEyesGazeMouseSettings.ConfigExplo;
@@ -178,15 +217,25 @@ begin
 end;
 
 constructor TEyesGazeMouseSettings.Create;
+var
+  ASt : string;
 begin
   inherited Create;
   FEliteState := esStop;
   FGazeSurveyor := TGazeSurveyor.Create(Self);
+  {*** EyeXMouse.exe closure forced, if opened }
+  GazeReset;
+  GazeEnabled := False;
   {*** params read forced  }
   WalkDeadZone;
   Sensibility;
   Noise;
   Combat;
+  {*** SavConfig 1 et 2}
+  if KeyReadString(AppKey, 'GazeConfig1') = EmptyStr
+    then KeyWrite(AppKey, 'GazeConfig1', ConfigToText( ConfigDivers1_ ));
+  if KeyReadString(AppKey, 'GazeConfig2') = EmptyStr
+    then KeyWrite(AppKey, 'GazeConfig2', ConfigToText( ConfigDivers2_ ));
 end;
 
 procedure TEyesGazeMouseSettings.GazeDisable;
@@ -318,7 +367,8 @@ end;
 procedure TEyesGazeMouseSettings.Start;
 begin
   GazeJoystick;
-  if IsEliteRunning then OpenExecute('EyeXMouse.exe', '', SW_SHOW)
+  Sleep(90);
+  EyeXMouseRun;
 end;
 
 procedure TEyesGazeMouseSettings.EliteSurveyor;
@@ -330,6 +380,44 @@ destructor TEyesGazeMouseSettings.Destroy;
 begin
   FGazeSurveyor.Terminate;
   inherited;
+end;
+
+function TEyesGazeMouseSettings.GetGazeEnabled: Boolean;
+begin
+  Result := Boolean(KeyReadDWord32(AppKey, 'GazeEnabled', 0));
+end;
+
+procedure TEyesGazeMouseSettings.SetGazeEnabled(const Value: Boolean);
+begin
+  KeyWriteDWord32(AppKey, 'GazeEnabled', Integer(Value));
+end;
+
+procedure TEyesGazeMouseSettings.EyeXMouseRun;
+begin
+  if IsEliteRunning and not GazeEnabled then OpenExecute('EyeXMouse.exe', '', SW_SHOW)
+end;
+
+procedure TEyesGazeMouseSettings.SaveConfigToSet1;
+begin
+  KeyWrite(AppKey, 'GazeConfig1', CurrentConfigToText );
+end;
+
+function TEyesGazeMouseSettings.CurrentConfigToText: string;
+begin
+  Result := ConfigToText( CurrentConfig );
+end;
+
+function TEyesGazeMouseSettings.CurrentConfig: TConfigArray;
+begin
+  Result[0] := WalkDeadZone;
+  Result[1] := Sensibility;
+  Result[2] := Noise;
+  Result[3] := Integer(Combat);
+end;
+
+procedure TEyesGazeMouseSettings.SaveConfigToSet2;
+begin
+  KeyWrite(AppKey, 'GazeConfig2', CurrentConfigToText );
 end;
 
 { TGazeSurveyor }

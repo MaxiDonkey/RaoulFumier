@@ -3474,7 +3474,6 @@ begin
   { --- Retrouver l'item correspondant dans le catalog et extraire l'idkey }
   IdStr := GetIdFromCatalog(BindStr);
   { --- Selon la commande et le contexte définir le temps d'appui de la touche }
-
   if IdStr > 0 then TKeyMessageSender.Signal(IdStr, 30, UpKey, Cumul);
 end;
 
@@ -3674,7 +3673,6 @@ begin
   { --- Retrouver l'item correspondant dans le catalog et extraire l'idkey }
   IdStr := GetIdFromCatalog(BindStr);
   { --- Selon la commande et le contexte définir le temps d'appui de la touche }
-
   if IdStr > 0 then TKeyMessageSender.Signal(IdStr, pDelay, WITH_KEYUP);
 end;
 

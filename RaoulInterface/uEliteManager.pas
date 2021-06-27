@@ -380,8 +380,11 @@ type
     procedure ForwardWithCaution;
     procedure BackwardWithCaution;
     procedure StandInFront;
+    procedure StandInBack;
     procedure OpenTheDoor;
     procedure ShipBoarding;
+    procedure SniperMode;
+    procedure Engager;
 
     {*** Manager : emulated joystick by Tobii Eye tracker }
     procedure TobiiLoad;
@@ -394,12 +397,13 @@ type
     procedure TobiiConfigCutter;
     procedure TobiiConfigDivers1;
     procedure TobiiCongigDivers2;
-    procedure TobiiMoreSensibility;   //TODO
-    procedure TobiiMoreLessibility;   //TODO
-    procedure TobiiMorePrecision;     //TODO
-    procedure TobiiLessPrecision;     //TODO
-    procedure TobiiSaveDiver1;        //TODO
-    procedure TobiiSaveDiver2;        //TODO
+    procedure TobiiMoreSensibility;
+    procedure TobiiLessSensibility;
+    procedure TobiiMorePrecision;
+    procedure TobiiLessPrecision;
+    procedure TobiiSaveDiver1;
+    procedure TobiiSaveDiver2;        
+    procedure TobiiMenuMode;
   private
     procedure OdysseyInteractionValidate;
   public
@@ -934,17 +938,17 @@ begin
     200   : KeyStop;
     20000 : FOdysseyPressedKey.StopFire;
     201   : FOdysseyPressedKey.Avancer;  //HumAvance;
-    20190 : HumAvance(1,90);
-    20191 : HumAvance(1,150);
-    20192 : HumAvance(1,250);
-    20193 : HumAvance(1,400);
-    20194 : HumAvance(1,600);
+    20190 : HumAvance(1,150);
+    20191 : HumAvance(1,300);
+    20192 : HumAvance(1,600);
+    20193 : HumAvance(1,900);
+    20194 : HumAvance(1,1500);
     202   : FOdysseyPressedKey.Reculer;  //HumRecule;
-    20290 : HumRecule(1,90);
-    20291 : HumRecule(1,150);
-    20292 : HumRecule(1,250);
-    20293 : HumRecule(1,400);
-    20294 : HumRecule(1,600);
+    20290 : HumRecule(1,150);
+    20291 : HumRecule(1,300);
+    20292 : HumRecule(1,600);
+    20293 : HumRecule(1,900);
+    20294 : HumRecule(1,1500);
     203   : HumSprint;
     204   : HumWalk;
     205   : HumAccroupir;
@@ -979,11 +983,9 @@ begin
     234   : HumToggleToolMode;
     235   : ;
     236   : HumToggleMissionHelpPanel;  //TODO si nécessaire
-
-    237   : FOdysseyPressedKey.Tirer; //HumPrimaryFire;         //Tirer without_keyup
-    238   : HumPrimaryFire_1;         //Tirer une cartouche
-    239   : HumPrimaryFire_Rafale;    //Tirer une rafale de 3 cartouches
-
+    237   : FOdysseyPressedKey.Tirer;   //HumPrimaryFire;
+    238   : HumPrimaryFire_1;           //Tirer une cartouche
+    239   : HumPrimaryFire_Rafale;      //Tirer une rafale de 3 cartouches
     24000 : HumLateralLeft(1,90);
     24001 : HumLateralLeft(1,150);
     24002 : HumLateralLeft(1,250);
@@ -994,7 +996,28 @@ begin
     24102 : HumLateralRight(1,250);
     24103 : HumLateralRight(1,400);
     24104 : HumLateralRight(1,600);
-
+    {*** Rotation de yeux plus/moins [1..5] }
+    24500 : HumRotateLeft(1,30);
+    24501 : HumRotateLeft(1,45);
+    24502 : HumRotateLeft(1,60);
+    24503 : HumRotateLeft(1,75);
+    24504 : HumRotateLeft(1,90);
+    24600 : HumRotateRight(1,30);
+    24601 : HumRotateRight(1,45);
+    24602 : HumRotateRight(1,60);
+    24603 : HumRotateRight(1,75);
+    24604 : HumRotateRight(1,90);
+    {*** Regard haut bas hausse/baisse [1..5] }
+    25000 : HumPitchUp(1,60);
+    25001 : HumPitchUp(1,90);
+    25002 : HumPitchUp(1,120);
+    25003 : HumPitchUp(1,150);
+    25004 : HumPitchUp(1,180);
+    25100 : HumPitchDown(1,60);
+    25101 : HumPitchDown(1,90);
+    25102 : HumPitchDown(1,120);
+    25103 : HumPitchDown(1,150);
+    25104 : HumPitchDown(1,180);
     {Au sol mode rev-2 06/2021 for Odyssey}
     290   : HumGalaxyMapOpen;
     291   : HumSystemMapOpen;
@@ -1002,7 +1025,6 @@ begin
     293   : HumQuickCommsPanel;
     294   : HumOpenAccessPanel;
     295   : HumConflictContextualUI;
-
     {MACRO au sol rev-2 06/2021 for Odyssey }
     300   : ThrowGrenadeFragmentation;
     301   : ThrowGrenadeEMP;
@@ -1014,7 +1036,10 @@ begin
     307   : StandInFront;
     308   : OpenTheDoor;
     309   : ShipBoarding;
-
+    310   : SniperMode;
+    311   : Engager;
+    312   : StandInBack;
+    {*** In game, Tobii manager }
     400   : TobiiStart;
     401   : TobiiPause;
     402   : TobiiConfigCombat;
@@ -1023,14 +1048,15 @@ begin
     405   : TobiiConfigCutter;
     406   : TobiiConfigDivers1;
     407   : TobiiCongigDivers2;
-    408   : TobiiMoreSensibility;  //TODO
-    409   : TobiiMoreLessibility;  //TODO
-    410   : TobiiMorePrecision;    //TODO
-    411   : TobiiLessPrecision;    //TODO
-    412   : TobiiSaveDiver1;       //TODO
-    413   : TobiiSaveDiver2;       //TODO
+    408   : TobiiMoreSensibility;
+    409   : TobiiLessSensibility;
+    410   : TobiiMorePrecision;
+    411   : TobiiLessPrecision;
+    412   : TobiiSaveDiver1;
+    413   : TobiiSaveDiver2;
     414   : TobiiLoad;
     415   : TobiiStop;
+    416   : TobiiMenuMode;
   end;
   if not Again and not IsAgainCommand(indexCmd) then LastCmd := indexCmd
 end; {CallCommande}
@@ -3217,7 +3243,6 @@ begin
 end;
 
 procedure TCustomEliteManager.StandInFront;
-//ne peut pas avec les api ??? --> à tester maintenant
 begin
   if EliteStatus.IsOnOdyssey then begin
     FOdysseyPressedKey.Clear;
@@ -3256,12 +3281,14 @@ end;
 
 procedure TCustomEliteManager.TobiiSaveDiver1;
 begin
-
+  EyesGazeMouseSettings.SaveConfigToSet1;
 end;
 
 procedure TCustomEliteManager.TobiiMorePrecision;
+{*** plus précis pour les petites valeurs}
 begin
-
+  with EyesGazeMouseSettings do
+    if WalkDeadZone > 0 then WalkDeadZone := WalkDeadZone - 1;
 end;
 
 procedure TCustomEliteManager.TobiiCongigDivers2;
@@ -3290,8 +3317,10 @@ begin
 end;
 
 procedure TCustomEliteManager.TobiiLessPrecision;
+{*** moins précis pour les grandes valeurs}
 begin
-
+  with EyesGazeMouseSettings do
+    if WalkDeadZone < 12 then WalkDeadZone := WalkDeadZone + 1;
 end;
 
 procedure TCustomEliteManager.TobiiConfigCutter;
@@ -3306,32 +3335,72 @@ end;
 
 procedure TCustomEliteManager.TobiiSaveDiver2;
 begin
-
+  EyesGazeMouseSettings.SaveConfigToSet2;
 end;
 
 procedure TCustomEliteManager.TobiiMoreSensibility;
+{*** plus sensible pour les petites valeurs }
 begin
-
+  with EyesGazeMouseSettings do
+    if Sensibility > 10 then Sensibility := Sensibility - TrackPositionToSensibility(1);
 end;
 
-procedure TCustomEliteManager.TobiiMoreLessibility;
+procedure TCustomEliteManager.TobiiLessSensibility;
+{*** moins sensible pour les grandes valeurs}
 begin
-
+  with EyesGazeMouseSettings do
+    if Sensibility < 40 then Sensibility := Sensibility + TrackPositionToSensibility(1);
 end;
 
 procedure TCustomEliteManager.TobiiStart;
 begin
-  EyesGazeMouseSettings.GazeJoystick;
+  EyesGazeMouseSettings.Start;
 end;
 
 procedure TCustomEliteManager.TobiiLoad;
 begin
-  EyesGazeMouseSettings.Start;
+  EyesGazeMouseSettings.EyeXMouseRun;
 end;
 
 procedure TCustomEliteManager.TobiiStop;
 begin
   EyesGazeMouseSettings.GazeDisable;
+end;
+
+procedure TCustomEliteManager.TobiiMenuMode;
+begin
+  EyesGazeMouseSettings.GazeMenu
+end;
+
+procedure TCustomEliteManager.SniperMode;
+begin
+  if EliteStatus.IsOnOdyssey then begin
+    HumAccroupir;
+    if not EliteStatus.IsAimDownSight then HumAimZoom;
+  end;
+end;
+
+procedure TCustomEliteManager.Engager;
+begin
+  if EliteStatus.IsOnOdyssey then begin
+    TobiiStart;
+    Sleep(250);
+    HumSelectPrimaryWeapon;
+    Sleep(250);
+    FOdysseyPressedKey.Avancer;
+  end;
+end;
+
+procedure TCustomEliteManager.StandInBack;
+begin
+  if EliteStatus.IsOnOdyssey then begin
+    FOdysseyPressedKey.Clear;
+    if EliteStatus.IsAimDownSight then HumAimZoom;
+    Sleep(250);
+    FOdysseyPressedKey.Reculer;
+    Sleep(250);
+    HumSprint;
+  end;
 end;
 
 { TEliteManager }
@@ -3521,16 +3590,19 @@ procedure TOdysseyKeySurveyor.Execute;
 begin
   while not Terminated and not Application.Terminated do begin
     Synchronize( Process );
-    ThDelay( 500  ); //5000
+    ThDelay( 1000  ); 
   end;
 end;
 
 procedure TOdysseyKeySurveyor.Process;
+var
+  WaitingFor: Cardinal;
 begin
+  WaitingFor := KeyReadCard(AppKey, 'KeyPressedDelay', 60000);
   { --- 30 seconds for key down before automatic key up }
   with ThOdysseyPressedKey do begin
-    if (ClockMov  > 0) and (GetTickCount - ClockMov  > 30000) then StopMov;
-    if (ClockFire > 0) and (GetTickCount - ClockFire > 30000) then StopFire;
+    if (ClockMov  > 0) and (GetTickCount - ClockMov  > WaitingFor) then StopMov;
+    if (ClockFire > 0) and (GetTickCount - ClockFire > WaitingFor div 2) then StopFire;
   end;
 end;
 
