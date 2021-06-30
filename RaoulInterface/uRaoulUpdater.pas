@@ -28,6 +28,15 @@ type
     class function TryGrammarUpdate:Boolean;
   end;
 
+  TAppComplementUpdater = class
+  private
+    function  LocalFilenameExists(const AFileName: string; const InFolder: string): Boolean;
+    function  LoadEyeXFile(const AFileName: string): Boolean;
+    procedure UpdateEyeXMouse;
+  public
+    class procedure Process;
+  end;
+
 function RaoulKey: string;
 
 implementation
@@ -92,6 +101,11 @@ begin
   Delay(50);
 end;
 
+function LocalAppFolder: string;
+begin
+  Result := ExtractFileDir(Application.ExeName)
+end;
+
 function GrammarFolder:string;
 begin
   Result := Format('%s\Grammar', [ExtractFileDir(Application.ExeName)])
@@ -100,6 +114,11 @@ end;
 function GrammarWebFolder:string;
 begin
   Result := Format('%s/raoul/grammar', [UrlForUpdate])
+end;
+
+function EyeXWebFolder:string;
+begin
+  Result := Format('%s/raoul/eyexmouse', [UrlForUpdate])
 end;
 
 type
@@ -210,6 +229,42 @@ begin
     Delay(90);
     with Application do Terminate
   end
+end;
+
+{ TAppComplementUpdater }
+
+function TAppComplementUpdater.LoadEyeXFile(const AFileName: string): Boolean;
+begin
+  Result := TWebTools.DownloadFromHttp(
+    Format('%s/%s', [EyeXWebFolder,  AFileName]) ,
+    Format('%s\%s', [LocalAppFolder, AFileName]) );
+end;
+
+function TAppComplementUpdater.LocalFilenameExists(const AFileName: string; const InFolder: string): Boolean;
+var
+  FileName: string;
+begin
+  if InFolder = EmptyStr then FileName := Format('%s\%s', [ExtractFileDir(Application.ExeName), AFileName])
+    else FileName := Format('%s\%s\%s', [ExtractFileDir(Application.ExeName), InFolder, AFileName]);
+  Result :=  FileExists(FileName)
+end;
+
+class procedure TAppComplementUpdater.Process;
+begin
+  with TAppComplementUpdater.Create do
+  try
+    UpdateEyeXMouse;
+  finally
+    Free
+  end
+end;
+
+procedure TAppComplementUpdater.UpdateEyeXMouse;
+begin
+  if not LocalFilenameExists('Tobii.EyeX.Client.dll', '') then
+    LoadEyeXFile('Tobii.EyeX.Client.dll');
+  if not LocalFilenameExists('EyeXMouse.exe', '') then
+    LoadEyeXFile('EyeXMouse.exe');
 end;
 
 end.

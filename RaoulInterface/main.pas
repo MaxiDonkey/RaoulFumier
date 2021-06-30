@@ -185,7 +185,9 @@ begin
       else BootDelayed.Enabled := True
   end;
   { --- Si éventuellement l'avertissement est ouvert }
-  TSplashWaitForm.SplashHide
+  TSplashWaitForm.SplashHide;
+  { --- Vérifie la cohérence de EyeXMouse pour la visu }
+  TAppComplementUpdater.Process;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
