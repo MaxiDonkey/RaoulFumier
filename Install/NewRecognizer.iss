@@ -21,7 +21,7 @@ OutputBaseFilename=RaoulFumier
 Compression=lzma
 SolidCompression=true
 VersionInfoCompany=MaxiDonkey inc
-VersionInfoDescription=Tool for Elite Horizon
+VersionInfoDescription=Tool for Elite Horizon/Odyssey
 VersionInfoProductName=Raoul Fumier
 AppCopyright=CMD MaxiDonkey
 DefaultGroupName={#MyAppName}
@@ -40,32 +40,20 @@ Name: desktopicon; Description: {cm:CreateDesktopIcon}; GroupDescription: {cm:Ad
 Source: ..\bin\RaoulFumier.exe; DestDir: {app}; Flags: ignoreversion; Tasks: ; Languages: 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 Source: ..\bin\Raoul.exe; DestDir: {app}; Tasks: ; Languages: ; Flags: 32bit
+Source: ..\bin\EyeXMouse.exe; DestDir: {app}; Flags: 32bit ignoreversion
+Source: ..\bin\Tobii.EyeX.Client.dll; DestDir: {app}; Flags: ignoreversion
 Source: ..\bin\Grammar\Elite.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\gram1_0.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\gram2.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\gram2_0.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gram2_1.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gram2_2.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gram2_3.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gram2_4.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gram2_5.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gram2_6.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gram2_7.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\gram3.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\gram3_0.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\gram3_1.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\gram3_2.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gram3_3.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gram3_4.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gram3_5.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gram3_6.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gram3_7.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gram3_8.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gram3_9.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gram3_10.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gram3_11.cfg; DestDir: {app}\Grammar
-Source: ..\bin\Grammar\gram3_12.cfg; DestDir: {app}\Grammar
+Source: ..\bin\Grammar\gram4.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\gram4_0.cfg; DestDir: {app}\Grammar
+Source: ..\bin\Grammar\gram4_1.cfg; DestDir: {app}\Grammar
+Source: ..\bin\Grammar\gram5_0.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\gram5_0.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\gr_actions.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\gr_adverbes.cfg; DestDir: {app}\Grammar
@@ -91,6 +79,8 @@ Source: ..\bin\Help\MainRoot.roo; DestDir: {app}\Help
 Source: ..\bin\Help\MainRubriks.dat; DestDir: {app}\Help
 Source: ..\bin\Help\NavRoot.roo; DestDir: {app}\Help
 Source: ..\bin\Help\NavRubriks.dat; DestDir: {app}\Help
+Source: ..\bin\Help\OdysseyRoot.roo; DestDir: {app}\Help
+Source: ..\bin\Help\OdysseyRubriks.dat; DestDir: {app}\Help
 
 [Icons]
 Name: {commonprograms}\{#MyAppName}; Filename: {app}\{#MyAppExeName}

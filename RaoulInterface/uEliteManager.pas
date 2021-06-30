@@ -306,6 +306,7 @@ type
 
     {CMD : au sol *** rev-2 06/2021 Odyssey *** }
     procedure KeyStop;                                          //Stop l'enfoncement d'une touche
+    procedure KeyFireStop;
     procedure HumAvance; overload;
     procedure HumRecule; overload;
     procedure HumAvance(index: Byte; tms: Integer = 0); overload;        //déplacement vers l'avant
@@ -385,7 +386,12 @@ type
     procedure ShipBoarding;
     procedure SniperMode;
     procedure Engager;
-
+    procedure EngagerEx;
+    procedure DoAfterInteract;
+    procedure CashPrimes;
+    procedure EnrollmentManage;
+    procedure ShowStock;
+    procedure ShowConsumable;
     {*** Manager : emulated joystick by Tobii Eye tracker }
     procedure TobiiLoad;
     procedure TobiiStop;
@@ -406,6 +412,7 @@ type
     procedure TobiiMenuMode;
   private
     procedure OdysseyInteractionValidate;
+    procedure HumInteractMenuItem(const Value: Integer);
   public
     procedure SetTags(const Value: string);
     procedure SetKeyInventory(const Value: TKeyInventory);
@@ -444,6 +451,7 @@ type
   public
     property ClockMov: Cardinal read FClockMov write FClockMov;
     property ClockFire: Cardinal read FClockFire write FClockFire;
+
     procedure Avancer;
     procedure Reculer;
     procedure Tirer;
@@ -936,7 +944,7 @@ begin
     31000 : if Assigned(ProcExitElite) then ProcExitElite(nil);
     { *** Au sol rev-2 06/2021 for Odyssey}
     200   : KeyStop;
-    20000 : FOdysseyPressedKey.StopFire;
+    20000 : KeyFireStop;
     201   : FOdysseyPressedKey.Avancer;  //HumAvance;
     20190 : HumAvance(1,150);
     20191 : HumAvance(1,300);
@@ -997,27 +1005,27 @@ begin
     24103 : HumLateralRight(1,400);
     24104 : HumLateralRight(1,600);
     {*** Rotation de yeux plus/moins [1..5] }
-    24500 : HumRotateLeft(1,30);
+    24500 : HumRotateLeft(1,35);
     24501 : HumRotateLeft(1,45);
     24502 : HumRotateLeft(1,60);
     24503 : HumRotateLeft(1,75);
     24504 : HumRotateLeft(1,90);
-    24600 : HumRotateRight(1,30);
+    24600 : HumRotateRight(1,35);
     24601 : HumRotateRight(1,45);
     24602 : HumRotateRight(1,60);
     24603 : HumRotateRight(1,75);
     24604 : HumRotateRight(1,90);
     {*** Regard haut bas hausse/baisse [1..5] }
-    25000 : HumPitchUp(1,60);
-    25001 : HumPitchUp(1,90);
-    25002 : HumPitchUp(1,120);
-    25003 : HumPitchUp(1,150);
-    25004 : HumPitchUp(1,180);
-    25100 : HumPitchDown(1,60);
-    25101 : HumPitchDown(1,90);
-    25102 : HumPitchDown(1,120);
-    25103 : HumPitchDown(1,150);
-    25104 : HumPitchDown(1,180);
+    25000 : HumPitchUp(1,35);
+    25001 : HumPitchUp(1,45);
+    25002 : HumPitchUp(1,60);
+    25003 : HumPitchUp(1,75);
+    25004 : HumPitchUp(1,90);
+    25100 : HumPitchDown(1,35);
+    25101 : HumPitchDown(1,45);
+    25102 : HumPitchDown(1,60);
+    25103 : HumPitchDown(1,75);
+    25104 : HumPitchDown(1,90);
     {Au sol mode rev-2 06/2021 for Odyssey}
     290   : HumGalaxyMapOpen;
     291   : HumSystemMapOpen;
@@ -1029,16 +1037,21 @@ begin
     300   : ThrowGrenadeFragmentation;
     301   : ThrowGrenadeEMP;
     302   : ThrowGrenadeBouclier;
-    303   : ;
+    303   : DoAfterInteract;       //Stop Tobii + Interact
     304   : AimZoomRafale;
     305   : ForwardWithCaution;
     306   : BackwardWithCaution;
     307   : StandInFront;
     308   : OpenTheDoor;
-    309   : ShipBoarding;
+    309   : ShipBoarding;          //Stop Tobii + Interact
     310   : SniperMode;
     311   : Engager;
     312   : StandInBack;
+    313   : CashPrimes;            //Stop Tobii + Interact
+    314   : EnrollmentManage;      //Stop Tobii + Interact
+    315   : ShowStock;             //Stop Tobii + Interact
+    316   : ShowConsumable;        //Stop Tobii + Interact
+    317   : EngagerEx;
     {*** In game, Tobii manager }
     400   : TobiiStart;
     401   : TobiiPause;
@@ -2092,9 +2105,8 @@ end;
 
 procedure TCustomEliteManager.ShipDismissRecall;
 begin
-  case EliteStatus.InSrv of
-    True : FKeyInventory.KeyTrigger_( 'RecallDismissShip', WITH_KEYUP)
-  end
+  if EliteStatus.InSrv or EliteStatus.IsOnOdyssey then
+    FKeyInventory.KeyTrigger_( 'RecallDismissShip', WITH_KEYUP)
 end;
 
 procedure TCustomEliteManager.RequestDock;
@@ -2954,17 +2966,17 @@ end;
 
 procedure TCustomEliteManager.HumSelectFragGrenade;
 begin
-  FKeyInventory.KeyTrigger_( 'HumanoidSelectFragGrenade', WITH_KEYUP)
+  FKeyInventory.KeyTrigger_( 'HumanoidSelectFragGrenade', 90); //WITH_KEYUP)
 end;
 
 procedure TCustomEliteManager.HumSelectEMPGrenade;
 begin
-  FKeyInventory.KeyTrigger_( 'HumanoidSelectEMPGrenade', WITH_KEYUP)
+  FKeyInventory.KeyTrigger_( 'HumanoidSelectEMPGrenade', 90); //WITH_KEYUP)
 end;
 
 procedure TCustomEliteManager.HumSelectShieldGrenade;
 begin
-  FKeyInventory.KeyTrigger_( 'HumanoidSelectShieldGrenade', WITH_KEYUP)
+  FKeyInventory.KeyTrigger_( 'HumanoidSelectShieldGrenade', 90); //WITH_KEYUP)
 end;
 
 procedure TCustomEliteManager.HumSwitchToRechargeTool;
@@ -3160,8 +3172,8 @@ end;
 procedure TCustomEliteManager.HumPrimaryFire;
 begin
   if EliteStatus.IsOnOdyssey then begin
-    KeyWrite(AppKey, 'OdysseyFire', 'Ok'); //for test
     //Ne relache pas la combinaison de touches - tir continu
+    KeyWrite(AppKey, 'OdysseyFire', 'Ok');
     FKeyInventory.KeyTrigger_( 'HumanoidPrimaryFireButton', WITHOUT_KEYUP);
   end;
 end;
@@ -3261,7 +3273,11 @@ end;
 
 procedure TCustomEliteManager.ShipBoarding;
 begin
-  OdysseyInteractionValidate
+  if EliteStatus.IsOnOdyssey then begin
+    TobiiStop;
+    Sleep(90);
+    OdysseyInteractionValidate;
+  end;
 end;
 
 procedure TCustomEliteManager.OdysseyInteractionValidate;
@@ -3269,7 +3285,7 @@ begin
   if EliteStatus.IsOnOdyssey then begin
     HumPrimaryInteract;
     Sleep(250);
-    UISelect;                 
+    UISelect;
   end;
 end;
 
@@ -3375,6 +3391,8 @@ end;
 procedure TCustomEliteManager.SniperMode;
 begin
   if EliteStatus.IsOnOdyssey then begin
+    KeyStop;
+    Sleep(150);
     HumAccroupir;
     if not EliteStatus.IsAimDownSight then HumAimZoom;
   end;
@@ -3384,9 +3402,9 @@ procedure TCustomEliteManager.Engager;
 begin
   if EliteStatus.IsOnOdyssey then begin
     TobiiStart;
-    Sleep(250);
+    Sleep(150);
     HumSelectPrimaryWeapon;
-    Sleep(250);
+    Sleep(150);
     FOdysseyPressedKey.Avancer;
   end;
 end;
@@ -3396,10 +3414,71 @@ begin
   if EliteStatus.IsOnOdyssey then begin
     FOdysseyPressedKey.Clear;
     if EliteStatus.IsAimDownSight then HumAimZoom;
-    Sleep(250);
+    Sleep(150);
     FOdysseyPressedKey.Reculer;
-    Sleep(250);
+    Sleep(150);
     HumSprint;
+  end;
+end;
+
+procedure TCustomEliteManager.KeyFireStop;
+begin
+  FOdysseyPressedKey.StopFire;
+  //Relacher la combinaison de touches courante
+  KeyMessageSender.DoKeyUp(True);
+  HoldFire; //voir .109 
+end;
+
+procedure TCustomEliteManager.DoAfterInteract;
+begin
+  if EliteStatus.IsOnOdyssey then begin
+    TobiiStop;
+    Sleep(90);
+    HumPrimaryInteract;
+  end;
+end;
+
+procedure TCustomEliteManager.HumInteractMenuItem(const Value: Integer);
+begin
+  DoAfterInteract;
+  if EliteStatus.IsOnOdyssey then begin
+    Sleep(250);
+    Down(5);
+    if Value > 0 then begin
+      Sleep(250);
+      Up(Value);
+    end;
+    Sleep(250);
+    UISelect;
+  end;
+end;
+
+procedure TCustomEliteManager.CashPrimes;
+begin
+  HumInteractMenuItem(1);
+end;
+
+procedure TCustomEliteManager.EnrollmentManage;
+begin
+  HumInteractMenuItem(0);
+end;
+
+procedure TCustomEliteManager.ShowStock;
+begin
+  HumInteractMenuItem(0);
+end;
+
+procedure TCustomEliteManager.ShowConsumable;
+begin
+  HumInteractMenuItem(1);
+end;
+
+procedure TCustomEliteManager.EngagerEx;
+begin
+  if EliteStatus.IsOnOdyssey then begin
+    TobiiStart;
+    Sleep(150);
+    FOdysseyPressedKey.Avancer;
   end;
 end;
 
