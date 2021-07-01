@@ -3136,6 +3136,7 @@ begin
       650 : HeplChange(hk_main);
       651 : HeplChange(hk_elite);
       652 : HeplChange(hk_navigation);
+      653 : HeplChange(hk_odyssey);
       660 : HelpView.HideAutoOpen := True;
       661 : HelpView.HideAutoOpen := False;
     end
@@ -3153,7 +3154,7 @@ begin
   case Result of
     False : with TalkativeFacade do Text := EliteMode_FAILED
     else EliteActivate
-  end
+  end;
 end;
 
 function TNewRecorder.RecognitionCanProcess(const ASML : string): Boolean;

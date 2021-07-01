@@ -60,7 +60,7 @@ type
     destructor Destroy; override;
   end;
 
-  THelpKind = (hk_none, hk_main, hk_elite, hk_navigation);
+  THelpKind = (hk_none, hk_main, hk_elite, hk_navigation, hk_odyssey);
   TListRubriks = array[THelpKind] of TRubriks;
 
   THelps = class
@@ -154,7 +154,8 @@ var
    ( '',
      'MainRoot.roo;MainRubriks.dat',
      'EliteRoot.roo;EliteRubriks.dat',
-     'NavRoot.roo;NavRubriks.dat');
+     'NavRoot.roo;NavRubriks.dat',
+     'OdysseyRoot.roo;OdysseyRubriks.dat');
 
 implementation
 
@@ -453,6 +454,7 @@ begin
     hk_main       : Result := 'Aide RaoulFumier';
     hk_elite      : Result := 'Aide Elite Dangerous';
     hk_navigation : Result := 'Aide navigation';
+    hk_odyssey    : Result := 'Aide Elite Odyssey';
     else Result := EmptyStr
   end
 end;

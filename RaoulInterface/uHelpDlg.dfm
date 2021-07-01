@@ -114,21 +114,21 @@ object HelpDlg: THelpDlg
     object Panel2: TPanel
       Left = 281
       Top = 0
-      Width = 911
+      Width = 1127
       Height = 49
       Align = alClient
       BevelOuter = bvNone
       Color = 789516
       TabOrder = 0
       object Label3: TLabel
-        Left = 216
+        Left = 168
         Top = 0
-        Width = 681
+        Width = 817
         Height = 38
         AutoSize = False
         Caption = 
-          'Prononcer "AIDE RAOUL", "AIDE ELITE" ou "AIDE NAVIGATION" pour c' +
-          'hanger de cat'#233'gorie'
+          'Prononcer "AIDE RAOUL", "AIDE ELITE" , "AIDE NAVIGATION" ou "AID' +
+          'E ODYSSEY" pour changer de cat'#233'gorie'
         Color = 2960685
         Font.Charset = DEFAULT_CHARSET
         Font.Color = 33023
@@ -180,19 +180,19 @@ object HelpDlg: THelpDlg
       end
     end
     object Panel7: TPanel
-      Left = 1192
+      Left = 1408
       Top = 0
-      Width = 508
+      Width = 292
       Height = 49
       Align = alRight
       BevelOuter = bvNone
       Color = 789516
       TabOrder = 2
       object Label6: TLabel
-        Left = 224
-        Top = 0
+        Left = 0
+        Top = -11
         Width = 273
-        Height = 38
+        Height = 49
         Alignment = taRightJustify
         AutoSize = False
         Caption = 'Prononcer "Echap" pour refermer'
@@ -208,7 +208,7 @@ object HelpDlg: THelpDlg
         Layout = tlBottom
       end
       object Panel8: TPanel
-        Left = 500
+        Left = 284
         Top = 0
         Width = 8
         Height = 49

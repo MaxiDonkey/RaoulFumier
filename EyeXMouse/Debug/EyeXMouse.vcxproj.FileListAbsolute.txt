@@ -1,0 +1,2 @@
+D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\Debug\EyeXMouse.vcxproj.AssemblyReference.cache
+D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\Debug\EyeXMouse.exe

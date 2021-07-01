@@ -1,15 +1,23 @@
-{*******************************************************}
-{                                                       }
-{             08/2020  MaxiDonkey  Library              }
-{                                                       }
-{*******************************************************}
+
+{****************************************************************}
+{                                                                }
+{             08/2020  MaxiDonkey  Library                       }
+{             using the status.json file                         }
+{             rev-2 06/2021 for Odyssey                          }
+{                                                                }
+{             source of information                              }
+{ https://elite-journal.readthedocs.io/en/latest/Status%20File/  }
+{                                                                }
+{****************************************************************}
+
 
 unit uStatusReader;
 
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Windows, Messages, SysUtils, Variants, Classes, Graphics,
+  Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, StrCopyUtils;
 
 const
@@ -32,19 +40,28 @@ type
 
   TEliteStatus = class
   private
-    FValue         : Cardinal;
-    FPips          : string;
-    FFireGroup     : Integer;
-    FFuelMain      : Double;
-    FFuelReservoir : Double;
-    FGuiFocus      : Integer;
-    FLatitude      : Double;
-    FLongitude     : Double;
-    FHeading       : Integer;
-    FAltitude      : Integer;
-    FCargo         : Double;
-    FLegalState    : string;
-    FMutex         : Cardinal;
+    FValue          : Cardinal;
+    FValue2         : Cardinal;
+    FPips           : string;
+    FFireGroup      : Integer;
+    FFuelMain       : Double;
+    FFuelReservoir  : Double;
+    FGuiFocus       : Integer;
+    FLatitude       : Double;
+    FLongitude      : Double;
+    FHeading        : Integer;
+    FAltitude       : Integer;
+    FCargo          : Double;
+    FLegalState     : string;
+    FBodyName       : string;
+    {*** rev-2 06/2021 au sol }
+    FOxygen         : Double;
+    FHealth         : Double;
+    FTemperature    : Double;
+    FSelectedWeapon : string;
+    FGravity        : Double;   
+    {*** end rev-2}
+    FMutex          : Cardinal;
     {Evvents}
     FOnGuiChange             : TGuiNotify;
     FOnDocking               : TBoolChangeNotify;
@@ -76,6 +93,25 @@ type
     FOnHudInanalysisMode     : TBoolChangeNotify;
     FOnNightVision           : TBoolChangeNotify;
     FOnFsdJump               : TBoolChangeNotify;
+    {*** rev-2 06/2021 au sol }
+    FOnOnFoot                : TBoolChangeNotify;
+    FOnInTaxi                : TBoolChangeNotify;
+    FOnInMultiCrew           : TBoolChangeNotify;
+    FOnOnFootInStation       : TBoolChangeNotify;
+    FOnOnFootOnPlanet        : TBoolChangeNotify;
+    FOnAimDownSight          : TBoolChangeNotify;
+    FOnLowOxygen             : TBoolChangeNotify;
+    FOnLowHealth             : TBoolChangeNotify;
+    FOnCold                  : TBoolChangeNotify;
+    FOnHot                   : TBoolChangeNotify;
+    FOnVeryHot               : TBoolChangeNotify;
+    FOnGlideMode             : TBoolChangeNotify;
+    FOnOnFootInHangar        : TBoolChangeNotify;
+    FOnVeryCold              : TBoolChangeNotify;
+    FOnOnFootSocialSpace     : TBoolChangeNotify;
+    FOnBreathableAtmosphere  : TBoolChangeNotify;
+    FOnOnFootExterior        : TBoolChangeNotify;
+    {*** end rev-2}
     procedure SetValue(const AValue: Cardinal);
     procedure SetPips(const Value: string);
     procedure SetFireGroup(const Value: Integer);
@@ -100,10 +136,25 @@ type
     procedure SetCargo(const Value: Double);
     function  GetLegalState: string;
     procedure SetLegalState(const Value: string);
+    function  GetValue2: Cardinal;
+    procedure SetValue2(const AValue: Cardinal);
+    function  GetBodyName: string;
+    procedure SetBodyName(const Value: string);
+    function  GetOxygen: Double;
+    procedure SetOxygen(const Value: Double);
+    function  GetHealth: Double;
+    procedure SetHealth(const Value: Double);
+    function  GetTemperature: Double;
+    procedure SetTemperature(const Value: Double);
+    function  GetSelectedWeapon: string;
+    procedure SetSelectedWeapon(const Value: string);
+    function  GetGravity: Double;  
+    procedure SetGravity(const Value: Double); 
 
   private
     { --- protected resources}
-    function  IsByteOpen(const Status: Integer):Boolean;
+    function  IsByteOpen(const Status: Integer):Boolean;  // For Flags
+    function  IsByteOpen2(const Status: Integer):Boolean; // For Flags2 rev-2
     procedure CardinalAssignment(var Card1: Cardinal; Card2: Cardinal);
     function  ReadCardinal(Card: Cardinal):Cardinal;
     procedure IntegerAssignment(var Card1: Integer; Card2: Integer);
@@ -146,9 +197,33 @@ type
     function FsdJump: Boolean;
     function SrvHighBeam: Boolean;
 
+    {*** rev-2 06/2021 au sol }
+    function IsOnFoot: Boolean;
+    function IsInTaxi: Boolean;
+    function IsInMultiCrew: Boolean;
+    function IsOnFootInStation: Boolean;
+    function IsOnFootOnPlanet: Boolean;
+    function IsAimDownSight: Boolean;
+    function IsLowOxygen: Boolean;
+    function IsLowHealth: Boolean;
+    function IsCold: Boolean;
+    function IsHot: Boolean;
+    function IsVeryHot: Boolean;
+    function IsVeryCold: Boolean;
+    function IsGlideMode: Boolean;
+    function IsOnFootInHangar: Boolean;
+    function IsOnFootSocialSpace: Boolean;
+    function IsBreathableAtmosphere: Boolean;
+    function IsOnFootExterior: Boolean;
+
+    function IsOnElite: Boolean;
+    function IsOnOdyssey: Boolean;
+    {*** end rev-2}
+
     function GuiValue: TGuiType;
 
     property Value: Cardinal read GetValue write SetValue;
+    property Value2: Cardinal read GetValue2 write SetValue2;   {*** rev-2 06/2021 au sol }
     property Pips: string read GetPips write SetPips;
     property FireGroup: Integer read GetFireGroup write SetFireGroup;
     property FuelMain: Double read GetFuelMain write SetFuelMain;
@@ -160,6 +235,15 @@ type
     property Altitude: Integer read GetAltitude write SetAltitude;
     property Cargo: Double read GetCargo write SetCargo;
     property LegalState: string read GetLegalState write SetLegalState;
+    property BodyName: string read GetBodyName write SetBodyName;
+    // PlanetRadius
+    {*** rev-2 06/2021 au sol }
+    property Oxygen: Double read GetOxygen write SetOxygen;
+    property Health: Double read GetHealth write SetHealth;
+    property Temperature: Double read GetTemperature write SetTemperature;
+    property SelectedWeapon: string read GetSelectedWeapon write SetSelectedWeapon;
+    property Gravity: double read GetGravity write SetGravity; 
+    {*** end rev-2}
 
     constructor Create;
     destructor Destroy; override;
@@ -194,6 +278,25 @@ type
     property OnHudInanalysisMode: TBoolChangeNotify read FOnHudInanalysisMode write FOnHudInanalysisMode;
     property OnNightVision: TBoolChangeNotify read FOnNightVision write FOnNightVision;
     property OnFsdJump: TBoolChangeNotify read FOnFsdJump write FOnFsdJump;
+    {*** rev-2 06/2021 au sol }
+    property OnOnFoot: TBoolChangeNotify read FOnOnFoot write FOnOnFoot;
+    property OnInTaxi: TBoolChangeNotify read FOnInTaxi write FOnInTaxi;
+    property OnInMultiCrew: TBoolChangeNotify read FOnInMultiCrew write FOnInMultiCrew;
+    property OnOnFootInStation: TBoolChangeNotify read FOnOnFootInStation write FOnOnFootInStation;
+    property OnOnFootOnPlanet: TBoolChangeNotify read FOnOnFootOnPlanet write FOnOnFootOnPlanet;
+    property OnAimDownSight: TBoolChangeNotify read FOnAimDownSight write FOnAimDownSight;
+    property OnLowOxygen: TBoolChangeNotify read FOnLowOxygen write FOnLowOxygen;
+    property OnLowHealth: TBoolChangeNotify read FOnLowHealth write FOnLowHealth;
+    property OnCold: TBoolChangeNotify read FOnCold write FOnCold;
+    property OnHot: TBoolChangeNotify read FOnHot write FOnHot;
+    property OnVeryCold: TBoolChangeNotify read FOnVeryCold write FOnVeryCold;
+    property OnVeryHot: TBoolChangeNotify read FOnVeryHot write FOnVeryHot;
+    property OnGlideMode: TBoolChangeNotify read FOnGlideMode write FOnGlideMode;
+    property OnOnFootInHangar: TBoolChangeNotify read FOnOnFootInHangar write FOnOnFootInHangar;
+    property OnOnFootSocialSpace: TBoolChangeNotify read FOnOnFootSocialSpace write FOnOnFootSocialSpace;
+    property OnOnFootExterior: TBoolChangeNotify read FOnOnFootExterior write FOnOnFootExterior;
+    property OnBreathableAtmosphere: TBoolChangeNotify read FOnBreathableAtmosphere write FOnBreathableAtmosphere;
+    {*** end rev-2}
   end;
 
   TBufferAddNotify  = procedure (const ASt: string) of object;
@@ -243,6 +346,7 @@ type
     procedure SetSource(const Value: string);
 
     function ExtractStatus: Cardinal;
+    function ExtractStatus2: Cardinal;
     function ExtractPips: string;
     function ExtractFireGroup: Integer;
     function ExtractFuelMain: Double;
@@ -254,6 +358,14 @@ type
     function ExtractAltitude: Integer;
     function ExtractCargo: Double;
     function ExtractLegalState: string;
+    function ExtractBodyName: string;
+    {*** rev-2 06/2021 au sol }
+    function ExtractOxygen: Double;
+    function ExtractHealth: Double;
+    function ExtractTemperature: Double;
+    function ExtractSelectedWeapon: string;
+    function ExtractGravity: Double;  
+    {*** end rev-2}
   end;
 
 var
@@ -295,12 +407,33 @@ type
      est_nightvision,                           est_altitudefromaverageradius,
      est_fsdjump,                               est_srvhighbeam
    );
-   TAreaEliteStatus = 0..Integer( high(TEliteStatusType) );
+  TAreaEliteStatus = 0..Integer( high(TEliteStatusType) );
+
+  {*** rev-2 06/2021 au sol }
+  TOdysseyStatusType =
+    ( ost_onfoot,                               ost_intaxi,
+      ost_inmulticrew,                          ost_onfootinstation,
+      ost_onfootonplanet,                       ost_aimdownSight,
+      ost_lowoxygen,                            ost_lowhealth,
+      ost_cold,                                 ost_hot,
+      ost_verycold,                             ost_veryhot,
+      ost_glidemode,                            ost_onfootinhangar,
+      ost_onfootsocialspace,                    ost_onfootexterior,
+      ost_breathableatmosphere
+    );
+  TAreaOdysseyStatus = 0..Integer( high(TOdysseyStatusType) );
+  {*** end rev-2}
 
 function EliteStatusToInt(const Value: TEliteStatusType):Integer;
 begin
   if Integer(Value) <= high(TAreaEliteStatus) then Result := Integer( Value )
     else raise Exception.Create('EliteStatus hors limites')
+end;
+
+function OdysseyStatusToInt(const Value: TOdysseyStatusType):Integer;
+begin
+  if Integer(Value) <= high(TAreaOdysseyStatus) then Result := Integer( Value )
+    else raise Exception.Create('OdysseyStatus hors limites')
 end;
 
 var
@@ -342,7 +475,7 @@ const
   SAVE_GAMES_KEY     = '{4C5C32FF-BB9D-43B0-B5B4-2D72E54EAAA4}';
 
 var
-  SavedGamesW    : string = 'Frontier Developments\Elite Dangerous';
+  SavedGamesW : string = 'Frontier Developments\Elite Dangerous';
 
 function GetFrontierSaveGames: string;
 begin
@@ -353,7 +486,7 @@ end;
 function ReadStatusFile: string;
 var
   Stream   : TFileStream;
-  S        : Char;
+  S        : Char;  //Delphi v 10.4 AnsiChar
   FileName : string;
 begin
   FileName := Format('%s\%s', [GetFrontierSaveGames, 'Status.json']);
@@ -362,7 +495,7 @@ begin
     Stream.Position := 0;
     while Stream.Position < Stream.Size do begin
       Stream.ReadBuffer(S, SizeOf(S));
-      if S = '}' then S := ',';   //ici
+      if S = '}' then S := ',';   
       Result := Result + S;
     end;
   finally
@@ -425,7 +558,7 @@ end;
 
 function TEliteStatus.HardpointDeployed: Boolean;
 begin
-  Result := IsByteOpen( Integer(est_hardpointdeployed) )
+  Result := IsByteOpen( Integer(hardpointdeployed) )
 end;
 
 function TEliteStatus.HasLatLong: Boolean;
@@ -457,6 +590,13 @@ function TEliteStatus.IsByteOpen(const Status: Integer): Boolean;
 begin
   Result := isB1(Value, Status)
 end;
+
+function TEliteStatus.IsByteOpen2(const Status: Integer): Boolean;
+{*** rev-2 06/2021 au sol }
+begin
+  Result := isB1(Value2, Status)
+end;
+
 
 function TEliteStatus.IsinDanger: Boolean;
 begin
@@ -657,7 +797,7 @@ end;
 
 function TEliteStatus.GetValue: Cardinal;
 begin
-  Result := ReadCardinal(FValue)
+  Result := ReadCardinal( FValue )
 end;
 
 procedure TEliteStatus.IntegerAssignment(var Card1: Integer; Card2: Integer);
@@ -790,6 +930,191 @@ begin
   Result := TGuiType( GuiFocus )
 end;
 
+function TEliteStatus.GetValue2: Cardinal;
+begin
+  Result := ReadCardinal( FValue2 )
+end;
+
+procedure TEliteStatus.SetValue2(const AValue: Cardinal);
+{*** rev-2 06/2021 au sol }
+begin
+  if FValue2 <> AValue then begin
+    CardinalAssignment(FValue2, AValue);
+    if Assigned(FOnOnFoot)               then FOnOnFoot(Self, IsOnFoot);
+    if Assigned(FOnInTaxi)               then FOnInTaxi(Self, IsInTaxi);
+    if Assigned(FOnInMultiCrew)          then FOnInMultiCrew(Self, IsInMultiCrew);
+    if Assigned(FOnOnFootInStation)      then FOnOnFootInStation(Self, IsOnFootInStation);
+    if Assigned(FOnOnFootOnPlanet)       then FOnOnFootOnPlanet(Self, IsOnFootOnPlanet);
+    if Assigned(FOnAimDownSight)         then FOnAimDownSight(Self, IsAimDownSight);
+    if Assigned(FOnLowOxygen)            then FOnLowOxygen(Self, IsLowOxygen);
+    if Assigned(FOnLowHealth)            then FOnLowHealth(Self, IsLowHealth);
+    if Assigned(FOnCold)                 then FOnCold(Self, IsCold);
+    if Assigned(FOnHot)                  then FOnHot(Self, IsHot);
+    if Assigned(FOnVeryHot)              then FOnVeryHot(Self, IsVeryHot);
+    if Assigned(FOnGlideMode)            then FOnGlideMode(Self, IsGlideMode);
+    if Assigned(FOnOnFootInHangar)       then FOnOnFootInHangar(Self, IsOnFootInHangar);
+    if Assigned(FOnVeryCold)             then FOnVeryCold(Self, IsVeryCold);
+    if Assigned(FOnOnFootSocialSpace)    then FOnOnFootSocialSpace(Self, IsOnFootSocialSpace);
+    if Assigned(FOnBreathableAtmosphere) then FOnBreathableAtmosphere(Self, IsBreathableAtmosphere);
+    if Assigned(FOnOnFootExterior)       then FOnOnFootExterior(Self, IsOnFootExterior);
+  end;
+end;
+
+function TEliteStatus.GetBodyName: string;
+begin
+  Result := ReadString(FBodyName)
+end;
+
+procedure TEliteStatus.SetBodyName(const Value: string);
+begin
+  if FBodyName <> Value then StringAssignment(FBodyName, Value);
+end;
+
+function TEliteStatus.GetOxygen: Double;
+begin
+  Result := ReadDouble(FOxygen)
+end;
+
+procedure TEliteStatus.SetOxygen(const Value: Double);
+begin
+  if FOxygen <> Value then DoubleAssignment(FOxygen, Value)
+end;
+
+function TEliteStatus.GetHealth: Double;
+begin
+  Result := ReadDouble(FHealth)
+end;
+
+procedure TEliteStatus.SetHealth(const Value: Double);
+begin
+  if FHealth <> Value then DoubleAssignment(FHealth, Value)
+end;
+
+function TEliteStatus.GetTemperature: Double;
+begin
+  Result := ReadDouble(FTemperature)
+end;
+
+procedure TEliteStatus.SetTemperature(const Value: Double);
+begin
+  if FTemperature <> Value then DoubleAssignment(FTemperature, Value)
+end;
+
+function TEliteStatus.GetSelectedWeapon: string;
+begin
+  Result := ReadString(FSelectedWeapon)
+end;
+
+procedure TEliteStatus.SetSelectedWeapon(const Value: string);
+begin
+  if FSelectedWeapon <> Value then StringAssignment(FSelectedWeapon, Value);
+end;
+
+function TEliteStatus.GetGravity: Double;  
+begin
+  Result := ReadDouble(FGravity)
+end;
+
+procedure TEliteStatus.SetGravity(const Value: Double); 
+begin
+  if FGravity <> Value then DoubleAssignment(FGravity, Value);
+end;
+
+function TEliteStatus.IsOnFoot: Boolean;
+begin
+  Result := IsByteOpen2( Integer(ost_onfoot) )
+end;
+
+function TEliteStatus.IsInTaxi: Boolean;
+begin
+  Result := IsByteOpen2( Integer(ost_intaxi) )
+end;
+
+function TEliteStatus.IsInMultiCrew: Boolean;
+begin
+  Result := IsByteOpen2( Integer(ost_inmulticrew) )
+end;
+
+function TEliteStatus.IsOnFootInStation: Boolean;
+begin
+  Result := IsByteOpen2( Integer(ost_onfootinstation) )
+end;
+
+function TEliteStatus.IsOnFootOnPlanet: Boolean;
+begin
+  Result := IsByteOpen2( Integer(ost_onfootonplanet) )
+end;
+
+function TEliteStatus.IsAimDownSight: Boolean;
+begin
+  Result := IsByteOpen2( Integer(ost_aimdownSight) )
+end;
+
+function TEliteStatus.IsLowOxygen: Boolean;
+begin
+  Result := IsByteOpen2( Integer(ost_lowoxygen) )
+end;
+
+function TEliteStatus.IsLowHealth: Boolean;
+begin
+  Result := IsByteOpen2( Integer(ost_lowhealth) )
+end;
+
+function TEliteStatus.IsCold: Boolean;
+begin
+  Result := IsByteOpen2( Integer(ost_cold) )
+end;
+
+function TEliteStatus.IsHot: Boolean;
+begin
+  Result := IsByteOpen2( Integer(ost_hot) )
+end;
+
+function TEliteStatus.IsVeryHot: Boolean;
+begin
+  Result := IsByteOpen2( Integer(ost_veryhot) )
+end;
+
+function TEliteStatus.IsVeryCold: Boolean;
+begin
+  Result := IsByteOpen2( Integer(ost_verycold) )
+end;
+
+function TEliteStatus.IsGlideMode: Boolean;
+begin
+  Result := IsByteOpen2( Integer(ost_glidemode) )
+end;
+
+function TEliteStatus.IsOnFootInHangar: Boolean;
+begin
+  Result := IsByteOpen2( Integer(ost_onfootinhangar) )
+end;
+
+function TEliteStatus.IsOnFootSocialSpace: Boolean;
+begin
+  Result := IsByteOpen2( Integer(ost_onfootsocialspace) )
+end;
+
+function TEliteStatus.IsBreathableAtmosphere: Boolean;
+begin
+  Result := IsByteOpen2( Integer(ost_breathableatmosphere) )
+end;
+
+function TEliteStatus.IsOnFootExterior: Boolean;
+begin
+  Result := IsByteOpen2( Integer(ost_onfootexterior) )
+end;
+
+function TEliteStatus.IsOnElite: Boolean;
+begin
+  Result := Value > 0
+end;
+
+function TEliteStatus.IsOnOdyssey: Boolean;
+begin
+  Result := Value2 > 0
+end;
+
 { TStatusStringFIFO }
 
 constructor TStatusStringFIFO.Create;
@@ -882,18 +1207,27 @@ begin
   if Buffer <> EmptyStr then begin
     ThExtractor.SetSource( Buffer );
     with ThEliteStatus do begin
-      Value         := ThExtractor.ExtractStatus;
-      Pips          := ThExtractor.ExtractPips;
-      FireGroup     := ThExtractor.ExtractFireGroup;
-      FuelMain      := ThExtractor.ExtractFuelMain;
-      FuelReservoir := ThExtractor.ExtractFuelReservoir;
-      GuiFocus      := ThExtractor.ExtractGuiFocus;
-      Latitude      := ThExtractor.ExtractLatitude;
-      Longitude     := ThExtractor.ExtractLongitude;
-      Heading       := ThExtractor.ExtractHeading;
-      Altitude      := ThExtractor.ExtractAltitude;
-      Cargo         := ThExtractor.ExtractCargo;
-      LegalState    := ThExtractor.ExtractLegalState;
+      Value          := ThExtractor.ExtractStatus;
+      Pips           := ThExtractor.ExtractPips;
+      FireGroup      := ThExtractor.ExtractFireGroup;
+      FuelMain       := ThExtractor.ExtractFuelMain;
+      FuelReservoir  := ThExtractor.ExtractFuelReservoir;
+      GuiFocus       := ThExtractor.ExtractGuiFocus;
+      Latitude       := ThExtractor.ExtractLatitude;
+      Longitude      := ThExtractor.ExtractLongitude;
+      Heading        := ThExtractor.ExtractHeading;
+      Altitude       := ThExtractor.ExtractAltitude;
+      Cargo          := ThExtractor.ExtractCargo;
+      LegalState     := ThExtractor.ExtractLegalState;
+      BodyName       := ThExtractor.ExtractBodyName;
+      {*** rev-2 06/2021 au sol }
+      Value2         := ThExtractor.ExtractStatus2;   
+      Oxygen         := ThExtractor.ExtractOxygen;
+      Health         := ThExtractor.ExtractHealth;
+      Temperature    := ThExtractor.ExtractTemperature;
+      SelectedWeapon := ThExtractor.ExtractSelectedWeapon;
+      Gravity        := ThExtractor.ExtractGravity;
+      {*** end rev-2}
     end
   end
 end;
@@ -987,7 +1321,7 @@ begin
   if FSource <> EmptyStr then begin
     ASt := GetAfterStr(FSource, 'Flags":');
     ASt := GetBeforStr(ASt, ',');
-    try Result := StrToInt64(ASt) except Result := 0 end
+    try Result := StrToInt(ASt) except Result := 0 end
   end
 end;
 
@@ -1042,7 +1376,13 @@ var
 begin
   ASt := GetAfterStr(FSource, 'Heading":');
   ASt := GetBeforStr(ASt, ',');
-  try Result := StrToInt( ASt ) except Result := 0 end
+  try
+    Result := StrToInt( ASt );
+    if Result < 0 then Result := 180 + (180 + Result)
+    
+  except
+    Result := 0
+  end
 end;
 
 function TJSonStatusExtractor.ExtractAltitude: Integer;
@@ -1069,6 +1409,77 @@ function TJSonStatusExtractor.ExtractLegalState: string;
 begin
   Result := GetAfterStr(FSource, 'LegalState":"');
   Result := GetBeforStr(Result, '"');
+end;
+
+function TJSonStatusExtractor.ExtractBodyName: string;
+begin
+  Result := GetAfterStr(FSource, 'BodyName":"');
+  Result := GetBeforStr(Result, '"');
+end;
+
+function TJSonStatusExtractor.ExtractStatus2: Cardinal;
+{*** rev-2 06/2021 au sol }
+var
+  ASt: string;
+begin
+  Result := 0;
+  if FSource <> EmptyStr then begin
+    ASt := GetAfterStr(FSource, 'Flags2":');
+    ASt := GetBeforStr(ASt, ',');
+    try Result := StrToInt(ASt) except Result := 0 end
+  end
+end;
+
+function TJSonStatusExtractor.ExtractOxygen: Double;
+{*** rev-2 06/2021 au sol }
+var
+  ASt: string;
+begin
+  DecimalSeparator := '.';
+  ASt := GetAfterStr(FSource, 'Oxygen":');
+  ASt := GetBeforStr(ASt, ',');
+  try Result := StrToFloat( ASt ) except Result := 0.0 end
+end;
+
+function TJSonStatusExtractor.ExtractHealth: Double;
+{*** rev-2 06/2021 au sol }
+var
+  ASt: string;
+begin
+  DecimalSeparator := '.';
+  ASt := GetAfterStr(FSource, 'Health":');
+  ASt := GetBeforStr(ASt, ',');
+  try Result := StrToFloat( ASt ) except Result := 0.0 end
+end;
+
+
+function TJSonStatusExtractor.ExtractTemperature: Double;
+{*** rev-2 06/2021 au sol }
+var
+  ASt: string;
+begin
+  DecimalSeparator := '.';
+  ASt := GetAfterStr(FSource, 'Temperature":');
+  ASt := GetBeforStr(ASt, ',');
+  try Result := StrToFloat( ASt ) except Result := 0.0 end
+end;
+
+function TJSonStatusExtractor.ExtractSelectedWeapon: string;
+{*** rev-2 06/2021 au sol }
+begin
+  Result := GetAfterStr(FSource, 'SelectedWeapon":"');
+  Result := GetBeforStr(Result, '"');
+end;
+
+function TJSonStatusExtractor.ExtractGravity: Double;
+{*** rev-2 06/2021 au sol }
+var
+  ASt: string;
+begin
+  DecimalSeparator := '.';
+  ASt := GetAfterStr(FSource, 'Gravity":');
+  ASt := GetBeforStr(ASt, ',');
+  try Result := StrToFloat( ASt ) except Result := 0.0 end
 end;
 
 initialization

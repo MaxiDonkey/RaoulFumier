@@ -1,24 +1,37 @@
+{*******************************************************}
+{                                                       }
+{             02/2008  MaxiDonkey  Library              }
+{             rev-2 06/2021                             }
+{                                                       }
+{*******************************************************}
+
 unit uRegistry;
 
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, Registry, Dialogs;
+  Windows, Messages, SysUtils, Classes, Forms, Registry,
+  Dialogs;
 
 procedure KeyCreate(AKey: string);
 procedure KeyRead(AKey: string; KeyName: string; var Value: string); overload;
+procedure KeyRead(AKey: string; KeyName: string; var Value: Integer); overload;
 procedure KeyRead(AKey: string; KeyName: string; Default: string; var Value: string); overload;
 procedure KeyWrite(AKey: string; KeyName: string; Value: string); overload;
 procedure KeyWrite(AKey: string; KeyName: string; Value: Double); overload;
 procedure KeyWrite(AKey: string; KeyName: string; Value: Integer); overload;
 procedure KeyWrite(AKey: string; KeyName: string; Value: Boolean); overload;
 procedure KeyWrite(AKey: string; KeyName: string; Value: Cardinal); overload;
+procedure KeyWriteWord(AKey: string; KeyName: string; Value: Integer);
 
 function KeyReadInt(AKey: string; KeyName: string; Default: Integer = 0):Integer;
 function KeyReadFloat(AKey: string; KeyName: string; Default: Double = 0.0):Double;
 function KeyReadBoolean(AKey: string; KeyName: string; Default: Boolean = False):Boolean;
 function KeyReadString(AKey: string; KeyName: string; Default: string = ''):string;
 function KeyReadCard(AKey: string; KeyName: string; Default: Cardinal = 0):Cardinal;
+
+function  KeyReadDWord32(AKey: string; KeyName: string; Default: Integer = 0):Integer;
+procedure KeyWriteDWord32(AKey: string; KeyName: string; Value: Integer);
 
 procedure KeyDeleteValue(AKey: string; KeyName: string);
 
@@ -115,10 +128,30 @@ begin
   end;
 end;
 
+procedure KeyRead(AKey: string; KeyName: string; var Value: Integer);
+var
+  Default : Integer;
+begin
+  Default := Value;
+  with TRegistry.Create do
+  try
+    RootKey := HKEY_CURRENT_USER;
+    try
+      OpenKey( AKey, False);
+      Value := ReadInteger( KeyName );
+    except
+      Value := Default;
+    end;
+  finally
+    Free;
+  end;
+end;
+
 function KeyNameValueExists(AKey: string; KeyName: string):Boolean;
 var
   L : TStringList;
 begin
+  Result := False;
   with TRegistry.Create do
   try
     RootKey := HKEY_CURRENT_USER;
@@ -157,18 +190,18 @@ begin
     except
     end;
   finally
-    Free
+    Free;
   end;
 end;
 
 procedure KeyWrite(AKey: string; KeyName: string; Value: Double);
 begin
-  KeyWrite(AKey, KeyName, FloatToStr(Value) )
+  KeyWrite(AKey, KeyName, FloatToStr(Value) );
 end;
 
 procedure KeyWrite(AKey: string; KeyName: string; Value: Integer);
 begin
-  KeyWrite(AKey, KeyName, IntToStr(Value) )
+  KeyWrite(AKey, KeyName, IntToStr(Value) );
 end;
 
 procedure KeyWrite(AKey: string; KeyName: string; Value: Cardinal);
@@ -178,7 +211,7 @@ end;
 
 procedure KeyWrite(AKey: string; KeyName: string; Value: Boolean);
 begin
-  KeyWrite(AKey, KeyName, Integer(Value) )
+  KeyWrite(AKey, KeyName, Integer(Value) );
 end;
 
 function KeyReadInt(AKey: string; KeyName: string; Default: Integer):Integer;
@@ -194,17 +227,10 @@ begin
   end;
 end;
 
-function KeyReadCard(AKey: string; KeyName: string; Default: Cardinal = 0):Cardinal;
-var
-  Value : string;
+function KeyReadDWord32(AKey: string; KeyName: string; Default: Integer):Integer;
 begin
-  KeyRead(AKey, KeyName, Value);
-  try
-    if Value = EmptyStr then Result := Default
-      else Result := StrToInt64( Value );
-  except
-    Result := Default;
-  end;
+  Result := Default;
+  KeyRead(AKey, KeyName, Result);
 end;
 
 function KeyReadFloat(AKey: string; KeyName: string; Default: Double):Double;
@@ -236,6 +262,39 @@ end;
 function KeyReadString(AKey: string; KeyName: string; Default: string = ''):string;
 begin
   KeyRead(AKey, KeyName, Default, Result);
+end;
+
+function KeyReadCard(AKey: string; KeyName: string; Default: Cardinal = 0):Cardinal;
+var
+  Value : string;
+begin
+  KeyRead(AKey, KeyName, Value);
+  try
+    if Value = EmptyStr then Result := Default
+      else Result := StrToInt64( Value );
+  except
+    Result := Default;
+  end;
+end;
+
+procedure KeyWriteWord(AKey: string; KeyName: string; Value: Integer);
+begin
+  with TRegistry.Create do
+  try
+    RootKey := HKEY_CURRENT_USER;
+    try
+      OpenKey( AKey, False);
+      WriteInteger(KeyName, Value );
+    except
+    end;
+  finally
+    Free;
+  end;
+end;
+
+procedure KeyWriteDWord32(AKey: string; KeyName: string; Value: Integer);
+begin
+  KeyWriteWord(AKey, KeyName, Value );
 end;
 
 initialization
