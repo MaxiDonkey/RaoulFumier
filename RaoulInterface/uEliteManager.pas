@@ -3392,7 +3392,7 @@ procedure TCustomEliteManager.SniperMode;
 begin
   if EliteStatus.IsOnOdyssey then begin
     KeyStop;
-    Sleep(150);
+    Sleep(250);
     HumAccroupir;
     if not EliteStatus.IsAimDownSight then HumAimZoom;
   end;
@@ -3402,9 +3402,9 @@ procedure TCustomEliteManager.Engager;
 begin
   if EliteStatus.IsOnOdyssey then begin
     TobiiStart;
-    Sleep(150);
+    Sleep(250);
     HumSelectPrimaryWeapon;
-    Sleep(150);
+    Sleep(250);
     FOdysseyPressedKey.Avancer;
   end;
 end;
@@ -3414,9 +3414,9 @@ begin
   if EliteStatus.IsOnOdyssey then begin
     FOdysseyPressedKey.Clear;
     if EliteStatus.IsAimDownSight then HumAimZoom;
-    Sleep(150);
+    Sleep(250);
     FOdysseyPressedKey.Reculer;
-    Sleep(150);
+    Sleep(250);
     HumSprint;
   end;
 end;
@@ -3477,7 +3477,7 @@ procedure TCustomEliteManager.EngagerEx;
 begin
   if EliteStatus.IsOnOdyssey then begin
     TobiiStart;
-    Sleep(150);
+    Sleep(250);
     FOdysseyPressedKey.Avancer;
   end;
 end;
