@@ -13,7 +13,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StrCopyUtils, uRegistry, StrUtils,
 
-  KeysDef,
+  KeysDef, uDosUtils,
   {Elite bindings and Tobii}
   EliteBindingsTools, uStatusReader, uGazeSettings;
 
@@ -410,6 +410,9 @@ type
     procedure TobiiSaveDiver1;
     procedure TobiiSaveDiver2;        
     procedure TobiiMenuMode;
+  public
+    procedure TobiiConfig;
+    procedure TobiiHideConfig;
   private
     procedure OdysseyInteractionValidate;
     procedure HumInteractMenuItem(const Value: Integer);
@@ -489,7 +492,8 @@ uses
   uNewRecorder,
   { --- Pour gérer la saisie des textes
         SendKey(iKey: Smallint; Tms: Cardinal; Specials: TSpecials = []); }
-  SendKey32;
+  SendKey32,
+  uRaoulUpdater;
 
 { TCustomEliteManager }
 
@@ -1070,6 +1074,8 @@ begin
     414   : TobiiLoad;
     415   : TobiiStop;
     416   : TobiiMenuMode;
+//    417   : TobiiConfig;
+//    418   : TobiiHideConfig;
   end;
   if not Again and not IsAgainCommand(indexCmd) then LastCmd := indexCmd
 end; {CallCommande}
@@ -3031,6 +3037,8 @@ end;
 
 procedure TCustomEliteManager.HumQuickCommsPanel;
 begin
+  Exit;
+  { *** Ne plus l'ouvrir car déclenchement intempestif }
   if EliteStatus.IsOnOdyssey then begin
     FOdysseyPressedKey.Clear;
     FKeyInventory.KeyTrigger_( 'QuickCommsPanel_Humanoid', WITH_KEYUP);
@@ -3480,6 +3488,17 @@ begin
     Sleep(250);
     FOdysseyPressedKey.Avancer;
   end;
+end;
+
+procedure TCustomEliteManager.TobiiConfig;
+begin
+  if not uRaoulUpdater.IsDirectorOpened then
+    uDosUtils.OpenExecute('GazeMode.exe', '' );
+end;
+
+procedure TCustomEliteManager.TobiiHideConfig;
+begin
+  if uRaoulUpdater.IsDirectorOpened then uRaoulUpdater.CloseDirector;
 end;
 
 { TEliteManager }

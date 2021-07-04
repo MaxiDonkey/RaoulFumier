@@ -1,0 +1,820 @@
+unit Main;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, System.StrUtils,
+  {Accès registre}
+  uRegistry, Vcl.ExtCtrls, Vcl.ComCtrls, ShellAPI, Vcl.WinXCtrls, StrCopyUtils;
+
+const
+  FixToLeft  = True;
+  FixToRight = False;
+
+type
+  TGazeMode = (gmDisabled, gmJoystick, gmMenu, gmPause);
+  TEliteState = (esStop, EsRun);
+
+var
+  StrModes : array[tGazeMode] of string =
+    ('EyeXMouse States : Disabled', 'EyeXMouse States : Eyestick',
+     'EyeXMouse States : Menu',     'EyeXMouse States : Pause');
+  FixCat : array[0..3] of string =
+    ('RelativDxFix', 'RelativDyFix', 'MouseDxFix', 'MouseDyFix');
+
+type
+  TFixValue = class;
+  TTDirectorClass = class(TForm)
+    EliteStateSurveyor: TTimer;
+    PageControl1: TPageControl;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    Label1: TLabel;
+    TrackBar1: TTrackBar;
+    Label2: TLabel;
+    TrackBar2: TTrackBar;
+    Label3: TLabel;
+    TrackBar3: TTrackBar;
+    cbCombat: TCheckBox;
+    Panel1: TPanel;
+    BtnMenu: TButton;
+    BtnPause: TButton;
+    btnStop: TButton;
+    BtnJoy: TButton;
+    Panel2: TPanel;
+    BtnGo: TButton;
+    Button1: TButton;
+    Button2: TButton;
+    Button3: TButton;
+    Button4: TButton;
+    Button5: TButton;
+    Label4: TLabel;
+    Label5: TLabel;
+    StateLine: TLabel;
+    Panel3: TPanel;
+    ToggleSwitch1: TToggleSwitch;
+    Label9: TLabel;
+    UpDown1: TUpDown;
+    Edit1: TEdit;
+    Edit2: TEdit;
+    UpDown2: TUpDown;
+    Label11: TLabel;
+    Label12: TLabel;
+    Label13: TLabel;
+    ToggleSwitch2: TToggleSwitch;
+    TabSheet3: TTabSheet;
+    Panel4: TPanel;
+    Label7: TLabel;
+    Label8: TLabel;
+    Label10: TLabel;
+    Label14: TLabel;
+    ToggleSwitch3: TToggleSwitch;
+    UpDown3: TUpDown;
+    Edit3: TEdit;
+    Edit4: TEdit;
+    UpDown4: TUpDown;
+    ToggleSwitch4: TToggleSwitch;
+    Label6: TLabel;
+    ComboBox1: TComboBox;
+    procedure btnStopClick(Sender: TObject);
+    procedure BtnJoyClick(Sender: TObject);
+    procedure BtnMenuClick(Sender: TObject);
+    procedure BtnPauseClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure EliteStateSurveyorTimer(Sender: TObject);
+    procedure TrackBar1Change(Sender: TObject);
+    procedure TrackBar2Change(Sender: TObject);
+    procedure TrackBar3Change(Sender: TObject);
+    procedure BtnGoClick(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+    procedure cbCombatClick(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
+    procedure Button5Click(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+  private
+    FMode       : TGazeMode;
+    FEliteState : TEliteState;
+    FEyeDx      : TFixValue;
+    FEyeDy      : TFixValue;
+    FMouseDx    : TFixValue;
+    FMouseDy    : TFixValue;
+
+    procedure Update;
+    procedure GazeReset;
+    procedure GazeDisable;
+    procedure GazeJoystick;
+    procedure GazeMenu;
+    procedure GazePause;
+    procedure SetMode(const Value: tGazeMode);
+    procedure SetEliteState(const Value: TEliteState);
+    function  GetWalkDeadZone: Integer;
+    procedure SetWalkDeadZone(const Value: Integer);
+    function  GetSensibility: Integer;
+    procedure SetSensibility(const Value: Integer);
+    function  GetNoise: Integer;
+    procedure SetNoise(const Value: Integer);
+    function  GetCombat: Boolean;
+    procedure SetCombat(const Value: Boolean);
+    function  GetRelativDxFix: Integer;
+    procedure SetRelativDxFix(const Value: Integer);
+    function  GetRelativDyFix: Integer;
+    procedure SetRelativDyFix(const Value: Integer);
+    function  GetMouseDxFix: Integer;
+    procedure SetMouseDxFix(const Value: Integer);
+    function  GetMouseDyFix: Integer;
+    procedure SetMouseDyFix(const Value: Integer);
+    function  GetRelativDxToLeft: Boolean;
+    procedure SetRelativDxToLeft(const Value: Boolean);
+    function  GetRelativDyToLeft: Boolean;
+    procedure SetRelativDyToLeft(const Value: Boolean);
+    function  GetMouseDxToLeft: Boolean;
+    procedure SetMouseDxToLeft(const Value: Boolean);
+    function  GetMouseDyToLeft: Boolean;
+    procedure SetMouseDyToLeft(const Value: Boolean);
+  private
+    procedure ResolutionInitialize;
+    procedure OnComboChange(Sender: TObject);
+    function  GetScreenIndex: Integer;
+    procedure SetScreenIndex(const Value: Integer);
+    function  GetScreenWidth: Integer;
+    procedure SetScreenWidth(const Value: Integer);
+    function  GetScreenHeight: Integer;
+    procedure SetScreenHeight(const Value: Integer);
+  public
+    procedure ViewInit;
+
+    property Mode: TGazeMode read FMode write SetMode;
+    property EliteState: TEliteState read FEliteState write SetEliteState;
+    property WalkDeadZone: Integer read GetWalkDeadZone write SetWalkDeadZone;
+    property Sensibility: Integer read GetSensibility write SetSensibility;
+    property Noise: Integer read GetNoise write SetNoise;
+    property Combat: Boolean read GetCombat write SetCombat;
+    property RelativDxFix: Integer read GetRelativDxFix write SetRelativDxFix;
+    property RelativDyFix: Integer read GetRelativDyFix write SetRelativDyFix;
+    property MouseDxFix: Integer read GetMouseDxFix write SetMouseDxFix;
+    property MouseDyFix: Integer read GetMouseDyFix write SetMouseDyFix;
+    property RelativDxToLeft: Boolean read GetRelativDxToLeft write SetRelativDxToLeft;
+    property RelativDyToLeft: Boolean read GetRelativDyToLeft write SetRelativDyToLeft;
+    property MouseDxToLeft: Boolean read GetMouseDxToLeft write SetMouseDxToLeft;
+    property MouseDyToLeft: Boolean read GetMouseDyToLeft write SetMouseDyToLeft;
+
+    property ScreenIndex: Integer read GetScreenIndex write SetScreenIndex;
+    property ScreenWidth: Integer read GetScreenWidth write SetScreenWidth;
+    property ScreenHeight: Integer read GetScreenHeight write SetScreenHeight;
+  end;
+
+  TFixValue = class
+  private
+    FOwner     : TTDirectorClass;
+    FEdit      : TEdit;
+    FSwitch    : TToggleSwitch;
+    FUpDown    : TUpDown;
+    FValue     : Integer;
+    FDestStr   : string;
+    FFixToLeft : Boolean;
+    function  IsNeg: boolean;
+    procedure UpdateSwitch(const Value: TToggleSwitchState); overload;
+    procedure UpdateSwitch(const Value: Boolean); overload;
+    procedure UpdateValue(const Value: Integer);
+    function  BoolToToggleSwitch(const Value: Boolean):TToggleSwitchState;
+    function  ToggleSwitchToBoll(const Value: TToggleSwitchState):Boolean;
+    procedure OnSwitchChange(Sender: TObject);
+    procedure OnEditChange(Sender: TObject);
+    procedure OnUpDownChange(Sender: TObject;
+      var AllowChange: Boolean; NewValue: Integer; Direction: TUpDownDirection);
+    procedure UpdateValueInRegistry;
+    procedure ReadValueFromRegistry;
+    procedure UpdateFixInRegistry;
+    procedure ReadFixFromRegistry;
+  public
+    procedure SetEdit(const Value: TEdit);
+    procedure SetSwitch(const Value: TToggleSwitch);
+    procedure SetUpDown(const Value: TUpDown);
+    procedure SetValue(const Value: Integer);
+
+    constructor Create(const AOwner: TTDirectorClass; const AEdit: TEdit;
+      const ASwitch: TToggleSwitch; const AUpDown: TUpDown; DestStr: string);
+  end;
+
+procedure OpenExecute(AppName: string; AppParams: string; Displayed: Integer);
+function MonitorResolutionSt(const index: Integer): string; overload;
+function MonitorResolutionSt(const index, AWidth, AHeight: Integer): string; overload;
+
+
+
+var
+  TDirectorClass: TTDirectorClass;
+
+implementation
+
+{$R *.dfm}
+
+var
+  HElite      : THandle = 0;
+  ELITE_CLASS : string = 'FrontierDevelopmentsAppWinClass';
+
+function ScreenCount: Integer;
+begin
+  with Screen do Result := MonitorCount;
+end;
+
+function MonitorResolutionSt(const index: Integer): string;
+begin
+  with Screen, Monitors[index] do
+    Result := MonitorResolutionSt(index + 1, Width, Height);
+end;
+
+function MonitorResolutionSt(const index, AWidth, AHeight: Integer): string;
+begin
+  Result := Format('Screen %d : %dx%d', [index, AWidth, AHeight]);
+end;
+
+procedure ResolutionStToValues(const Value: string; var VWidth, VHeight, VIndex: Integer);
+var
+  S, ASt: string;
+begin
+  S := GetAfterStr(Value, ':');
+  ASt := GetBeforStr(Value, ':');
+  ASt := GetAfterStr(ASt, 'Screen');
+  //non contrôlé
+  Vindex := StrToInt(ASt);
+  ASt := GetBeforStr(S, 'x');
+  //non contrôlé
+  VWidth := StrToInt(ASt);
+  ASt := GetAfterStr(S, 'x');
+  //non contrôlé
+  VHeight := StrToInt(ASt);
+end;
+
+function MonitorResolutions: string;
+var
+  i   : Integer;
+  ASt : string;
+begin
+  with TStringList.Create do
+  try
+    Add('None');
+    for i := 0 to Pred(ScreenCount) do begin
+      ASt := MonitorResolutionSt(i);
+      if IndexOf(ASt) = -1 then Add( ASt );
+    end;
+    Result := Text;
+  finally
+    Free;
+  end;
+end;
+
+procedure OpenExecute(AppName: string; AppParams: string; Displayed: Integer);
+begin
+  try
+    if FileExists(AppName) then
+      ShellExecute(0, 'Open', PWideChar(AppName), PWideChar(AppParams), nil, Displayed);
+  except
+  end;
+end;
+
+function IsEliteRunning: Boolean;
+begin
+  HElite := FindWindow( PChar(ELITE_CLASS), nil );
+  Result :=  HElite <> 0;
+end;
+
+procedure EliteForeGround;
+begin
+  if HElite = 0 then HElite := FindWindow( PChar(ELITE_CLASS), nil );
+  SetForegroundWindow( HElite );
+end;
+
+procedure TTDirectorClass.btnStopClick(Sender: TObject);
+begin
+  GazeDisable;
+end;
+
+procedure TTDirectorClass.Button1Click(Sender: TObject);
+begin
+  WalkDeadZone := 0;
+  Sensibility  := 10;
+  Noise        := 150;
+  Combat       := True;
+  ViewInit;
+end;
+
+procedure TTDirectorClass.Button2Click(Sender: TObject);
+begin
+  WalkDeadZone := 0;
+  Sensibility  := 20;
+  Noise        := 250;
+  Combat       := False;
+  ViewInit;
+end;
+
+procedure TTDirectorClass.Button3Click(Sender: TObject);
+begin
+  WalkDeadZone := 4;
+  Sensibility  := 30;
+  Noise        := 550;
+  Combat       := False;
+  ViewInit;
+end;
+
+procedure TTDirectorClass.Button4Click(Sender: TObject);
+begin
+  WalkDeadZone := 1;
+  Sensibility  := 30;
+  Noise        := 250;
+  Combat       := False;
+  ViewInit;
+end;
+
+procedure TTDirectorClass.Button5Click(Sender: TObject);
+begin
+  WalkDeadZone := 1;
+  Sensibility  := 40;
+  Noise        := 650;
+  Combat       := False;
+  ViewInit;
+end;
+
+procedure TTDirectorClass.cbCombatClick(Sender: TObject);
+begin
+  with TCheckBox(Sender) do Combat := Checked;
+  Update;
+end;
+
+procedure TTDirectorClass.EliteStateSurveyorTimer(Sender: TObject);
+begin
+  if IsEliteRunning then EliteState := esRun else EliteState := esStop;
+end;
+
+procedure TTDirectorClass.BtnGoClick(Sender: TObject);
+begin
+  if IsEliteRunning then
+    OpenExecute('EyeXMouse.exe', '', SW_SHOW)
+end;
+
+procedure TTDirectorClass.BtnJoyClick(Sender: TObject);
+begin
+  with PageControl1 do ActivePageIndex := 1;
+  GazeJoystick;
+end;
+
+procedure TTDirectorClass.BtnMenuClick(Sender: TObject);
+begin
+  with PageControl1 do ActivePageIndex := 2;
+  GazeMenu;
+end;
+
+procedure TTDirectorClass.BtnPauseClick(Sender: TObject);
+begin
+  GazePause;
+end;
+
+procedure TTDirectorClass.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  GazeDisable;
+end;
+
+procedure TTDirectorClass.FormCreate(Sender: TObject);
+begin
+  GazeDisable;
+  FEliteState := esStop;
+  FEyeDx      := TFixValue.Create(Self, Edit1, ToggleSwitch1, UpDown1, 'RelativDxFix');
+  FEyeDy      := TFixValue.Create(Self, Edit2, ToggleSwitch2, UpDown2, 'RelativDyFix');
+  FMouseDx    := TFixValue.Create(Self, Edit3, ToggleSwitch3, UpDown3, 'MouseDxFix');
+  FMouseDy    := TFixValue.Create(Self, Edit4, ToggleSwitch4, UpDown4, 'MouseDyFix');
+  ResolutionInitialize;
+end;
+
+procedure TTDirectorClass.FormDestroy(Sender: TObject);
+begin
+  FEyeDx.Free;
+  FEyeDy.Free;
+  FMouseDx.Free;
+  FMouseDy.Free;
+end;
+
+procedure TTDirectorClass.FormShow(Sender: TObject);
+begin
+  try
+    ViewInit;
+    EliteStateSurveyor.Enabled := True;
+    BtnJoy.SetFocus;
+  except
+  end
+end;
+
+procedure TTDirectorClass.GazeDisable;
+begin
+  if Mode <> gmDisabled then GazeReset else GazeJoystick;
+end;
+
+procedure TTDirectorClass.GazeJoystick;
+begin
+  KeyWriteDWord32(AppKey, 'GazeMode', 1);
+  Mode := gmJoystick;
+end;
+
+procedure TTDirectorClass.GazeMenu;
+begin
+  KeyWriteDWord32(AppKey, 'GazeMode', 2);
+  Mode := gmMenu;
+end;
+
+procedure TTDirectorClass.GazePause;
+begin
+  KeyWriteDWord32(AppKey, 'GazeMode', 3);
+  Mode := gmPause;
+end;
+
+procedure TTDirectorClass.GazeReset;
+begin
+  KeyWriteDWord32(AppKey, 'GazeMode', 0);
+  Mode := gmDisabled;
+end;
+
+function TTDirectorClass.GetCombat: Boolean;
+begin
+  Result := Boolean(KeyReadDWord32(AppKey, 'Combat', 0));
+end;
+
+function TTDirectorClass.GetMouseDxFix: Integer;
+begin
+  Result := KeyReadDWord32(AppKey, 'MouseDxFix', 0)
+end;
+
+function TTDirectorClass.GetMouseDxToLeft: Boolean;
+begin
+  Result := Boolean( KeyReadDWord32(AppKey, 'MouseDxToLeft', 1) );
+end;
+
+function TTDirectorClass.GetMouseDyFix: Integer;
+begin
+  Result := KeyReadDWord32(AppKey, 'MouseDyFix', 0)
+end;
+
+function TTDirectorClass.GetMouseDyToLeft: Boolean;
+begin
+  Result := Boolean( KeyReadDWord32(AppKey, 'MouseDyToLeft', 1) );
+end;
+
+function TTDirectorClass.GetNoise: Integer;
+begin
+  Result := KeyReadDWord32(AppKey, 'Noise', 250)
+end;
+
+function TTDirectorClass.GetRelativDxFix: Integer;
+begin
+  Result := KeyReadDWord32(AppKey, 'RelativDxFix', 0)
+end;
+
+function TTDirectorClass.GetRelativDxToLeft: Boolean;
+begin
+  Result := Boolean( KeyReadDWord32(AppKey, 'RelativDxToLeft', 1) );
+end;
+
+function TTDirectorClass.GetRelativDyFix: Integer;
+begin
+  Result := KeyReadDWord32(AppKey, 'RelativDyFix', 0)
+end;
+
+function TTDirectorClass.GetRelativDyToLeft: Boolean;
+begin
+  Result := Boolean( KeyReadDWord32(AppKey, 'RelativDyToLeft', 1) );
+end;
+
+function TTDirectorClass.GetScreenHeight: Integer;
+begin
+  Result := KeyReadDWord32(AppKey, 'ScreenHeight', -1);
+end;
+
+function TTDirectorClass.GetScreenIndex: Integer;
+begin
+  Result := KeyReadDWord32(AppKey, 'ScreenIndex', 0);
+end;
+
+function TTDirectorClass.GetScreenWidth: Integer;
+begin
+  Result := KeyReadDWord32(AppKey, 'ScreenWidth', -1);
+end;
+
+function TTDirectorClass.GetSensibility: Integer;
+begin
+  Result := KeyReadDWord32(AppKey, 'Sensibility', 20)
+end;
+
+function TTDirectorClass.GetWalkDeadZone: Integer;
+begin
+  Result := KeyReadDWord32(AppKey, 'WalkDeadZone')
+end;
+
+procedure TTDirectorClass.OnComboChange(Sender: TObject);
+var
+  ASt: string;
+  VIndex, VWidth, VHeight: Integer;
+begin
+  with ComboBox1, Items do
+  try
+    ASt := Strings[ItemIndex];
+    ResolutionStToValues(ASt, VWidth, VHeight, VIndex);
+    ScreenIndex  := VIndex;
+    ScreenWidth  := VWidth;
+    ScreenHeight := VHeight;
+  except
+  end;
+end; {OnComboChange}
+
+procedure TTDirectorClass.ResolutionInitialize;
+begin
+  with ComboBox1, Items do begin
+    Text := MonitorResolutions;
+    ItemIndex := ScreenIndex;
+    OnChange := OnComboChange;
+  end;
+end;
+
+procedure TTDirectorClass.SetCombat(const Value: Boolean);
+begin
+  KeyWriteDWord32(AppKey, 'Combat', Integer(Value))
+end;
+
+procedure TTDirectorClass.SetEliteState(const Value: TEliteState);
+begin
+  FEliteState := Value;
+  if FEliteState = esStop then GazeReset;
+end;
+
+procedure TTDirectorClass.SetMode(const Value: tGazeMode);
+begin
+  FMode := Value;
+  with StateLine do Caption := StrModes[FMode]
+end;
+
+procedure TTDirectorClass.SetMouseDxFix(const Value: Integer);
+begin
+  KeyWriteDWord32(AppKey, 'MouseDxFix', Value);
+  Update;
+end;
+
+procedure TTDirectorClass.SetMouseDxToLeft(const Value: Boolean);
+begin
+  KeyWriteDWord32(AppKey, 'MouseDxToLeft', Integer(Value));
+  Update;
+end;
+
+procedure TTDirectorClass.SetMouseDyFix(const Value: Integer);
+begin
+  KeyWriteDWord32(AppKey, 'MouseDyFix', Value);
+  Update;
+end;
+
+procedure TTDirectorClass.SetMouseDyToLeft(const Value: Boolean);
+begin
+  KeyWriteDWord32(AppKey, 'MouseDyToLeft', Integer(Value));
+  Update;
+end;
+
+procedure TTDirectorClass.SetNoise(const Value: Integer);
+begin
+  KeyWriteDWord32(AppKey, 'Noise', Value);
+  Update;
+end;
+
+procedure TTDirectorClass.SetRelativDxFix(const Value: Integer);
+begin
+  KeyWriteDWord32(AppKey, 'RelativDxFix', Value);
+  Update;
+end;
+
+procedure TTDirectorClass.SetRelativDxToLeft(const Value: Boolean);
+begin
+  KeyWriteDWord32(AppKey, 'RelativDxToLeft', Integer(Value));
+  Update;
+end;
+
+procedure TTDirectorClass.SetRelativDyFix(const Value: Integer);
+begin
+  KeyWriteDWord32(AppKey, 'RelativDyFix', Value);
+  Update;
+end;
+
+procedure TTDirectorClass.SetRelativDyToLeft(const Value: Boolean);
+begin
+  KeyWriteDWord32(AppKey, 'RelativDyToLeft', Integer(Value));
+  Update;
+end;
+
+procedure TTDirectorClass.SetScreenHeight(const Value: Integer);
+begin
+  KeyWriteDWord32(AppKey, 'ScreenHeight', Value);
+end;
+
+procedure TTDirectorClass.SetScreenIndex(const Value: Integer);
+begin
+  KeyWriteDWord32(AppKey, 'ScreenIndex', Value);
+end;
+
+procedure TTDirectorClass.SetScreenWidth(const Value: Integer);
+begin
+  KeyWriteDWord32(AppKey, 'ScreenWidth', Value);
+end;
+
+procedure TTDirectorClass.SetSensibility(const Value: Integer);
+begin
+  KeyWriteDWord32(AppKey, 'Sensibility', Value);
+  Update;
+end;
+
+procedure TTDirectorClass.SetWalkDeadZone(const Value: Integer);
+begin
+  KeyWriteDWord32(AppKey, 'WalkDeadZone', Value);
+  Update;
+end;
+
+procedure TTDirectorClass.TrackBar1Change(Sender: TObject);
+begin
+  with TrackBar1 do WalkDeadZone := Position;
+end;
+
+procedure TTDirectorClass.TrackBar2Change(Sender: TObject);
+begin
+  with TrackBar2 do Sensibility := Position * 10;
+end;
+
+procedure TTDirectorClass.TrackBar3Change(Sender: TObject);
+begin
+  with TrackBar3 do Noise := 50 + 100 * Position;
+end;
+
+procedure TTDirectorClass.Update;
+begin
+  KeyWriteDWord32(AppKey, 'Update', 1);
+end;
+
+procedure TTDirectorClass.ViewInit;
+begin
+  with TrackBar1 do Position := WalkDeadZone;
+  with TrackBar2 do Position := Sensibility div 10;
+  with TrackBar3 do Position := (Noise - 50) div 100;
+  with cbCombat  do Checked  := Combat;
+end;
+
+{ TFixValue }
+
+function TFixValue.BoolToToggleSwitch(const Value: Boolean): TToggleSwitchState;
+begin
+  case Value of
+    FixToLeft : Result := tssOn;
+    else Result := tssOff;
+  end;
+end;
+
+constructor TFixValue.Create(const AOwner: TTDirectorClass; const AEdit: TEdit;
+  const ASwitch: TToggleSwitch; const AUpDown: TUpDown; DestStr: string);
+begin
+  inherited Create;
+  FOwner := AOwner;
+  FDestStr := DestStr;
+  SetEdit(AEdit);
+  SetSwitch(ASwitch);
+  SetUpDown(AUpDown);
+  ReadValueFromRegistry;
+  ReadFixFromRegistry;
+  FSwitch.OnClick := OnSwitchChange;
+  FEdit.OnChange  := OnEditChange;
+  AUpDown.OnChangingEx := OnUpDownChange;
+end;
+
+function TFixValue.IsNeg: boolean;
+begin
+  with FSwitch do Result := State = tssOn;
+end;
+
+procedure TFixValue.OnEditChange(Sender: TObject);
+var
+  AValue: Integer;
+begin
+  with FUpDown do
+  try
+    AValue   := FValue;
+    FValue   := StrToInt(FEdit.Text);
+    Position := FValue;
+    UpdateValueInRegistry;
+  except
+    UpdateValue(AValue);
+  end;
+end;
+
+procedure TFixValue.OnSwitchChange(Sender: TObject);
+begin
+  with FSwitch do FFixToLeft := ToggleSwitchToBoll(State);
+  UpdateFixInRegistry;
+end;
+
+procedure TFixValue.OnUpDownChange(Sender: TObject;
+  var AllowChange: Boolean; NewValue: Integer; Direction: TUpDownDirection);
+begin
+  AllowChange := True;
+  FValue      := NewValue;
+  UpdateValueInRegistry;
+end;
+
+procedure TFixValue.ReadFixFromRegistry;
+begin
+  with FOwner do
+    case IndexStr(FDestStr, FixCat) of
+      0 : FFixToLeft := RelativDxToLeft;
+      1 : FFixToLeft := RelativDyToLeft;
+      2 : FFixToLeft := MouseDxToLeft;
+      3 : FFixToLeft := MouseDyToLeft;
+    end;
+  UpdateSwitch(FFixToLeft);
+end;
+
+procedure TFixValue.ReadValueFromRegistry;
+begin
+  with FOwner do
+    case IndexStr(FDestStr, FixCat) of
+      0 : FValue       := RelativDxFix;
+      1 : FValue       := RelativDyFix;
+      2 : FValue       := MouseDxFix;
+      3 : FValue       := MouseDyFix;
+    end;
+  UpdateValue(FValue);
+end;
+
+procedure TFixValue.SetEdit(const Value: TEdit);
+begin
+  FEdit := Value;
+end;
+
+procedure TFixValue.SetSwitch(const Value: TToggleSwitch);
+begin
+  FSwitch := Value;
+end;
+
+procedure TFixValue.SetUpDown(const Value: TUpDown);
+begin
+  FUpDown := Value
+end;
+
+procedure TFixValue.SetValue(const Value: Integer);
+begin
+  UpdateValue(Value);
+end;
+
+function TFixValue.ToggleSwitchToBoll(const Value: TToggleSwitchState): Boolean;
+begin
+  case Value of
+    tssOn  : Result := True;
+    tssOff : Result := False;
+  end;
+end;
+
+procedure TFixValue.UpdateFixInRegistry;
+begin
+  with FOwner do
+    case IndexStr(FDestStr, FixCat) of
+      0 : RelativDxToLeft := FFixToLeft;
+      1 : RelativDyToLeft := FFixToLeft;
+      2 : MouseDxToLeft   := FFixToLeft;
+      3 : MouseDyToLeft   := FFixToLeft;
+    end;
+end;
+
+procedure TFixValue.UpdateSwitch(const Value: Boolean);
+begin
+  UpdateSwitch( BoolToToggleSwitch( Value ) )
+end;
+
+procedure TFixValue.UpdateValue(const Value: Integer);
+begin
+  FValue := Abs(Value);
+  with FEdit do Text := Format('%d', [FValue]);
+  with FUpDown do Position := FValue;
+end;
+
+procedure TFixValue.UpdateValueInRegistry;
+begin
+  with FOwner do
+    case IndexStr(FDestStr, FixCat) of
+      0 : RelativDxFix := FValue;
+      1 : RelativDyFix := FValue;
+      2 : MouseDxFix   := FValue;
+      3 : MouseDyFix   := FValue;
+    end;
+end;
+
+procedure TFixValue.UpdateSwitch(const Value: TToggleSwitchState);
+begin
+  with FSwitch do State := Value
+end;
+
+end.
+
+
+

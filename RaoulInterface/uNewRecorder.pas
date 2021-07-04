@@ -1781,7 +1781,7 @@ begin
   end;
 
   CheckGrammar;
-  TalkFmt(10,0, 'je suis prêt');
+//  TalkFmt(10,0, 'je suis prêt');  //déplacé dans main
   Listen         := True;
   State          := srs_active;
   Mode           := rm_sleep;
@@ -2516,7 +2516,7 @@ begin
       900 : if IsListen then PauseActivate;
       //901 : if IsListen then NoneActivate; //n'est pas dans la grammaire switch ??
       { --- Redo }
-      910 : if IsListen then RedoCommentBuilder.TryTopronounce; 
+      910 : if IsListen then RedoCommentBuilder.TryTopronounce;
       911 : if IsListen then ReTalkCommentBuilder.TryTopronounce;
       { --- fun comments - not available in elite mode }
      1001 : if IsListenCommandCheck(SML, 0.75, [m_elite]) then TFunTalk.NightMare;
@@ -2525,6 +2525,9 @@ begin
      1004 : if IsListenCommandCheck(SML, 0.75, [m_elite]) then TFunTalk.Meteo_we;
      1005 : if IsListenCommandCheck(SML, 0.75, [m_elite]) then TFunTalk.OkGoogle;
      1006 : if IsListenCommandCheck(SML, 0.75, [m_elite]) then TFunTalk.ThankMission;
+      { --- Tobii utils}
+     1100 : if IsListen then EliteManager.TobiiConfig;
+     1101 : if IsListen then EliteManager.TobiiHideConfig;
     end
   except
   end

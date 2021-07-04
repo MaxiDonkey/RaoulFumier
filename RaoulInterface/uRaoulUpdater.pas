@@ -30,19 +30,40 @@ type
 
   TAppComplementUpdater = class
   private
+    FSources : TStringList;
+    procedure Initialize;
     function  LocalFilenameExists(const AFileName: string; const InFolder: string): Boolean;
     function  LoadEyeXFile(const AFileName: string): Boolean;
+    procedure ClearEyeXMouse;
     procedure UpdateEyeXMouse;
   public
+    constructor Create;
+    destructor Destroy; override;
+
     class procedure Process;
   end;
 
-function RaoulKey: string;
+function  RaoulKey: string;
+procedure CloseDirector;
+function  IsDirectorOpened:Boolean;
 
 implementation
 
 uses
   uSplashWaitForm, uGaussDisplay;
+
+procedure CloseDirector;
+var
+  Hnd : THandle;
+begin
+  Hnd := FindWindow(nil, 'Director');
+  SendMessage(Hnd, WM_CLOSE, 0, 0);
+end;
+
+function IsDirectorOpened:Boolean;
+begin
+  Result := FindWindow(nil, 'Director') > 0
+end;
 
 function RaoulKey: string;
 begin
@@ -233,6 +254,47 @@ end;
 
 { TAppComplementUpdater }
 
+procedure TAppComplementUpdater.ClearEyeXMouse;
+begin
+    with FSources do
+    with GetEnumerator do
+    try
+      while MoveNext do
+      try
+        if Current <> Strings[0] then DeleteFile(Current)
+          else
+        if not IsDirectorOpened then DeleteFile(Current);
+        Sleep(500);
+      except
+      end;
+    finally
+      Free;
+    end;
+
+end;
+
+constructor TAppComplementUpdater.Create;
+begin
+  Inherited Create;
+  FSources := TStringList.Create;
+  Initialize;
+end;
+
+destructor TAppComplementUpdater.Destroy;
+begin
+  FSources.Free;
+  inherited;
+end;
+
+procedure TAppComplementUpdater.Initialize;
+begin
+  with FSources do begin
+    Add('GazeMode.exe');
+    Add('Tobii.EyeX.Client.dll');
+    Add('EyeXMouse.exe');
+  end;
+end;
+
 function TAppComplementUpdater.LoadEyeXFile(const AFileName: string): Boolean;
 begin
   Result := TWebTools.DownloadFromHttp(
@@ -253,6 +315,7 @@ class procedure TAppComplementUpdater.Process;
 begin
   with TAppComplementUpdater.Create do
   try
+    ClearEyeXMouse;
     UpdateEyeXMouse;
   finally
     Free
@@ -261,10 +324,17 @@ end;
 
 procedure TAppComplementUpdater.UpdateEyeXMouse;
 begin
-  if not LocalFilenameExists('Tobii.EyeX.Client.dll', '') then
-    LoadEyeXFile('Tobii.EyeX.Client.dll');
-  if not LocalFilenameExists('EyeXMouse.exe', '') then
-    LoadEyeXFile('EyeXMouse.exe');
+  with FSources do
+    with GetEnumerator do
+    try
+      while MoveNext do if not LocalFilenameExists(Current, '') then begin
+        if Current <> Strings[0] then LoadEyeXFile(Current)
+          else
+        if not IsDirectorOpened then LoadEyeXFile(Current);
+      end;
+    finally
+      Free;
+    end;
 end;
 
 end.

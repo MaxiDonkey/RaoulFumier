@@ -165,6 +165,8 @@ end;
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   with GaussDisplayForm do if Visible then Close;
+  {Try to close GazeMode.exe}
+  uRaoulUpdater.CloseDirector;
   {Recorder}
   InternRecorder.DoOnClose;
   TSQLRaoul.UserDataExport;
@@ -176,9 +178,12 @@ begin
   { --- Lancement retardé après affichage }
   if KeyReadBoolean(BufferKey, 'RecorderStarted') then begin
     with DelayedStart do Enabled := False;
+    { --- Vérifie la cohérence de EyeXMouse pour la visu }
+    TAppComplementUpdater.Process;
     with TalkativeFacade do begin
       PostInitialize;
-      CommandText := 'En sommeil'
+      CommandText := 'En sommeil';
+      Recorder.TalkFmt(10,0, 'je suis prêt');
     end;
     { --- Help prepare if not Boot process }
     with THelpDlg do if not IsBootProcess then HelpDefine
@@ -186,8 +191,6 @@ begin
   end;
   { --- Si éventuellement l'avertissement est ouvert }
   TSplashWaitForm.SplashHide;
-  { --- Vérifie la cohérence de EyeXMouse pour la visu }
-  TAppComplementUpdater.Process;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);

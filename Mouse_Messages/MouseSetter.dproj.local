@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2020/08/04 14:44:30.000.248,=C:\Users\MaxiD\Documents\Embarcadero\Studio\Projets\Unit1.pas</Transaction>
+    <Transaction>2020/08/11 14:18:52.000.045,=C:\Users\MaxiD\Documents\Embarcadero\Studio\Projets\Unit1.pas</Transaction>
+    <Transaction>2020/08/11 14:20:11.000.720,=C:\Users\MaxiD\Documents\Embarcadero\Studio\Projets\Unit1.pas</Transaction>
+    <Transaction>2020/08/15 12:20:18.000.329,=C:\Users\MaxiD\Documents\Embarcadero\Studio\Projets\Unit1.pas</Transaction>
+    <Transaction>2021/06/08 06:52:32.000.272,=C:\Users\MaxiD\Documents\Embarcadero\Studio\Projets\Unit1.pas</Transaction>
+    <Transaction>2021/06/08 06:54:35.000.492,=C:\Users\MaxiD\Documents\Embarcadero\Studio\Projets\Unit1.pas</Transaction>
+    <Transaction>2021/06/14 13:10:09.000.399,=C:\Users\MaxiD\Documents\Embarcadero\Studio\Projets\Unit1.pas</Transaction>
+    <Transaction>2021/06/14 13:10:42.000.609,C:\Users\MaxiD\Documents\Embarcadero\Studio\Projets\Unit1.pas=D:\2021-developpement\Mouse_Messages\Main.pas</Transaction>
+    <Transaction>2021/06/14 13:10:42.000.609,C:\Users\MaxiD\Documents\Embarcadero\Studio\Projets\Unit1.dfm=D:\2021-developpement\Mouse_Messages\Main.dfm</Transaction>
+    <Transaction>2021/06/14 13:10:52.000.944,C:\Users\MaxiD\Documents\Embarcadero\Studio\Projets\Project1.dproj=D:\2021-developpement\Mouse_Messages\MouseSetter.dproj</Transaction>
+  </Transactions>
+	<ActiveMobileDevice>
+		<NoProfile iOSSimulator="iPhone5"/>
+	</ActiveMobileDevice>
+</BorlandProject>

@@ -1,3 +1,32 @@
-Grammaire last modification (28) : partielle le 18/12/2020 06:03:39
-Arinum.cfg
+Grammaire last modification (43) : complète le 01/07/2021 04:42:15
+Elite.cfg
+gram1_0.cfg
+gram2.cfg
+gram2_0.cfg
+gram3.cfg
+gram3_0.cfg
+gram3_1.cfg
+gram3_2.cfg
+gram4.cfg
+gram4_0.cfg
+gram4_1.cfg
+gram5.cfg
+gram5_0.cfg
+gr_actions.cfg
+gr_adverbes.cfg
+gr_clauses.cfg
+gr_custom.cfg
+gr_custom.grxml
+gr_fix.cfg
+gr_insult.cfg
+gr_link.cfg
+gr_main.cfg
+gr_metier.cfg
+gr_temps.cfg
+Spelling.cfg
 switch.cfg
+_Spelling.cfg
+Pause.cfg
+Gridmode.cfg
+help.cfg
+Arinum.cfg
