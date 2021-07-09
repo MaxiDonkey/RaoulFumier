@@ -7,6 +7,8 @@
 
 unit uEliteManager;
 
+{ --- Use Status.json Flag2 only with Custom.4.0.binds. IsOnFoot not with Horizon }
+
 interface
 
 uses
@@ -394,9 +396,10 @@ type
     procedure ShowConsumable;
     {*** Manager : emulated joystick by Tobii Eye tracker }
     procedure TobiiLoad;
-    procedure TobiiStop;
     procedure TobiiStart;
     procedure TobiiPause;
+    procedure TobiiStop;
+    procedure TobiiMenuMode;
     procedure TobiiConfigCombat;
     procedure TobiiConfigStation;
     procedure TobiiConfigExplo;
@@ -408,14 +411,18 @@ type
     procedure TobiiMorePrecision;
     procedure TobiiLessPrecision;
     procedure TobiiSaveDiver1;
-    procedure TobiiSaveDiver2;        
-    procedure TobiiMenuMode;
+    procedure TobiiSaveDiver2;
   public
-    procedure TobiiConfig;
-    procedure TobiiHideConfig;
+    procedure TobiiConfig;      //Switch 1100
+    procedure TobiiHideConfig;  //Switch 1101
+    procedure TobiiPauseSwitch; //Switch 1102
+    procedure TobiiMouseSwitch; //Switch 1103
+    procedure StopMovAndFire;
+
   private
     procedure OdysseyInteractionValidate;
     procedure HumInteractMenuItem(const Value: Integer);
+    procedure StopMovAndTobii;
   public
     procedure SetTags(const Value: string);
     procedure SetKeyInventory(const Value: TKeyInventory);
@@ -442,10 +449,10 @@ type
 
   TOdysseyPressedKey = class
   private
-    FManager : TEliteManager;
-    FMov     : TOdysseyPressedKeySet;
-    FClockMov: Cardinal;
-    FClockFire: Cardinal;
+    FManager   : TEliteManager;
+    FMov       : TOdysseyPressedKeySet;
+    FClockMov  : Cardinal;
+    FClockFire : Cardinal;
     procedure DoOnCaseAdd(const Value: TOdysseyPressedKeyType);
     procedure DoOnCaseSub(const Value: TOdysseyPressedKeyType);
     function  IsCaseOn(const Value: TOdysseyPressedKeyType): Boolean;
@@ -471,6 +478,7 @@ type
   TOdysseyKeySurveyor = class(TThread)
   private
     ThOdysseyPressedKey : TOdysseyPressedKey;
+    ThWaitingFor        : Cardinal;
     procedure ThDelay(ms: Cardinal);
     procedure Process;
   public
@@ -1057,7 +1065,7 @@ begin
     316   : ShowConsumable;        //Stop Tobii + Interact
     317   : EngagerEx;
     {*** In game, Tobii manager }
-    400   : TobiiStart;
+    400   : TobiiStart;            
     401   : TobiiPause;
     402   : TobiiConfigCombat;
     403   : TobiiConfigStation;
@@ -1074,8 +1082,8 @@ begin
     414   : TobiiLoad;
     415   : TobiiStop;
     416   : TobiiMenuMode;
-//    417   : TobiiConfig;
-//    418   : TobiiHideConfig;
+//    417   : TobiiConfig;           //Switch 1100
+//    418   : TobiiHideConfig;       //Switch 1101 
   end;
   if not Again and not IsAgainCommand(indexCmd) then LastCmd := indexCmd
 end; {CallCommande}
@@ -1885,7 +1893,11 @@ end;
 
 procedure TCustomEliteManager.Pause;
 begin
-  FKeyInventory.KeyTrigger_( 'Pause', WITH_KEYUP)
+  FKeyInventory.KeyTrigger_( 'Pause', WITH_KEYUP);
+  { *** Pause the tobii to avoid deleterious effects }
+  Delay(100);
+  StopMovAndFire;
+  TobiiPause;
 end;
 
 procedure TCustomEliteManager.FriendBoard;
@@ -2360,69 +2372,50 @@ end;
 
 procedure TCustomEliteManager.CamPitchUp(tms: Integer);
 begin
-  case EliteStatus.GuiValue of
-    gt_galaxymap, gt_systemmap : begin
-      if tms < 1 then FKeyInventory.KeyTrigger_( 'CamPitchUp', WITH_KEYUP)
-        else FKeyInventory.KeyTrigger_( 'CamPitchUp', tms)
-    end
-  end
+  if tms < 1 then FKeyInventory.KeyTrigger_( 'CamPitchUp', WITH_KEYUP)
+    else FKeyInventory.KeyTrigger_( 'CamPitchUp', tms)
 end;
 
 procedure TCustomEliteManager.CamPitchDown(tms: Integer);
 begin
-  case EliteStatus.GuiValue of
-    gt_galaxymap, gt_systemmap : begin
-      if tms < 1 then FKeyInventory.KeyTrigger_( 'CamPitchDown', WITH_KEYUP)
-        else FKeyInventory.KeyTrigger_( 'CamPitchDown', tms)
-    end
-  end
+  if tms < 1 then FKeyInventory.KeyTrigger_( 'CamPitchDown', WITH_KEYUP)
+    else FKeyInventory.KeyTrigger_( 'CamPitchDown', tms)
 end;
 
 procedure TCustomEliteManager.CamYawLeft(tms: Integer);
 begin
-  case EliteStatus.GuiValue of
-    gt_galaxymap, gt_systemmap : begin
-      if tms < 1 then FKeyInventory.KeyTrigger_( 'CamYawLeft', WITH_KEYUP)
-        else FKeyInventory.KeyTrigger_( 'CamYawLeft', tms)
-    end
-  end
+  if tms < 1 then FKeyInventory.KeyTrigger_( 'CamYawLeft', WITH_KEYUP)
+    else FKeyInventory.KeyTrigger_( 'CamYawLeft', tms)
 end;
 
 procedure TCustomEliteManager.CamYawRight(tms: Integer);
 begin
-  case EliteStatus.GuiValue of
-    gt_galaxymap, gt_systemmap : begin
-      if tms < 1 then FKeyInventory.KeyTrigger_( 'CamYawRight', WITH_KEYUP)
-        else FKeyInventory.KeyTrigger_( 'CamYawRight', tms)
-    end
-  end
+  if tms < 1 then FKeyInventory.KeyTrigger_( 'CamYawRight', WITH_KEYUP)
+    else FKeyInventory.KeyTrigger_( 'CamYawRight', tms)
 end;
 
 procedure TCustomEliteManager.CamZoomIn(tms: Integer);
 begin
-  case EliteStatus.GuiValue of
-    gt_galaxymap, gt_systemmap : begin
-      if tms < 1 then FKeyInventory.KeyTrigger_( 'CamZoomIn', WITH_KEYUP)
-        else FKeyInventory.KeyTrigger_( 'CamZoomIn', tms)
-    end
-  end
+  //rev-2 : Note TEST AVEC ODYSSEY Puisque la fonction échoue maintenant
+  if tms < 1 then FKeyInventory.KeyTrigger_( 'CamZoomIn', WITH_KEYUP)
+    else FKeyInventory.KeyTrigger_( 'CamZoomIn', tms);
+//  case EliteStatus.GuiValue of
+//    gt_galaxymap, gt_systemmap : begin
+//      if tms < 1 then FKeyInventory.KeyTrigger_( 'CamZoomIn', WITH_KEYUP)
+//        else FKeyInventory.KeyTrigger_( 'CamZoomIn', tms)
+//    end
+//  end
 end;
 
 procedure TCustomEliteManager.CamZoomOut(tms: Integer);
 begin
-  case EliteStatus.GuiValue of
-    gt_galaxymap, gt_systemmap : begin
-      if tms < 1 then FKeyInventory.KeyTrigger_( 'CamZoomOut', WITH_KEYUP)
-        else FKeyInventory.KeyTrigger_( 'CamZoomOut', tms)
-    end
-  end
+  if tms < 1 then FKeyInventory.KeyTrigger_( 'CamZoomOut', WITH_KEYUP)
+    else FKeyInventory.KeyTrigger_( 'CamZoomOut', tms);
 end;
 
 procedure TCustomEliteManager.GalaxyMapHome;
 begin
-  case EliteStatus.GuiValue of
-    gt_galaxymap, gt_systemmap : FKeyInventory.KeyTrigger_( 'GalaxyMapHome', WITH_KEYUP)
-  end
+  FKeyInventory.KeyTrigger_( 'GalaxyMapHome', WITH_KEYUP)
 end;
 
 procedure TCustomEliteManager.Camera_Next;
@@ -2972,17 +2965,17 @@ end;
 
 procedure TCustomEliteManager.HumSelectFragGrenade;
 begin
-  FKeyInventory.KeyTrigger_( 'HumanoidSelectFragGrenade', 90); //WITH_KEYUP)
+  FKeyInventory.KeyTrigger_( 'HumanoidSelectFragGrenade', WITH_KEYUP)
 end;
 
 procedure TCustomEliteManager.HumSelectEMPGrenade;
 begin
-  FKeyInventory.KeyTrigger_( 'HumanoidSelectEMPGrenade', 90); //WITH_KEYUP)
+  FKeyInventory.KeyTrigger_( 'HumanoidSelectEMPGrenade', WITH_KEYUP)
 end;
 
 procedure TCustomEliteManager.HumSelectShieldGrenade;
 begin
-  FKeyInventory.KeyTrigger_( 'HumanoidSelectShieldGrenade', 90); //WITH_KEYUP)
+  FKeyInventory.KeyTrigger_( 'HumanoidSelectShieldGrenade', WITH_KEYUP)
 end;
 
 procedure TCustomEliteManager.HumSwitchToRechargeTool;
@@ -3014,7 +3007,7 @@ end;
 procedure TCustomEliteManager.HumGalaxyMapOpen;
 begin
   if EliteStatus.IsOnOdyssey then begin
-    FOdysseyPressedKey.Clear;
+    StopMovAndFire;
     FKeyInventory.KeyTrigger_( 'GalaxyMapOpen_Humanoid', WITH_KEYUP);
   end;
 end;
@@ -3022,7 +3015,7 @@ end;
 procedure TCustomEliteManager.HumSystemMapOpen;
 begin
   if EliteStatus.IsOnOdyssey then begin
-    FOdysseyPressedKey.Clear;
+    StopMovAndFire;
     FKeyInventory.KeyTrigger_( 'SystemMapOpen_Humanoid', WITH_KEYUP);
   end;
 end;
@@ -3030,7 +3023,7 @@ end;
 procedure TCustomEliteManager.HumFocusCommsPanel;
 begin
   if EliteStatus.IsOnOdyssey then begin
-    FOdysseyPressedKey.Clear;
+    StopMovAndFire;
     FKeyInventory.KeyTrigger_( 'FocusCommsPanel_Humanoid', WITH_KEYUP);
   end;
 end;
@@ -3040,7 +3033,7 @@ begin
   Exit;
   { *** Ne plus l'ouvrir car déclenchement intempestif }
   if EliteStatus.IsOnOdyssey then begin
-    FOdysseyPressedKey.Clear;
+    StopMovAndFire;
     FKeyInventory.KeyTrigger_( 'QuickCommsPanel_Humanoid', WITH_KEYUP);
   end;
 end;
@@ -3049,7 +3042,7 @@ procedure TCustomEliteManager.HumOpenAccessPanel;
 begin
   //presser 1000ms pour ouvrir
   if EliteStatus.IsOnOdyssey then begin
-    FOdysseyPressedKey.Clear;
+    StopMovAndFire;
     FKeyInventory.KeyTrigger_( 'HumanoidOpenAccessPanelButton', 1000);
   end;
 end;
@@ -3057,7 +3050,7 @@ end;
 procedure TCustomEliteManager.HumConflictContextualUI;
 begin
   if EliteStatus.IsOnOdyssey then begin
-    FOdysseyPressedKey.Clear;
+    StopMovAndFire;
     FKeyInventory.KeyTrigger_( 'HumanoidConflictContextualUIButton', WITH_KEYUP);
   end;
 end;
@@ -3065,13 +3058,13 @@ end;
 procedure TCustomEliteManager.KeyStop;
 begin
   FOdysseyPressedKey.StopMov;
-  //Relacher la combinaison de touches courante
+  //Relacher "physiquement" la combinaison de touches courante
   KeyMessageSender.DoKeyUp(True);
 end;
 
 procedure TCustomEliteManager.HumAvance;
 begin
-  if EliteStatus.IsOnOdyssey then begin
+  if EliteStatus.IsOnFoot then begin
     //Ne relache pas la combinaison de touches
     KeyWrite(AppKey, 'OdysseyMvt', 'avance');
     FKeyInventory.KeyTrigger_( 'HumanoidForwardButton', WITHOUT_KEYUP);
@@ -3080,7 +3073,7 @@ end;
 
 procedure TCustomEliteManager.HumRecule;
 begin
-  if EliteStatus.IsOnOdyssey then begin
+  if EliteStatus.IsOnFoot then begin
     //Ne relache pas la combinaison de touches
     KeyWrite(AppKey, 'OdysseyMvt', 'recule');
     FKeyInventory.KeyTrigger_( 'HumanoidBackwardButton', WITHOUT_KEYUP);
@@ -3205,7 +3198,7 @@ procedure TCustomEliteManager.ThrowGrenadeFragmentation;
 begin
   if EliteStatus.IsOnOdyssey then begin
     HumSelectFragGrenade;
-    Sleep(250);
+    Delay(250);
     HumThrowGrenade;
   end;
 end;
@@ -3214,7 +3207,7 @@ procedure TCustomEliteManager.ThrowGrenadeBouclier;
 begin
   if EliteStatus.IsOnOdyssey then begin
     HumSelectShieldGrenade;
-    Sleep(250);
+    Delay(250);
     HumThrowGrenade;
   end;
 end;
@@ -3223,7 +3216,7 @@ procedure TCustomEliteManager.ThrowGrenadeEMP;
 begin
   if EliteStatus.IsOnOdyssey then begin
     HumSelectEMPGrenade;
-    Sleep(250);
+    Delay(250);
     HumThrowGrenade;
   end;
 end;
@@ -3233,7 +3226,7 @@ begin
   if EliteStatus.IsOnOdyssey then begin
     FOdysseyPressedKey.StopFire;
     if not EliteStatus.IsAimDownSight then HumAimZoom;
-    Sleep(250);
+    Delay(250);
     HumPrimaryFire_Rafale;
   end;
 end;
@@ -3243,9 +3236,9 @@ begin
   if EliteStatus.IsOnOdyssey then begin
     FOdysseyPressedKey.Clear;
     if not EliteStatus.IsAimDownSight then HumAimZoom;
-    Sleep(250);
+    Delay(250);
     FOdysseyPressedKey.Avancer;
-    Sleep(250);
+    Delay(250);
     HumWalk;
   end;
 end;
@@ -3255,9 +3248,9 @@ begin
   if EliteStatus.IsOnOdyssey then begin
     FOdysseyPressedKey.Clear;
     if not EliteStatus.IsAimDownSight then HumAimZoom;
-    Sleep(250);
+    Delay(250);
     FOdysseyPressedKey.Reculer;
-    Sleep(250);
+    Delay(250);
     HumWalk;
   end;
 end;
@@ -3265,25 +3258,25 @@ end;
 procedure TCustomEliteManager.StandInFront;
 begin
   if EliteStatus.IsOnOdyssey then begin
-    FOdysseyPressedKey.Clear;
+    StopMovAndFire;
     if EliteStatus.IsAimDownSight then HumAimZoom;
-    Sleep(250);
+    Delay(250);
     FOdysseyPressedKey.Avancer;
-    Sleep(250);
+    Delay(250);
     HumSprint;
   end;
 end;
 
 procedure TCustomEliteManager.OpenTheDoor;
 begin
-  OdysseyInteractionValidate
+  OdysseyInteractionValidate;
 end;
 
 procedure TCustomEliteManager.ShipBoarding;
 begin
   if EliteStatus.IsOnOdyssey then begin
-    TobiiStop;
-    Sleep(90);
+    TobiiPause;
+    Delay(300);
     OdysseyInteractionValidate;
   end;
 end;
@@ -3291,8 +3284,10 @@ end;
 procedure TCustomEliteManager.OdysseyInteractionValidate;
 begin
   if EliteStatus.IsOnOdyssey then begin
+    StopMovAndFire;
+    Delay(90);
     HumPrimaryInteract;
-    Sleep(250);
+    delay(450);
     UISelect;
   end;
 end;
@@ -3399,8 +3394,8 @@ end;
 procedure TCustomEliteManager.SniperMode;
 begin
   if EliteStatus.IsOnOdyssey then begin
-    KeyStop;
-    Sleep(250);
+    StopMovAndFire;
+    Delay(250);
     HumAccroupir;
     if not EliteStatus.IsAimDownSight then HumAimZoom;
   end;
@@ -3410,9 +3405,9 @@ procedure TCustomEliteManager.Engager;
 begin
   if EliteStatus.IsOnOdyssey then begin
     TobiiStart;
-    Sleep(250);
+    Delay(250);
     HumSelectPrimaryWeapon;
-    Sleep(250);
+    Delay(250);
     FOdysseyPressedKey.Avancer;
   end;
 end;
@@ -3420,11 +3415,11 @@ end;
 procedure TCustomEliteManager.StandInBack;
 begin
   if EliteStatus.IsOnOdyssey then begin
-    FOdysseyPressedKey.Clear;
+    StopMovAndFire;
     if EliteStatus.IsAimDownSight then HumAimZoom;
-    Sleep(250);
+    Delay(250);
     FOdysseyPressedKey.Reculer;
-    Sleep(250);
+    Delay(250);
     HumSprint;
   end;
 end;
@@ -3440,8 +3435,9 @@ end;
 procedure TCustomEliteManager.DoAfterInteract;
 begin
   if EliteStatus.IsOnOdyssey then begin
-    TobiiStop;
-    Sleep(90);
+    TobiiPause;
+    StopMovAndFire;
+    Delay(350);
     HumPrimaryInteract;
   end;
 end;
@@ -3450,13 +3446,13 @@ procedure TCustomEliteManager.HumInteractMenuItem(const Value: Integer);
 begin
   DoAfterInteract;
   if EliteStatus.IsOnOdyssey then begin
-    Sleep(250);
+    Delay(250);
     Down(5);
     if Value > 0 then begin
-      Sleep(250);
+      Delay(250);
       Up(Value);
     end;
-    Sleep(250);
+    Delay(250);
     UISelect;
   end;
 end;
@@ -3485,7 +3481,7 @@ procedure TCustomEliteManager.EngagerEx;
 begin
   if EliteStatus.IsOnOdyssey then begin
     TobiiStart;
-    Sleep(250);
+    Delay(250);
     FOdysseyPressedKey.Avancer;
   end;
 end;
@@ -3499,6 +3495,29 @@ end;
 procedure TCustomEliteManager.TobiiHideConfig;
 begin
   if uRaoulUpdater.IsDirectorOpened then uRaoulUpdater.CloseDirector;
+end;
+
+procedure TCustomEliteManager.TobiiPauseSwitch;
+begin
+  //NOTE Il faut que EyeMouse géère le non fonctionnement d'Elite
+  TobiiPause;
+end;
+
+procedure TCustomEliteManager.TobiiMouseSwitch;
+begin
+  //NOTE Il faut que EyeMouse géère le non fonctionnement d'Elite
+  EyesGazeMouseSettings.StartMouse;
+end;
+
+procedure TCustomEliteManager.StopMovAndTobii;
+begin
+  StopMovAndFire;
+  TobiiStop;
+end;
+
+procedure TCustomEliteManager.StopMovAndFire;
+begin
+  with FOdysseyPressedKey do Clear;
 end;
 
 { TEliteManager }
@@ -3679,28 +3698,27 @@ constructor TOdysseyKeySurveyor.Create(const Value: TOdysseyPressedKey);
 begin
   inherited Create( False );
   {Launch on create}
+  ThWaitingFor        := KeyReadCard(AppKey, 'KeyPressedDelay', 60000);
+  { --- 90 et 30 seconds for key down before automatic key up }
   ThOdysseyPressedKey := Value;
   FreeOnTerminate     := True;
-  Priority            := tpLower
+  Priority            := tpLower;
+
 end;
 
 procedure TOdysseyKeySurveyor.Execute;
 begin
   while not Terminated and not Application.Terminated do begin
     Synchronize( Process );
-    ThDelay( 1000  ); 
+    ThDelay( 150  );
   end;
 end;
 
 procedure TOdysseyKeySurveyor.Process;
-var
-  WaitingFor: Cardinal;
 begin
-  WaitingFor := KeyReadCard(AppKey, 'KeyPressedDelay', 60000);
-  { --- 30 seconds for key down before automatic key up }
   with ThOdysseyPressedKey do begin
-    if (ClockMov  > 0) and (GetTickCount - ClockMov  > WaitingFor) then StopMov;
-    if (ClockFire > 0) and (GetTickCount - ClockFire > WaitingFor div 2) then StopFire;
+    if (ClockMov  > 0) and (GetTickCount - ClockMov  > ThWaitingFor) then StopMov;
+    if (ClockFire > 0) and (GetTickCount - ClockFire > ThWaitingFor div 2) then StopFire;
   end;
 end;
 

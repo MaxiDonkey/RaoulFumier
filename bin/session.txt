@@ -1,3 +1,26 @@
 oui
 hey fumier referme-toi
-hey fumier affiche la version
+hey fumier mode pause
+retourne sur elite
+hey fumier mode pause
+retourne sur elite
+hey fumier afficher la version
+hey fumier afficher la version
+hey fumier afficher la version
+hey fumier afficher la version
+hey fumier mode pause
+retourne sur elite
+ignore
+ignore
+non
+hey fumier referme-toi
+ignore
+ignore
+ignore
+ignore
+ignore
+ignore
+ignore
+hey fumier mode pause
+retourne sur elite
+réveille-toi

@@ -76,6 +76,7 @@ type
     {*** Manager }
     procedure Start;
     procedure Stop;
+    procedure StartMouse;
     procedure Terminate;
     procedure EliteSurveyor; //for Timer
     {*** Parameters }
@@ -356,7 +357,8 @@ end;
 
 procedure TEyesGazeMouseSettings.Terminate;
 begin
-  GazeDisable;
+  GazeReset;
+//  GazeDisable;
 end;
 
 procedure TEyesGazeMouseSettings.Stop;
@@ -418,6 +420,13 @@ end;
 procedure TEyesGazeMouseSettings.SaveConfigToSet2;
 begin
   KeyWrite(AppKey, 'GazeConfig2', CurrentConfigToText );
+end;
+
+procedure TEyesGazeMouseSettings.StartMouse;
+begin
+  GazeMenu;
+  Sleep(90);
+  EyeXMouseRun;
 end;
 
 { TGazeSurveyor }

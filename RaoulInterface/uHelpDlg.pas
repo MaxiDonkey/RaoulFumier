@@ -38,6 +38,10 @@ type
     procedure LoadHelpFiles;
     procedure Initialize;
     procedure AutoOpen;
+    function  IndexMonitor: Integer;
+    function  ActualWidth: Integer;
+    function  ActualHeight: Integer;
+    procedure WindowSizeAdaptator;
 
   public
     class procedure HelpReload;
@@ -57,6 +61,12 @@ uses
   uEliteHelp, uRaoulDisplay, uNewRecorder, uWebTools, StrCopyUtils, uRegistry,
   uEliteUtils, uStatusReader;
 
+const
+  BasicWidth        = 1700;
+  BasicHeight       = 732;
+  BasicScreenWidth  = 1920;
+  BasicScreenHeight = 1080;
+
 procedure THelpDlg.FormCreate(Sender: TObject);
 begin
   AlphaBlend      := True;                    
@@ -71,6 +81,7 @@ begin
         then AlphaBlendValue := 210
         else AlphaBlendValue := 100
     end else AlphaBlendValue := 180;
+  WindowSizeAdaptator;
   SetForegroundWindow( HelpDlg.Handle );
   Recorder.HelpActivate
 end;
@@ -160,6 +171,36 @@ end;
 class function THelpDlg.IsBootProcess: Boolean;
 begin
   Result := KeyReadBoolean(AppKey, 'BootState')
+end;
+
+function THelpDlg.IndexMonitor: Integer;
+begin
+  Result := KeyReadInt(BufferKey, 'IndexMonitor', 0)
+end;
+
+function THelpDlg.ActualWidth: Integer;
+begin
+  Result := Screen.Monitors[IndexMonitor].Width;
+end;
+
+function THelpDlg.ActualHeight: Integer;
+begin
+  Result := Screen.Monitors[IndexMonitor].Height;
+end;
+
+procedure THelpDlg.WindowSizeAdaptator;
+var
+  ATop  : Integer;
+  ALeft : Integer;
+begin
+  Self.Width  := Trunc( (ActualWidth  / BasicScreenWidth)  * BasicWidth  );
+  Self.Height := Trunc( (ActualHeight / BasicScreenHeight) * BasicHeight );
+  ALeft       := (ActualWidth -  Self.Width)  div 2;
+  ATop        := (ActualHeight - Self.Height) div 2;
+  with Screen.Monitors[IndexMonitor] do begin
+    Self.Left := Left + ALeft;
+    Self.Top  := Top + ATop;
+  end;
 end;
 
 initialization

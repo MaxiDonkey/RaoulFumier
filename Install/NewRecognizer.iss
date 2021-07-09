@@ -41,6 +41,7 @@ Source: ..\bin\RaoulFumier.exe; DestDir: {app}; Flags: ignoreversion; Tasks: ; L
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 Source: ..\bin\Raoul.exe; DestDir: {app}; Tasks: ; Languages: ; Flags: 32bit
 Source: ..\bin\EyeXMouse.exe; DestDir: {app}; Flags: 32bit ignoreversion
+Source: ..\bin\GazeMode.exe; DestDir: {app}; Flags: 32bit
 Source: ..\bin\Tobii.EyeX.Client.dll; DestDir: {app}; Flags: ignoreversion
 Source: ..\bin\Grammar\Elite.cfg; DestDir: {app}\Grammar
 Source: ..\bin\Grammar\gram1_0.cfg; DestDir: {app}\Grammar

@@ -188,7 +188,7 @@ type
     property MetierBeforeGauss: TMetiers read GetMetierBeforeGauss write SetMetierBeforeGauss;
     property TalkVoiceDisabled: Boolean read GetTalkVoiceDisabled write SetTalkVoiceDisabled;
 
-    constructor Create(AVuMetre: TcxProgressBar = nil); virtual;
+  constructor Create(AVuMetre: TcxProgressBar = nil); virtual;
   public
     procedure CheckGrammar;
     { --- for testing }
@@ -1542,7 +1542,11 @@ end;
 
 procedure TCustomDefRecorder.ExitEliteProc(Sender: TObject);
 begin
-  if IsListen then NoneActivate
+  if IsListen then begin
+    { --- Relâcher les touches avancer et fire si nécessaire }
+    EliteManager.StopMovAndFire;
+    NoneActivate;
+  end;
 end;
 
 procedure TCustomDefRecorder.GridActivate;
@@ -1769,7 +1773,8 @@ end; {Recognition}
 procedure TCustomNewRecorder.Hypothesis(ASender: TObject; StreamNumber: Integer;
   StreamPosition: OleVariant; const Result: ISpeechRecoResult);
 begin
-  if IsListen then if Assigned(FOnBuildHypothesis) then
+  { --- ne rien afficher en mode pause }
+  if IsListen and (CurrentMetier <> m_pause) then if Assigned(FOnBuildHypothesis) then
     FOnBuildHypothesis(Self, QuoteFix(Result.PhraseInfo.GetText(0,-1, True)) )
 end;
 
@@ -2401,6 +2406,10 @@ begin
   try
     case TSMLConfiance.Tag( SML ) of
       901 : if IsListenCommandCheck(SML, 0.90) then PauseBackActivate;
+      902 : AppCloseActivate;
+      903 : YesActivate;
+      904 : NoActivate;
+      905 : AppVersionShowActivate;
     end
   finally
   end
@@ -2528,6 +2537,9 @@ begin
       { --- Tobii utils}
      1100 : if IsListen then EliteManager.TobiiConfig;
      1101 : if IsListen then EliteManager.TobiiHideConfig;
+      { --- NOTE : Attention EyeXMode est réglé pour ne fonctionner qu'avec Elite en fonctionnement !!! }
+     1102 : if IsListen then EliteManager.TobiiPauseSwitch; //TODO après EyeXMouse release
+     1103 : if IsListen then EliteManager.TobiiMouseSwitch; //TODO après EyeXMouse release
     end
   except
   end
@@ -3399,8 +3411,8 @@ begin
     gt_switch,
     gt_fumier,
     gt_spell,
-    gt_pause,
     gt_elite,
+    gt_pause,
     gt_gridmode,
     gt_help       : Result := ThText;
     gt_gauss      : if CurrentMetier = m_gauss then Result := TSMLCalcul.Operation(ThSML);

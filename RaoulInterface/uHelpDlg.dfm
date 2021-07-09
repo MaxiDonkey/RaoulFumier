@@ -14,7 +14,7 @@ object HelpDlg: THelpDlg
   Font.Style = []
   FormStyle = fsStayOnTop
   OldCreateOrder = False
-  Position = poScreenCenter
+  Position = poDesigned
   OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
