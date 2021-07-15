@@ -691,25 +691,45 @@ type
       bct_conduitemode,      bct_chasseurorder,      bct_explorationfss,
       bct_surfacedetaillee,  bct_manuallanding,      bct_multicrew,
       bct_galaxymap,         bct_camsystem,          bct_galnetreader,
-      bct_camfree,           bct_humanoid,           bct_humanoidMode );
+      bct_camfree,           bct_humanoid,           bct_humanoidMode,
+      bct_headlock );
   TBindCategoriesArea    = 0..Integer(high(TBindCategoriesType));
   TArrayOfBindCategories = array[TBindCategoriesArea] of string;
 
 var
   MCR : TArrayOfBindCategories =
-   ( 'Vol rotation',         'Vol poussée',          'Vol propulsion',
-     'Vol divers',           'Visée',                'Armes',
-     'Refroisissement',      'Divers',               'Changement de mode',
-     'Tableau de bord',      'Conduite',             'Conduite visée',
-     'Conduite tourelle',    'Conduite propulsion',  'Conduite divers',
-     'Conduite modes',       'Ordres au chasseur',   'ACS',
-     'Détecteur de surface', 'Atterrissage manuel',  'Equipage multiple',
-     'Carte de la galaxie',  'Système de caméras',   'Liste de lecture',
-     'Camera libre',         'Au sol',               'Au sol - modes'
-   );
+    ( 'Vol rotation',         'Vol poussée',          'Vol propulsion',
+      'Vol divers',           'Visée',                'Armes',
+      'Refroisissement',      'Divers',               'Changement de mode',
+      'Tableau de bord',      'Conduite',             'Conduite visée',
+      'Conduite tourelle',    'Conduite propulsion',  'Conduite divers',
+      'Conduite modes',       'Ordres au chasseur',   'ACS',
+      'Détecteur de surface', 'Atterrissage manuel',  'Equipage multiple',
+      'Carte de la galaxie',  'Système de caméras',   'Liste de lecture',
+      'Camera libre',         'Au sol',               'Au sol - modes',
+      'Vue subjective'
+    );
 
 function GetBindCategories(const Value: string): TBindCategoriesType;
-function IsBindCategories(const Value: string):Boolean;
+function IsBindCategories(const Value: string): Boolean;
+
+{*** HeadLook system simplified }
+type
+  THeadLookType =
+    ( hlt_reset,              hlt_pitchup,            hlt_pitchdown,
+      hlt_yawleft,            hlt_yawright
+    );
+  THeadLookArea  = 0..Integer(high(THeadLookType));
+  TArrayHeadLook = array[THeadLookArea] of string;
+
+var
+  HeadLook : TArrayHeadLook =
+    ( 'HeadLookReset',        'HeadLookPitchUp',      'HeadLookPitchDown',
+      'HeadLookYawLeft',      'HeadLookYawRight'
+    );
+
+function GetHeadLook(const Value: string): THeadLookType;
+function IsHeadLook(const Value: string): Boolean;
 
 {+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -985,6 +1005,7 @@ type
     FCamFree                 : TArrayCamFree;
     FHumanoid                : TArrayOfHumanoidSol;
     FHumanoidMode            : TArrayOfHumanoidSolMode;
+    FHeadLock                : TArrayHeadLook;
     function ToStringEx(const AValues: array of string): string;
     function GetBindsXMLtext: string;
     function ExtractXMLByBind(const BindValue: string):string;
@@ -1608,6 +1629,15 @@ begin
   end
 end;
 
+function GetHeadLook(const Value: string): THeadLookType;
+begin
+  try
+    Result := THeadLookType( IndexStr(Value, HeadLook) )    
+  except
+    raise
+  end
+end;
+
 function GetBindHumanoidSol(const Value: string): THumanoidSolType;
 begin
   try
@@ -1629,6 +1659,11 @@ end;
 function IsBindCategories(const Value: string):Boolean;
 begin
   Result := IndexStr(Value, MCR) > -1
+end;
+
+function IsHeadLook(const Value: string):Boolean;
+begin
+  Result := IndexStr(Value, HeadLook) > -1
 end;
 
 function IsBindHumanoidSol(const Value: string):Boolean;
@@ -2368,6 +2403,7 @@ begin
       bct_camfree             : Add( ToStringEx( FCamFree              ) );
       bct_humanoid            : Add( ToStringEx( FHumanoid             ) );
       bct_humanoidMode        : Add( ToStringEx( FHumanoidMode         ) );
+      bct_headlock            : Add( ToStringEx( FHeadLock             ) );
     end;
     Result := Trim( Text );
   finally
@@ -2415,6 +2451,7 @@ begin
   FCamFree                 := CamFree;
   FHumanoid                := HOSOL;
   FHumanoidMode            := HOSOLMODE;
+  FHeadLock                := HeadLook;
 end;
 
 class function TBindsArrayTools.Extract(const ASource,
@@ -2468,6 +2505,7 @@ begin
     Add( ToStringEx( FCamFree              ) );
     Add( ToStringEx( FHumanoid             ) );
     Add( ToStringEx( FHumanoidMode         ) );
+    Add( ToStringEx( FHeadLock             ) );
     Result := Trim( Text )
   finally
     Free

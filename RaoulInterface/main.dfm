@@ -40,7 +40,6 @@ object MainForm: TMainForm
   object DistantData: TDistantData
     Server = '94.76.216.225\SQLSAPI'
     Catalog = 'RaoulFumier'
-    Password = '2y5iGNcC'
     OnPrepare = DistantDataPrepare
     Left = 24
     Top = 88

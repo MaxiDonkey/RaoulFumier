@@ -412,6 +412,16 @@ type
     procedure TobiiLessPrecision;
     procedure TobiiSaveDiver1;
     procedure TobiiSaveDiver2;
+    {*** Vue subjective}
+    procedure HeadLockReset;
+    procedure HeadLockUp;
+    procedure HeadLockDown;
+    procedure HeadLockLeft;
+    procedure HeadLockRight;
+    procedure HeadLockTools;
+    procedure HeadLockExit;
+    procedure HeadLockTarget;
+    procedure HeadLockShield;
   public
     procedure TobiiConfig;      //Switch 1100
     procedure TobiiHideConfig;  //Switch 1101
@@ -423,6 +433,8 @@ type
     procedure OdysseyInteractionValidate;
     procedure HumInteractMenuItem(const Value: Integer);
     procedure StopMovAndTobii;
+  private
+    procedure UIRetour;
   public
     procedure SetTags(const Value: string);
     procedure SetKeyInventory(const Value: TKeyInventory);
@@ -537,12 +549,16 @@ begin
     10872 : Pere    (1, 400);
     10873 : Pere    (1, 600);
     10874 : Pere    (1, 150); //rev-2 06/2021
+    10875 : Pere    (1, 800);
+    10876 : Pere    (1, 1000);
     88    : Fils;    // without_keyup
     10880 : Fils    (1, 90);
     10881 : Fils    (1, 250);
     10882 : Fils    (1, 400);
     10883 : Fils    (1, 600);
     10884 : Fils    (1, 150); //rev-2 06/2021
+    10885 : Fils    (1, 800);
+    10886 : Fils    (1, 1000);
     89    : Nord;    // without_keyup
     10890 : Nord    (1, 90);
     10891 : Nord    (1, 250);
@@ -664,7 +680,7 @@ begin
     32    : Right(1);
     33    : UISelect;
     { --- Retour : if grid opened do back on grid else uiback }
-    34    : with Recorder do if IsGridOpened then RetourActivate else UIBack;
+    34    : UIRetour;
     10341 : CloseCarte;
     35    : NextSheet(1);
     10352 : NextSheet(2);
@@ -1083,7 +1099,17 @@ begin
     415   : TobiiStop;
     416   : TobiiMenuMode;
 //    417   : TobiiConfig;           //Switch 1100
-//    418   : TobiiHideConfig;       //Switch 1101 
+//    418   : TobiiHideConfig;       //Switch 1101
+    {*** Vue subjective}
+    500   : HeadLockReset;
+    501   : HeadLockUp;
+    502   : HeadLockDown;
+    503   : HeadLockLeft;
+    504   : HeadLockRight;
+    505   : HeadLockTools;           //vue sur les instruments
+    506   : HeadLockExit;
+    507   : HeadLockTarget;
+    508   : HeadLockShield;
   end;
   if not Again and not IsAgainCommand(indexCmd) then LastCmd := indexCmd
 end; {CallCommande}
@@ -1854,39 +1880,50 @@ end;
 
 procedure TCustomEliteManager.LeftPanel;
 begin
+  TobiiPause;
   FKeyInventory.KeyTrigger_( 'FocusLeftPanel', WITH_KEYUP)
 end;
 
 procedure TCustomEliteManager.CommsPanel;
 begin
   if EliteStatus.IsOnOdyssey then HumFocusCommsPanel
-    else FKeyInventory.KeyTrigger_( 'FocusCommsPanel', WITH_KEYUP)
+    else begin
+      TobiiPause;
+      FKeyInventory.KeyTrigger_( 'FocusCommsPanel', WITH_KEYUP)
+    end;
 end;
 
 procedure TCustomEliteManager.QuickCommsPanel;
 begin
   if EliteStatus.IsOnOdyssey then HumQuickCommsPanel
-    else FKeyInventory.KeyTrigger_( 'QuickCommsPanel', WITH_KEYUP)
+    else begin
+      TobiiPause;
+      FKeyInventory.KeyTrigger_( 'QuickCommsPanel', WITH_KEYUP)
+    end
 end;
 
 procedure TCustomEliteManager.RadarPanel;
 begin
+  TobiiPause;
   FKeyInventory.KeyTrigger_( 'FocusRadarPanel', WITH_KEYUP)
 end;
 
 procedure TCustomEliteManager.RightPanel;
 begin
+  TobiiPause;
   FKeyInventory.KeyTrigger_( 'FocusRightPanel', WITH_KEYUP)
 end;
 
 procedure TCustomEliteManager.MapGalaxy;
 begin
+  TobiiPause;
   if EliteStatus.IsOnOdyssey then HumGalaxyMapOpen
     else FKeyInventory.KeyTrigger_( 'GalaxyMapOpen', WITH_KEYUP)
 end;
 
 procedure TCustomEliteManager.MapSystem;
 begin
+  TobiiPause;
   if EliteStatus.IsOnOdyssey then HumSystemMapOpen
     else FKeyInventory.KeyTrigger_( 'SystemMapOpen', WITH_KEYUP)
 end;
@@ -3122,7 +3159,8 @@ begin
         else ASt := 'YawRightButton'
   end;
   //Ne relache pas la combinaison de touches
-  FKeyInventory.KeyTrigger_(ASt, WITHOUT_KEYUP)
+  FKeyInventory.KeyTrigger_(ASt, WITHOUT_KEYUP);
+  FOdysseyPressedKey.FClockMov := GetTickCount;
 end;
 
 procedure TCustomEliteManager.Ouest;
@@ -3137,7 +3175,8 @@ begin
         else ASt := 'YawLeftButton'
   end;
   //Ne relache pas la combinaison de touches
-  FKeyInventory.KeyTrigger_(ASt, WITHOUT_KEYUP)
+  FKeyInventory.KeyTrigger_(ASt, WITHOUT_KEYUP);
+  FOdysseyPressedKey.FClockMov := GetTickCount;
 end;
 
 procedure TCustomEliteManager.Pere;
@@ -3152,7 +3191,8 @@ begin
         else ASt := 'RollLeftButton'
   end;
   //Ne relache pas la combinaison de touches
-  FKeyInventory.KeyTrigger_(ASt, WITHOUT_KEYUP)
+  FKeyInventory.KeyTrigger_(ASt, WITHOUT_KEYUP);
+  FOdysseyPressedKey.FClockMov := GetTickCount;
 end;
 
 procedure TCustomEliteManager.Fils;
@@ -3167,7 +3207,8 @@ begin
         else ASt := 'RollRightButton'
   end;
   //Ne relache pas la combinaison de touches
-  FKeyInventory.KeyTrigger_(ASt , WITHOUT_KEYUP)
+  FKeyInventory.KeyTrigger_(ASt , WITHOUT_KEYUP);
+  FOdysseyPressedKey.FClockMov := GetTickCount;
 end;
 
 procedure TCustomEliteManager.HumPrimaryFire;
@@ -3520,6 +3561,71 @@ begin
   with FOdysseyPressedKey do Clear;
 end;
 
+procedure TCustomEliteManager.HeadLockReset;
+begin
+  FKeyInventory.KeyTrigger_( 'HeadLookReset', WITH_KEYUP)
+end;
+
+procedure TCustomEliteManager.HeadLockUp;
+begin
+  FKeyInventory.KeyTrigger_( 'HeadLookPitchUp', WITH_KEYUP)
+end;
+
+procedure TCustomEliteManager.HeadLockDown;
+begin
+  FKeyInventory.KeyTrigger_( 'HeadLookPitchDown', WITH_KEYUP)
+end;
+
+procedure TCustomEliteManager.HeadLockLeft;
+begin
+  FKeyInventory.KeyTrigger_( 'HeadLookYawLeft', WITH_KEYUP)
+end;
+
+procedure TCustomEliteManager.HeadLockRight;
+begin
+  FKeyInventory.KeyTrigger_( 'HeadLookYawRight', WITH_KEYUP)
+end;
+
+procedure TCustomEliteManager.HeadLockTools;
+begin
+  if not EliteStatus.IsOnElite then Exit;
+  TobiiPause;
+//  Delay(150);
+  HeadLockReset;
+  Delay(150);
+  HeadLockDown;
+  HeadLockDown;
+end;
+
+procedure TCustomEliteManager.HeadLockExit;
+begin
+  UIRetour;
+  HeadLockReset;
+  Delay(150);
+  TobiiStart;
+end;
+
+procedure TCustomEliteManager.HeadLockTarget;
+begin
+  if EliteStatus.IsOnElite then begin
+    HeadLockTools;
+    HeadLockLeft;
+  end;
+end;
+
+procedure TCustomEliteManager.HeadLockShield;
+begin
+  if EliteStatus.IsOnElite then begin
+    HeadLockTools;
+    HeadLockRight;
+  end;
+end;
+
+procedure TCustomEliteManager.UIRetour;
+begin
+  with Recorder do if IsGridOpened then RetourActivate else UIBack;
+end;
+
 { TEliteManager }
 
 class procedure TEliteManager.Finalize;
@@ -3676,6 +3782,8 @@ begin
     SubCase(opkforward);
     SubCase(opkbackward);
     KeyWrite(AppKey, 'OdysseyMvt', 'none');
+    {*** pour les mvts du vaisseau "va père ...."}
+    KeyMessageSender.DoKeyUp(True);
   end;
 end;
 
