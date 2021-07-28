@@ -159,6 +159,9 @@ var
 
 implementation
 
+uses
+  uHelpDlg;
+
 function LoadRoots(const FileName: string): string;
 { --- Retrieve text from a text file }
 begin
@@ -850,12 +853,13 @@ end;
 procedure THelpView.SubTitleSelect(const index: Integer);
 begin
   if not BootState then with FSubTitle do
-  try
-    ItemIndex := index;
-    SubTitleClick(nil)
-  except
-    ItemIndex := 0
-  end
+    if not THelpDlg.IsHelpLocked then
+      try
+        ItemIndex := index;
+        SubTitleClick(nil)
+      except
+        ItemIndex := 0
+      end
 end;
 
 procedure THelpView.TitleClick(Sender: TObject);
@@ -895,12 +899,13 @@ end;
 procedure THelpView.TitleSelect(const index: Integer);
 begin
   if not BootState then with FTitle do
-  try
-    ItemIndex := index;
-    TitleClick(nil)
-  except
-    ItemIndex := 0
-  end
+   if not THelpDlg.IsHelpLocked then
+     try
+       ItemIndex := index;
+       TitleClick(nil)
+     except
+       ItemIndex := 0
+     end
 end;
 
 function THelpView.UpdateRubrik(Full: Boolean): string;

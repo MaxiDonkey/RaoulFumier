@@ -47,9 +47,13 @@ float filteredY = 0;
 float integratedErrorX = 0;
 float integratedErrorY = 0;
 float integratingSpeed = 1.0f;
-const float FIntegrationDeadZone = 16.0; // pixels
+float DeadZoneX = 8.0;
+float DeadZoneY = 8.0;
 const float FDeadZoneX = 8.0;			 // pixels
 const float FDeadZoneY = 8.0;			 // pixels
+const float FDeadFightZoneX = 1.0;		 // pixels
+const float FDeadFightZoneY = 1.0;		 // pixels
+const float FIntegrationDeadZone = 16.0; // pixels
 const float g_SlowZone = 80;			 // pixels
 float FSpeed = 0.18f;					 // 0.24f; how fast to move when far away
 float FSlowSpeed = 0.06f;				 // 0.12f; how fast to move when close
@@ -144,11 +148,12 @@ EliteForeGround() {
 }
 
 /*
-* Return True if Elite Horizon or Odyssey is running
+* Return True if Elite Horizon or Odyssey is running or if Navigation Mode enabled by Raoul Fumier
 */
-BOOL IsEliteRunnng() {
+BOOL ChechedProcess() {
   EliteHnd = GetEliteHandle();
-  if (EliteHnd == 0) { return false; }
+  BOOL CheckNavigation = GetRegistryValue(L"CheckNavigation", 0);
+  if ((EliteHnd == 0) && (CheckNavigation == true)) { return false; }
   else return true;
 }
 
@@ -240,7 +245,6 @@ void MoveInMenu(int x, int y) {
 * Handle on mouse coords
 */
 void HandleNewCoords(float x, float y) {
-	
 	if ((Running != 1) && (Running != 2)) { return; }
 	if (abs(lastRawX - x) + abs(lastRawY - y) > Noise) {
 		lastRawX = x;
@@ -253,8 +257,8 @@ void HandleNewCoords(float x, float y) {
 	integratedErrorY += errorY;
 	float speed = FSlowSpeed;
 	if (abs(errorX + errorY) > g_SlowZone) { speed = FSpeed; }
-	if (abs(errorX) > FDeadZoneX){ filteredX += speed * errorX; }
-	if (abs(errorY) > FDeadZoneY){ filteredY += speed * errorY; }
+	if (abs(errorX) > DeadZoneX){ filteredX += speed * errorX; }
+	if (abs(errorY) > DeadZoneY){ filteredY += speed * errorY; }
 	if (filteredX < 0) { filteredX = 0; }
 	if (filteredY < 0) { filteredY = 0; }
 	if (filteredX > ScreenMaxWidth) { filteredX = ScreenMaxWidth; }     
@@ -321,10 +325,14 @@ SpeedUpdate() {
 	if (Combat == 0) {
 		FSpeed = 0.24f;
 		FSlowSpeed = 0.12f;
+		DeadZoneX = FDeadFightZoneX;
+		DeadZoneY = FDeadFightZoneY;
 	}
 	else {
 		FSpeed = 0.18f;
 		FSlowSpeed = 0.06f;
+		DeadZoneX = FDeadZoneX;
+		DeadZoneY = FDeadZoneY;
 	}
 }
 
@@ -380,9 +388,9 @@ int main(int argc, char* argv[]) {
 			if (Running != 0) {
 				BOOL RegModified = (GetRegistryValue(L"Update", 0) == 1);
 				if (RegModified == true) { Update(); }
-				if (IsEliteRunnng() == false) { Running = 0; }
+				if (ChechedProcess() == false) { Running = 0; }
 			}
-			Sleep(450);
+			Sleep(75);
 		}
 	}
 	Finalize();

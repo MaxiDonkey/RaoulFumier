@@ -534,10 +534,11 @@ function IsExplorationFss(const Value: string):Boolean;
 {*** DETECTEUR DE SURFACE DETAILLEE; 1660-1714}
 type
   TSurfaceDetailleeType =
-   ( sdt_areaview,  sdt_exit,
-     sdt_yawleft,   sdt_yawright,
-     sdt_pitchleft, sdt_pitchright,
-     sdt_fovout,    sdt_fovin );
+   ( sdt_areaview,   sdt_exit,
+     sdt_yawleft,    sdt_yawright,
+     sdt_pitchleft,  sdt_pitchright,
+     sdt_fovout,     sdt_fovin,
+     sdt_filternext, sdt_filterprevious );
   TSurfaceDetailleeArea = 0..Integer(high(TSurfaceDetailleeType));
   TArraySurfaceDetaillee = array[TSurfaceDetailleeArea] of string;
 
@@ -546,7 +547,8 @@ var
    ( 'ExplorationSAAChangeScannedAreaViewToggle', 'ExplorationSAAExitThirdPerson',
      'SAAThirdPersonYawLeftButton',               'SAAThirdPersonYawRightButton',
      'SAAThirdPersonPitchUpButton',               'SAAThirdPersonPitchDownButton',
-     'SAAThirdPersonFovOutButton',                'SAAThirdPersonFovInButton'
+     'SAAThirdPersonFovOutButton',                'SAAThirdPersonFovInButton',
+     'ExplorationSAANextGenus',                   'ExplorationSAAPreviousGenus'
    );
 
 function GetSurfaceDetaillee(const Value: string): TSurfaceDetailleeType;

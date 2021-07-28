@@ -2389,7 +2389,7 @@ end;
 procedure TGramFactories.HelpProcess_(const SML: string;
   const ARecorder: TNewRecorder);
 begin
-  with Recorder, TSMLConfiance do if Confidence(SML) > 0.84 then
+  with Recorder, TSMLConfiance do if Confidence(SML) > 0.68 then
     TGridMAStacked.Execute( TagStr(SML), ActionsOnHelp )
 end;
 
@@ -2410,6 +2410,7 @@ begin
       903 : YesActivate;
       904 : NoActivate;
       905 : AppVersionShowActivate;
+      906 : RaoulRelaunching;
     end
   finally
   end
@@ -3135,8 +3136,10 @@ var
   Cmd: Integer;
 
   procedure HeplChange(const Value: THelpKind); begin
-    Helps.Current := Value;
-    HelpView.FirstDisplay
+    if not THelpDlg.IsHelpLocked then begin
+      Helps.Current := Value;
+      HelpView.FirstDisplay;
+    end;
   end;
 
 begin
@@ -3154,6 +3157,8 @@ begin
       653 : HeplChange(hk_odyssey);
       660 : HelpView.HideAutoOpen := True;
       661 : HelpView.HideAutoOpen := False;
+      700 : THelpDlg.UpdateHelpLocked(True);
+      701 : THelpDlg.UpdateHelpLocked(False);
     end
   except
   end

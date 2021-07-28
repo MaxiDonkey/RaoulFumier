@@ -185,6 +185,7 @@ begin
       CommandText := 'En sommeil';
       Recorder.TalkFmt(10,0, 'je suis prêt');
     end;
+    Delay(1700);
     { --- Help prepare if not Boot process }
     with THelpDlg do if not IsBootProcess then HelpDefine
       else BootDelayed.Enabled := True

@@ -9,7 +9,7 @@ uses
   {DevExpress}
   cxGraphics, cxControls,
   cxLookAndFeels, cxLookAndFeelPainters, cxContainer, cxEdit, dxSkinsCore,
-  dxSkinDarkRoom, cxCheckBox;
+  dxSkinDarkRoom, cxCheckBox, dxGDIPlusClasses;
 
 type
   THelpDlg = class(TForm)
@@ -30,10 +30,13 @@ type
     Panel8: TPanel;
     Label6: TLabel;
     cxCheckBox1: TcxCheckBox;
+    Image1: TImage;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
+    function  GetHelpLock: Boolean;
+    procedure SetHelpLock(const Value: Boolean);
     procedure RetrieveFiles(const index: Integer; var TextFileName, DatFileName: string);
     procedure LoadHelpFiles;
     procedure Initialize;
@@ -43,11 +46,15 @@ type
     function  ActualHeight: Integer;
     procedure WindowSizeAdaptator;
 
+    property HelpLock: Boolean read GetHelpLock write SetHelpLock;
+
   public
     class procedure HelpReload;
     class procedure HelpDefine;
-    class function RetrieveBootProcess: Boolean;  { --- Calcul delay Boot process }
-    class function IsBootProcess: Boolean;
+    class function  RetrieveBootProcess: Boolean;  { --- Calcul delay Boot process }
+    class function  IsBootProcess: Boolean;
+    class function  IsHelpLocked: Boolean;
+    class procedure UpdateHelpLocked(const Value: Boolean);
   end;
 
 var
@@ -72,10 +79,12 @@ begin
   AlphaBlend      := True;                    
   AlphaBlendValue := 160;
   with cxCheckBox1 do Checked := KeyReadBoolean(AppKey, 'HideAutoOpen');
+  KeyWrite(AppKey, 'HelpLock', False);
 end;
 
 procedure THelpDlg.FormShow(Sender: TObject);
 begin
+  GetHelpLock;
   if IsEliteRunningUTLS then begin
       if EliteStatus.Docked or EliteStatus.Docked
         then AlphaBlendValue := 210
@@ -83,7 +92,7 @@ begin
     end else AlphaBlendValue := 180;
   WindowSizeAdaptator;
   SetForegroundWindow( HelpDlg.Handle );
-  Recorder.HelpActivate
+  Recorder.HelpActivate;
 end;
 
 procedure THelpDlg.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -201,6 +210,29 @@ begin
     Self.Left := Left + ALeft;
     Self.Top  := Top + ATop;
   end;
+end;
+
+function THelpDlg.GetHelpLock: Boolean;
+begin
+  Result := KeyReadBoolean(AppKey, 'HelpLock', False);
+  try Image1.Visible := Result except end;
+end;
+
+procedure THelpDlg.SetHelpLock(const Value: Boolean);
+begin
+  KeyWrite(AppKey, 'HelpLock', Value);
+  try Image1.Visible := Value except end;
+end;
+
+class function THelpDlg.IsHelpLocked: Boolean;
+begin
+  if Assigned(HelpDlg) then Result := HelpDlg.HelpLock = True
+    else Result := False;
+end;
+
+class procedure THelpDlg.UpdateHelpLocked(const Value: Boolean);
+begin
+  if Assigned(HelpDlg) then HelpDlg.HelpLock := Value;
 end;
 
 initialization

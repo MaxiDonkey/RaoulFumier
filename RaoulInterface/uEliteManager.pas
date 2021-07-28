@@ -249,6 +249,8 @@ type
     procedure DSDPitchDown(tms: Integer = 0);
     procedure DSDZoomOut(tms: Integer = 0);
     procedure DSDZoomIn(tms: Integer = 0);
+    procedure DSDFilterNext;               //Only in Odyssey
+    procedure DSDFilterPrevious;           //Only in Odyssey
     {CMD : Carte de la galaxie}
     procedure CamPitchUp(tms: Integer = 0);
     procedure CamPitchDown(tms: Integer = 0);
@@ -422,13 +424,13 @@ type
     procedure HeadLockExit;
     procedure HeadLockTarget;
     procedure HeadLockShield;
+    procedure HeadLockCapture;
   public
     procedure TobiiConfig;      //Switch 1100
     procedure TobiiHideConfig;  //Switch 1101
     procedure TobiiPauseSwitch; //Switch 1102
     procedure TobiiMouseSwitch; //Switch 1103
     procedure StopMovAndFire;
-
   private
     procedure OdysseyInteractionValidate;
     procedure HumInteractMenuItem(const Value: Integer);
@@ -768,6 +770,8 @@ begin
     169   : DSDPitchDown(150);
     170   : DSDZoomOut(150);
     171   : DSDZoomIn(150);
+    17150 : DSDFilterNext;
+    17151 : DSDFilterPrevious;
     {*** VOL ATTERRISSAGE MANUEL 226-305}
     172   : LandingYawLeft;
     173   : LandingYawRight;
@@ -1110,6 +1114,7 @@ begin
     506   : HeadLockExit;
     507   : HeadLockTarget;
     508   : HeadLockShield;
+    509   : HeadLockCapture;
   end;
   if not Again and not IsAgainCommand(indexCmd) then LastCmd := indexCmd
 end; {CallCommande}
@@ -3563,6 +3568,7 @@ end;
 
 procedure TCustomEliteManager.HeadLockReset;
 begin
+  UIRetour;
   FKeyInventory.KeyTrigger_( 'HeadLookReset', WITH_KEYUP)
 end;
 
@@ -3590,18 +3596,14 @@ procedure TCustomEliteManager.HeadLockTools;
 begin
   if not EliteStatus.IsOnElite then Exit;
   TobiiPause;
-//  Delay(150);
   HeadLockReset;
-  Delay(150);
   HeadLockDown;
   HeadLockDown;
 end;
 
 procedure TCustomEliteManager.HeadLockExit;
 begin
-  UIRetour;
   HeadLockReset;
-  Delay(150);
   TobiiStart;
 end;
 
@@ -3624,6 +3626,29 @@ end;
 procedure TCustomEliteManager.UIRetour;
 begin
   with Recorder do if IsGridOpened then RetourActivate else UIBack;
+end;
+
+procedure TCustomEliteManager.HeadLockCapture;
+begin
+  if EliteStatus.IsOnElite then begin
+    HeadLockReset;
+    HeadLockDown;
+    TobiiStart;
+  end;
+end;
+
+procedure TCustomEliteManager.DSDFilterNext;
+begin
+  case EliteStatus.GuiValue of
+    gt_saamode : FKeyInventory.KeyTrigger_( 'ExplorationSAANextGenus', WITH_KEYUP)
+  end
+end;
+
+procedure TCustomEliteManager.DSDFilterPrevious;
+begin
+  case EliteStatus.GuiValue of
+    gt_saamode : FKeyInventory.KeyTrigger_( 'ExplorationSAAPreviousGenus', WITH_KEYUP)
+  end
 end;
 
 { TEliteManager }

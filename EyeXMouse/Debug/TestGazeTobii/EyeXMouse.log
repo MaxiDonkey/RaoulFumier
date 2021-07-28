@@ -1,0 +1,2 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(513,5): warning MSB8028: Le répertoire intermédiaire (Debug\) contient des fichiers partagés provenant d'un autre projet (MinimalGazeDataStream.vcxproj). Cela peut entraîner un comportement de nettoyage et de regénération incorrect.
+  EyeXMouse.vcxproj -> D:\EyeXMouse-master\EyeXMouse-master\src\code\EyeXMouse\Debug\EyeXMouse.exe
